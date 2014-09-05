@@ -145,9 +145,14 @@ public class BusListFragment extends BaseFragment {
 	
 	public void loadBtn(String order){
 		// 기본은 오름차순.
+		textBtnTime.setText(R.string.sort_time);
+		textBtnPrice.setText(R.string.sort_price);
+		textBtnNearBy.setText(R.string.sort_nearby);
+		/*/
 		textBtnTime.setText(R.string.sort_time_asc);
 		textBtnPrice.setText(R.string.sort_price_asc);
 		textBtnNearBy.setText(R.string.sort_nearby_asc);
+		/**/
 		
 		textBtnTime.setTypeface(FontLoader.getFontTypeface(
 				getActivity().getAssets(),
@@ -163,9 +168,11 @@ public class BusListFragment extends BaseFragment {
 		textBtnNearBy.setTextSize(FontLoader.getFontSizeFromPt(app.rateDpi, (float)7.2));
 		
 		// 기본은 흐릿하게.
+		/*/
 		textBtnTime.setAlpha((float) 0.50);
 		textBtnPrice.setAlpha((float) 0.50);
 		textBtnNearBy.setAlpha((float) 0.50);
+		/**/
 		
 		// 기본은 선택 x
 		imageTime.setImageDrawable(dUnSelected);
@@ -174,26 +181,32 @@ public class BusListFragment extends BaseFragment {
 		
 		// 선택된 것에 맞게 변경 
 		if(order.equals("time")){
-			textBtnTime.setAlpha((float) 1);
 			imageTime.setImageDrawable(dSelected);
+			/*/
+			textBtnTime.setAlpha((float) 1);
 			if(bus_list.isAsc())
 				textBtnTime.setText(R.string.sort_time_asc);
 			else
-				textBtnTime.setText(R.string.sort_time_desc);				
+				textBtnTime.setText(R.string.sort_time_desc);
+			/**/
 		}else if(order.equals("price")){
-			textBtnPrice.setAlpha((float) 1);
 			imagePrice.setImageDrawable(dSelected);
+			/*/
+			textBtnPrice.setAlpha((float) 1);
 			if(bus_list.isAsc())
 				textBtnPrice.setText(R.string.sort_price_asc);
 			else
 				textBtnPrice.setText(R.string.sort_price_desc);
+			/**/
 		}else if(order.equals("nearby")){
-			textBtnNearBy.setAlpha((float) 1);
 			imageNearby.setImageDrawable(dSelected);
+			/*/
+			textBtnNearBy.setAlpha((float) 1);
 			if(bus_list.isAsc())
 				textBtnNearBy.setText(R.string.sort_nearby_asc);
 			else
 				textBtnNearBy.setText(R.string.sort_nearby_desc);
+			/**/
 		}
 	}
 	
@@ -201,8 +214,7 @@ public class BusListFragment extends BaseFragment {
 		listAdapter = new ModelListAdapter<BusInfoModel>(
 				this.getActivity().getApplicationContext(),
 				R.layout.bus_list_row,
-				bus_list.getBusList(order)
-				);
+				bus_list.getBusList(order));
 		listView.setAdapter(listAdapter);
 		
 		loadBtn(order);
@@ -213,7 +225,7 @@ public class BusListFragment extends BaseFragment {
 		public void onClick(View v) {
 			
 			String order = (String)v.getTag();
-			if(order==null)
+			if(order==null || order.equals(bus_list.getOrder()))
 				return ;
 			loadListAdapter(order);
 		}

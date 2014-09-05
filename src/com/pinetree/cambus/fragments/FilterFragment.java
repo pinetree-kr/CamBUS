@@ -65,6 +65,8 @@ public class FilterFragment extends BaseFragment {
 			Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_filter, container, false);
 		
+		//view.setBackgroundResource(R.drawable.background);
+		
 		// title
 		TextView textTitle = (TextView)view.findViewById(R.id.TextTitle);
 		textTitle.setTypeface(FontLoader.getFontTypeface(
@@ -88,7 +90,18 @@ public class FilterFragment extends BaseFragment {
 		ImageView imageSearch = (ImageView)view.findViewById(R.id.ImageSearch);
 		ImageView imageBus = (ImageView)view.findViewById(R.id.ImageBus);
 		ImageView imageTri = (ImageView)view.findViewById(R.id.ImageTri);
+		/*/
+		ImageView imageBackground = (ImageView)view.findViewById(R.id.ImageFilterBackGround);
 		
+		Drawable dBg = ImageLoader.getResizedDrawableFromRes(
+				getResources(),
+				R.drawable.background,
+				app.rateDpi,
+				app.rateWidth,
+				app.rateHeight
+				);
+		imageBackground.setImageDrawable(dBg);
+		/**/
 		Drawable dSearch = ImageLoader.getResizedDrawableFromRes(
 				getResources(),
 				R.drawable.searchbtn,

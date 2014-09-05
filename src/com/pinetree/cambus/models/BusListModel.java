@@ -30,7 +30,8 @@ public class BusListModel extends Model {
 	
 	public ArrayList<BusInfoModel> getBusList(String order){
 		if(order.equals(this.order)){
-			asc = !asc;
+			//asc = !asc;
+			asc = true;
 		}else{
 			asc = true;
 		}
