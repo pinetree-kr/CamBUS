@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">CamBUS</string>
+    <string name="app_description">Cambodia BUS</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="language">language</string>
+	
+	<!-- filterfragment -->
+	<string name="departure">Departure</string>
+    <string name="destination">Destination</string>
+    <string name="time">Time</string>
+    <string name="bus_type">Bus Type</string>
+    <string name="select_city">Select City</string>
+    <string name="select_time">Select Time</string>
+    <string name="select_type">Select Type</string>
+    <string name="all_type">All Type</string>
+    <string name="departure_time">Departure Time</string>
+    <string name="search">Search</string>
+	
+    <!-- buslistfragment -->
+    <string name="sort_time">time</string>
+    <string name="sort_price">price</string>
+    <string name="sort_nearby">near by</string>
+    <string name="sort_time_asc">time △</string>
+    <string name="sort_price_asc">price △</string>
+    <string name="sort_nearby_asc">near by △</string>
+    <string name="sort_time_desc">time ▽</string>
+    <string name="sort_price_desc">price ▽</string>
+    <string name="sort_nearby_desc">near by ▽</string>
+    <string name="hour">hour</string>
+    <string name="hours">hours</string>
+    <string name="fee">fee</string>
+    <string name="average">average</string>
+    <string name="next_time">dep.time</string>
+    
+</resources>
