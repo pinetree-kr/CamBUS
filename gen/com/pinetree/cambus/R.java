@@ -28,12 +28,13 @@ public final class R {
         public static final int btnselected=0x7f020003;
         public static final int bus=0x7f020004;
         public static final int ic_launcher=0x7f020005;
-        public static final int line=0x7f020006;
-        public static final int logo=0x7f020007;
-        public static final int searchbtn=0x7f020008;
-        public static final int top=0x7f020009;
-        public static final int top2=0x7f02000a;
-        public static final int unselected=0x7f02000b;
+        public static final int icon=0x7f020006;
+        public static final int line=0x7f020007;
+        public static final int logo=0x7f020008;
+        public static final int searchbtn=0x7f020009;
+        public static final int top=0x7f02000a;
+        public static final int top2=0x7f02000b;
+        public static final int unselected=0x7f02000c;
     }
     public static final class id {
         public static final int ButtonNearBy=0x7f080019;

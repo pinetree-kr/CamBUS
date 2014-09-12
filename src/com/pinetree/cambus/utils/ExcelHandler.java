@@ -4,23 +4,13 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
-import jxl.Workbook;
-
 import com.pinetree.cambus.models.BusInfoModel;
-/*/
-import jxl.Sheet;
-import jxl.Workbook;
-import jxl.read.biff.BiffException;
-/**/
-
 
 import android.content.Context;
 import android.util.Log;
@@ -67,7 +57,7 @@ public class ExcelHandler {
 								
 								switch(col){
 								case 0:
-									object.setPreference(cell.getStringCellValue().trim());
+									//object.setPreference(cell.getStringCellValue().trim());
 									break;
 								case 1:
 									object.setDeparture(cell.getStringCellValue().trim());
@@ -91,13 +81,13 @@ public class ExcelHandler {
 									object.setDurationTime(cell.getNumericCellValue());
 									break;
 								case 8:
-									object.setRemarks(cell.getStringCellValue().trim());
+									//object.setRemarks(cell.getStringCellValue().trim());
 									break;
 								case 9:
-									object.setQuality(cell.getStringCellValue().trim());
+									//object.setQuality(cell.getStringCellValue().trim());
 									break;
 								case 10:
-									object.setOperation(cell.getStringCellValue().trim());
+									//object.setOperation(cell.getStringCellValue().trim());
 									break;
 								case 11:
 									object.setType(cell.getStringCellValue().trim());

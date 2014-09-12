@@ -1,6 +1,9 @@
 
 package com.pinetree.cambus;
 
+
+import io.userhabit.service.Userhabit;
+
 import com.pinetree.cambus.handlers.SwitchActivityHandler;
 import com.pinetree.cambus.handlers.SwitchFragmentHandler;
 import com.pinetree.cambus.interfaces.SwitchActivityInterface;
@@ -31,6 +34,13 @@ public abstract class BaseActivity extends Activity
 	@Override
 	protected void onStart(){
 		super.onStart();
+		Userhabit.activityStart(this);
+		
+	}
+	@Override
+	protected void onStop(){
+		super.onStop();
+		Userhabit.activityStop(this);
 	}
 	
 	@Override

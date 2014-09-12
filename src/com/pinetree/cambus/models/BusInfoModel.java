@@ -11,7 +11,7 @@ import com.pinetree.cambus.utils.NumberUtils;
 
 public class BusInfoModel extends Model {
 	protected int bus_no = -1;
-	protected String preference = "";
+	//protected String preference = "";
 	protected int departure_no = -1;
 	protected String departure = "";
 	protected int destination_no = -1;
@@ -51,14 +51,14 @@ public class BusInfoModel extends Model {
 	public int getBusNo(){
 		return bus_no;
 	}
-	
+	/*/
 	public void setPreference(String preference){
 		this.preference = preference;
 	}
 	public String getPreference(){
 		return preference;
 	}
-	
+	/**/
 	public void setDepartureNo(int no){
 		this.departure_no = no;
 	}
@@ -102,8 +102,11 @@ public class BusInfoModel extends Model {
 	public void setCompany(String company){
 		this.company = company;
 	}
-	public String getBusCompany(){
+	public String getCompany(){
 		return company;
+	}
+	public int getCompanyNo(){
+		return company_no;
 	}
 	public void setDepartureTime(Date departureTime){
 		Calendar calendar = Calendar.getInstance();

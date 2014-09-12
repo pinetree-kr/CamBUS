@@ -70,7 +70,7 @@ public class ModelListAdapter<T> extends ArrayAdapter<T>{
 		
 		BusInfoModel object = (BusInfoModel) getItem(position);
 		
-		textCompany.setText((position+1) + ". "+object.getBusCompany());
+		textCompany.setText((position+1) + ". "+object.getCompany());
 		textCompany.setTypeface(FontLoader.getFontTypeface(
 				getContext().getAssets(),
 				"HelveticaNeueLTStd-Lt.otf"));

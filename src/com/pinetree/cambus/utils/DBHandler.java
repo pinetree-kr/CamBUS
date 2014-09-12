@@ -43,6 +43,17 @@ public class DBHandler {
 	public long insertCity(String cityName){
 		ContentValues values = new ContentValues();
 		values.put("city_name", cityName);
+		switch(cityName){
+		case "Ho Chi Minh City":
+		case "Phnom Penh":
+		case "Sihanuke Ville":
+		case "Siem Reap":
+			values.put("preference",1);
+			break;
+		default:
+			values.put("preference",0);
+			break;
+		}
 		return db.insert("CamBUS_CityTable", null, values);
 	}
 	
@@ -57,18 +68,47 @@ public class DBHandler {
 		return db.insert("CamBUS_TypeTable", null, values);
 	}
 	
-	public long insertBusTime(BusInfoModel bus){
+	public long insertDeptDest(BusInfoModel busInfo){
 		Cursor cursor;
 		
-		ContentValues values = new ContentValues();
+		cursor = this.getDeptDestCursor(busInfo);
+		try{
+			if(cursor.getCount()>0){
+				;
+			}else{
+				ContentValues values = new ContentValues();
+				
+				values.put("dept_no", busInfo.getDepartureNo());
+				values.put("dest_no", busInfo.getDestinationNo());
+				values.put("company_no", busInfo.getCompanyNo());
+				values.put("type_no", busInfo.getTypeNo());
+				values.put("mid_no", busInfo.getMiddleCityNo());
+				values.put("duration_time", busInfo.getDurationTime());
+				values.put("native_price", busInfo.getNativePrice());
+				values.put("foreigner_price", busInfo.getForeignerPrice());
+				values.put("visa", busInfo.getVisa());
+				values.put("dn", busInfo.getDN());
+				values.put("last_updated", busInfo.getLastUpdated());
+				
+				db.insert("CamBUS_DeptDestTable", null, values);
+			}
+		}catch(NullPointerException e){
+			Log.i("DebugPrint",e.getMessage());
+		}
+		cursor.close();
+		return 0;
+	}
+	
+	public long insertBusTime(BusInfoModel bus){
+		Cursor cursor;
 		
 		// departure city
 		cursor = this.getCityNumberCursor(bus.getDeparture());
 		try{
 			if(cursor.getCount()>0){
-				values.put("departure_no", cursor.getInt(cursor.getColumnIndex("city_no")));
+				bus.setDepartureNo(cursor.getInt(cursor.getColumnIndex("city_no")));
 			}else{
-				values.put("departure_no", (int)this.insertCity(bus.getDeparture()));
+				bus.setDepartureNo((int)this.insertCity(bus.getDeparture()));
 			}
 		}catch(NullPointerException e){
 			Log.i("DebugPrint",e.getMessage());
@@ -79,9 +119,10 @@ public class DBHandler {
 		cursor = this.getCityNumberCursor(bus.getDestination());
 		try{
 			if(cursor.getCount()>0){
-				values.put("destination_no", cursor.getInt(cursor.getColumnIndex("city_no")));
+				bus.setDestinationNo(cursor.getInt(cursor.getColumnIndex("city_no")));
 			}else{
-				values.put("destination_no", (int)this.insertCity(bus.getDestination()));
+				bus.setDestinationNo((int)this.insertCity(bus.getDestination()));
+				
 			}
 		}catch(NullPointerException e){
 			Log.i("DebugPrint",e.getMessage());
@@ -92,9 +133,9 @@ public class DBHandler {
 		try{
 			cursor = this.getCityNumberCursor(bus.getMiddleCity());
 			if(cursor.getCount()>0){
-				values.put("middlecity_no", cursor.getInt(cursor.getColumnIndex("city_no")));
+				bus.setMiddleCityNo(cursor.getInt(cursor.getColumnIndex("city_no")));
 			}else{
-				values.put("middlecity_no", (int)this.insertCity(bus.getMiddleCity()));
+				bus.setMiddleCityNo((int)this.insertCity(bus.getMiddleCity()));
 			}
 		}catch(NullPointerException e){
 			//Log.i("DebugPrint","null middle city");
@@ -103,11 +144,11 @@ public class DBHandler {
 		
 		// company
 		try{
-			cursor = this.getCompanyNumberCursor(bus.getBusCompany());
+			cursor = this.getCompanyNumberCursor(bus.getCompany());
 			if(cursor.getCount()>0){
-				values.put("company_no", cursor.getInt(cursor.getColumnIndex("company_no")));
+				bus.setCompanyNo(cursor.getInt(cursor.getColumnIndex("company_no")));
 			}else{
-				values.put("company_no", (int)this.insertCompany(bus.getBusCompany()));
+				bus.setCompanyNo((int)this.insertCompany(bus.getCompany()));
 			}
 		}catch(NullPointerException e){
 			//Log.i("DebugPrint","null company");
@@ -118,27 +159,27 @@ public class DBHandler {
 		cursor = this.getTypeNumberCursor(bus.getType());
 		try{
 			if(cursor.getCount()>0){
-				values.put("type_no", cursor.getInt(cursor.getColumnIndex("type_no")));
+				bus.setTypeNo(cursor.getInt(cursor.getColumnIndex("type_no")));
 			}else{
-				values.put("type_no", (int)this.insertType(bus.getType()));
+				bus.setTypeNo((int)this.insertType(bus.getType()));
 			}
 		}catch(NullPointerException e){
 			Log.i("DebugPrint",e.getMessage());
 		}
 		cursor.close();
 		
-		values.put("preference", bus.getPreference());
+		// insert info to DeptDestList
+		insertDeptDest(bus);
+		
+		ContentValues values = new ContentValues();
+		
+		values.put("dept_no", bus.getDepartureNo());
+		values.put("dest_no", bus.getDestinationNo());
+		values.put("company_no", bus.getCompanyNo());
+		values.put("type_no", bus.getTypeNo());
+		
 		values.put("departure_time", bus.getDepartureTime());
 		values.put("arrival_time", bus.getArrivalTime());
-		values.put("duration_time", bus.getDurationTime());
-		values.put("remarks", bus.getRemarks());
-		values.put("quality", bus.getQuality());
-		values.put("operation", bus.getOperation());
-		values.put("native_price", bus.getNativePrice());
-		values.put("foreigner_price", bus.getForeignerPrice());
-		values.put("visa", bus.getVisa());
-		values.put("dn", bus.getDN());
-		values.put("last_updated", bus.getLastUpdated());
 		
 		return db.insert("CamBUS_TimeTable", null, values);
 	}
@@ -173,7 +214,8 @@ public class DBHandler {
 			do{
 				city_no = cursor.getInt(cursor.getColumnIndex("city_no"));
 				city_name = cursor.getString(cursor.getColumnIndex("city_name"));
-				isHigh = cursor.getString(cursor.getColumnIndex("preference")).toUpperCase().equals("HIGH")?true:false;
+				isHigh = cursor.getInt(cursor.getColumnIndex("preference"))>0?true:false;
+				
 				if(!hash.containsKey(String.valueOf(city_no))){
 					hash.put(String.valueOf(city_no), city_name);
 					object = new DepartureModel();
@@ -192,11 +234,16 @@ public class DBHandler {
 	
 	public Cursor getBusDepartureListCursor(){
 		String sql = 
-				"SELECT DISTINCT preference, city_no, city_name " +
+				"SELECT * " +
+				"FROM CamBUS_DepartureListView" +
+				";";
+				/*/
+				"SELECT DISTINCT city_no, city_name " +
 				"FROM CamBUS_CityTable a " +
 				"INNER JOIN CamBUS_TimeTable b " +
 				"ON a.city_no = b.departure_no " +
-				"ORDER BY preference ASC, city_name ASC;";
+				"ORDER BY city_name ASC;";
+				/**/
 		Cursor cursor = db.rawQuery(sql, null);
 		if(cursor != null){
 			cursor.moveToFirst();
@@ -252,7 +299,7 @@ public class DBHandler {
 			do{
 				city_no = cursor.getInt(cursor.getColumnIndex("city_no"));
 				city_name = cursor.getString(cursor.getColumnIndex("city_name"));
-				isHigh = cursor.getString(cursor.getColumnIndex("preference")).toUpperCase().equals("HIGH")?true:false;
+				isHigh = cursor.getInt(cursor.getColumnIndex("preference"))>0?true:false;
 				
 				if(!hash.containsKey(String.valueOf(city_no))){
 					hash.put(String.valueOf(city_no), city_name);
@@ -271,13 +318,22 @@ public class DBHandler {
 	}
 	
 	public Cursor getBusDestinationListCursor(int departure_no){
-		String sql = 
-				"SELECT DISTINCT preference, city_no, city_name " +
+		String sql =
+				/**/
+				"SELECT a.* " +
+				"FROM CamBUS_DestinationListView a " +
+				"INNER JOIN CamBUS_DeptDestTable b " +
+				"ON a.city_no = b.dest_no " +
+				"WHERE b.dept_no = '" + departure_no + "' " +
+				";";
+				/*/
+				"SELECT DISTINCT city_no, city_name " +
 				"FROM CamBUS_CityTable a " +
 				"INNER JOIN CamBUS_TimeTable b " +
 				"ON a.city_no = b.destination_no " +
 				"WHERE b.departure_no = '" + departure_no + "' " +
-				"ORDER BY preference ASC, city_name ASC;";
+				"ORDER BY city_name ASC;";
+				/**/
 		Cursor cursor = db.rawQuery(sql, null);
 		if(cursor != null){
 			cursor.moveToFirst();
@@ -303,25 +359,26 @@ public class DBHandler {
 				object.setDestination(destination);
 				object.setDestinationNo(destination_no);
 				
-				middlecity_no = cursor.getInt(cursor.getColumnIndex("middlecity_no"));
-				middlecity = getCityName(middlecity_no);
-				object.setMiddleCity(middlecity);
-				object.setMiddleCityNo(middlecity_no);
-				
+				middlecity_no = cursor.getInt(cursor.getColumnIndex("mid_no"));
+				if(middlecity_no>=0){
+					middlecity = getCityName(middlecity_no);
+					object.setMiddleCity(middlecity);
+					object.setMiddleCityNo(middlecity_no);
+				}
 				company_no = cursor.getInt(cursor.getColumnIndex("company_no"));
 				company = getCompanyName(company_no);
 				object.setCompany(company);
 				object.setCompanyNo(company_no);
 				
-				object.setBusNo(cursor.getInt(cursor.getColumnIndex("bus_no")));
-				object.setPreference(cursor.getString(cursor.getColumnIndex("preference")));
+				object.setBusNo(cursor.getInt(cursor.getColumnIndex("time_no")));
+				//object.setPreference(cursor.getString(cursor.getColumnIndex("preference")));
 				
 				object.setDepartureTime(cursor.getString(cursor.getColumnIndex("departure_time")));
 				object.setArrivalTime(cursor.getString(cursor.getColumnIndex("arrival_time")));
 				object.setDurationTime(cursor.getDouble(cursor.getColumnIndex("duration_time")));
-				object.setRemarks(cursor.getString(cursor.getColumnIndex("remarks")));
-				object.setQuality(cursor.getString(cursor.getColumnIndex("quality")));
-				object.setOperation(cursor.getString(cursor.getColumnIndex("operation")));
+				//object.setRemarks(cursor.getString(cursor.getColumnIndex("remarks")));
+				//object.setQuality(cursor.getString(cursor.getColumnIndex("quality")));
+				//object.setOperation(cursor.getString(cursor.getColumnIndex("operation")));
 				
 				type_no = cursor.getInt(cursor.getColumnIndex("type_no"));
 				type = getTypeName(type_no);
@@ -346,11 +403,18 @@ public class DBHandler {
 	public Cursor getBusInfoListCursor(int departure_no, int destination_no, int time, int type_no){
 		String sql =
 				"SELECT * " +
+				"FROM CamBUS_BusListView " +
+				"WHERE dept_no='" + departure_no + "' " +
+				"AND dest_no='" + destination_no +"' " +
+				"AND departure_time>='" + String.format("%02d:00",time) + "' ";
+						
+				/*/
+				"SELECT * " +
 				"FROM CamBUS_TimeTable a " +
 				"WHERE departure_no='" + departure_no + "' " +
 				"AND destination_no='" + destination_no +"' " +
 				"AND departure_time>='" + String.format("%02d:00",time) + "' ";
-		
+				/**/
 		if(type_no>=0){
 			sql +=
 				"AND type_no='" + type_no +"' ";
@@ -374,12 +438,12 @@ public class DBHandler {
 		return cursor;
 	}
 	
-	public Cursor getBusInfoByBusNo(int bus_no){
+	public Cursor getBusInfoByBusNo(int time_no){
 		Cursor cursor = db.query(
 				true,
-				"CamBUS_TimeTable",
+				"CamBUS_BusListView",
 				null,
-				"bus_no='"+bus_no+"'",
+				"time_no='"+time_no+"'",
 				null, null, null, null, null, null);
 		
 		if(cursor != null){
@@ -404,6 +468,8 @@ public class DBHandler {
 		}
 		return cursor;
 	}
+	
+	
 	public String getCityName(int cityNo){
 		Cursor cursor = getCityNameCursor(cityNo);
 		if(cursor != null && cursor.moveToFirst()){
@@ -430,6 +496,21 @@ public class DBHandler {
 		return cursor;
 	}
 
+	public Cursor getDeptDestCursor(BusInfoModel busInfo){
+		Cursor cursor = db.query(
+				true,
+				"CamBUS_DeptDestTable",
+				null,
+				"dept_no='" + busInfo.getDepartureNo() + "' " +
+				"AND dest_no='" + busInfo.getDestinationNo() + "' " +
+				"AND company_no='" + busInfo.getCompanyNo() + "' " +
+				"AND type_no='" + busInfo.getTypeNo() + "' ",
+				null, null, null, null, null, null);
+		if(cursor != null){
+			cursor.moveToFirst();
+		}
+		return cursor;
+	}
 	public String getTypeName(int typeNo){
 		Cursor cursor = getTypeNameCursor(typeNo);
 		if(cursor != null && cursor.moveToFirst()){
@@ -441,6 +522,7 @@ public class DBHandler {
 			cursor.close();
 		return null;
 	}
+	
 	public Cursor getTypeNameCursor(int typeNo){
 		if(typeNo<0){
 			throw new NullPointerException("NullType:"+typeNo);
