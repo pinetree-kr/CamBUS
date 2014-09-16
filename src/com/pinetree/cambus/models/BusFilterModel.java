@@ -20,6 +20,7 @@ import com.pinetree.cambus.interfaces.FragmentCallbackInterface;
 import com.pinetree.cambus.interfaces.ModelAsyncTaskInterface;
 import com.pinetree.cambus.interfaces.ModelCallbackInterface;
 import com.pinetree.cambus.utils.DBHandler;
+import com.pinetree.cambus.utils.ExcelFileInfo;
 import com.pinetree.cambus.utils.ExcelHandler;
 import com.pinetree.cambus.utils.ModelAsyncTask;
 
@@ -30,13 +31,13 @@ public class BusFilterModel extends Model implements ModelCallbackInterface, Mod
 	private static final long serialVersionUID = 20140825L;
 	protected ArrayList<DepartureModel> departure_list;
 	protected ArrayList<DestinationModel> destination_list;
+	protected ArrayList<CompanyModel> company_list;
 	protected ArrayList<Integer> time_list;
 	protected ArrayList<TypeModel> type_list;
 	public boolean isLoaded;
 	
 	protected Context context;
 	protected DBHandler handler;
-	protected String fileName;
 	//protected int version;
 	
 	protected ModelAsyncTask request;
@@ -46,12 +47,12 @@ public class BusFilterModel extends Model implements ModelCallbackInterface, Mod
 		//bus_list = new ArrayList<BusInfoModel>();
 		departure_list = new ArrayList<DepartureModel>();
 		destination_list = new ArrayList<DestinationModel>();
+		company_list = new ArrayList<CompanyModel>();
 		time_list = new ArrayList<Integer>();
 		type_list = new ArrayList<TypeModel>();
 		isLoaded = false;
 		context = null;
 		handler = null;
-		fileName = "";
 		request = null;
 		dialog = null;
 		initTimeList();
@@ -64,6 +65,9 @@ public class BusFilterModel extends Model implements ModelCallbackInterface, Mod
 		}
 	}
 	
+	public ArrayList<CompanyModel> getCompanyList(){
+		return company_list;
+	}
 	public ArrayList<DepartureModel> getDepartureList(){
 		return departure_list;
 	}
@@ -78,10 +82,10 @@ public class BusFilterModel extends Model implements ModelCallbackInterface, Mod
 	}
 	
 	// 로컬에 저장된 버스데이터를 불러온다
-	public void getBusData(Activity activity, DBHandler handler, String fileName){
+	public void getBusData(Activity activity, DBHandler handler){
 		this.context = activity.getApplicationContext();
 		this.handler = handler;
-		this.fileName = fileName;
+		//this.fileName = fileName;
 		//this.version = Integer.parseInt(fileName.split(".")[0].split("_")[1]);
 		
 		preAsyncTask(activity);
@@ -93,21 +97,39 @@ public class BusFilterModel extends Model implements ModelCallbackInterface, Mod
 		}
 	}
 	
-	public void setDepartureList(Context context, DBHandler handler){
+	public void updateDepartureList(DBHandler handler){
 		departure_list = handler.getBusDepartureList();
 	}
-	
-	public void setDestinationList(int departure_no, Context context, DBHandler handler){
+	public void updateCompanyList(DBHandler handler){
+		company_list = handler.getCompanyList();
+	}
+	public void updateDestinationList(DBHandler handler, int departure_no){
 		destination_list = handler.getBusDestinationList(departure_no);
 	}
-	public void setBusTypeList(Context context, DBHandler handler){
+	public void updateBusTypeList(DBHandler handler){
 		type_list = handler.getBusTypeList();
 	}
 	// XLS에 있는 데이터를 로컬DB로 옮긴
-	private void XLS2SQLite(Context context, String fileName, DBHandler handler){
-		for(BusInfoModel object : ExcelHandler.getBusFromXLS(context, fileName)){
-			//Log.i("DebugPrint","insertData");
-			object.setBusNo((int)handler.insertBusTime(object));
+	private void XLS2SQLite(Context context, DBHandler handler){
+		// insert busInfo to sqlite
+		for(BusInfoModel object : ExcelHandler.getBusFromXLS(context, ExcelFileInfo.ExcelFile)){
+			handler.insertBusTime(object);
+			//object.setBusNo((int)handler.insertBusTime(object));
+		}
+		// company list update
+		updateCompanyList(handler);
+		
+		// insert officeInfo to sqlite
+		for(OfficeInfoModel object : ExcelHandler.getOfficeFromXLS(context, ExcelFileInfo.ExcelFile)){
+			// check company name
+			for(CompanyModel company : company_list){
+				if(object.getCompany().contains(company.getCompanyName())){
+					object.setCompanyNo(company.getCompanyNo());
+					break;
+				}
+			}
+			handler.insertOffice(object);
+			//object.setOfficeNo((int)handler.insertOffice(object));
 		}
 	}
 	
@@ -119,13 +141,14 @@ public class BusFilterModel extends Model implements ModelCallbackInterface, Mod
 		// 로컬에 저장되어 있는 데이터가 없으면 XLS을 읽어들여 옮긴다.
 		
 		if(departure_list.size() < 2){
-			//Log.i("DebugPrint","XLS2SQLite");
-			XLS2SQLite(context, fileName, handler);
-			departure_list = handler.getBusDepartureList();
+			// 로컬db로의 저장
+			XLS2SQLite(context, handler);
+			this.updateDepartureList(handler);
 			isLoaded = true;
 		}
 		
-		type_list = handler.getBusTypeList();
+		this.updateBusTypeList(handler);
+		//type_list = handler.getBusTypeList();
 		//Log.i("DebugPrint", "type:"+type_list.size());
 		/**/
 	}

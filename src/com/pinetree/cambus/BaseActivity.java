@@ -23,7 +23,6 @@ public abstract class BaseActivity extends Activity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().setWindowAnimations(android.R.style.Animation_Toast);
-
     }
     
 	@Override
@@ -35,7 +34,7 @@ public abstract class BaseActivity extends Activity
 	protected void onStart(){
 		super.onStart();
 		Userhabit.activityStart(this);
-		
+		Userhabit.setSessionEndTime(15);
 	}
 	@Override
 	protected void onStop(){
@@ -57,13 +56,10 @@ public abstract class BaseActivity extends Activity
 		FragmentTransaction transaction = getFragmentManager().beginTransaction();
 		
 		if(close){
-			transaction.replace(R.id.base_fragment, fragment);//.commit();
+			transaction.replace(R.id.base_fragment, fragment);
 		}else{
-			transaction.replace(R.id.base_fragment, fragment);//.commit();
-			
-			//transaction.add(R.id.base_fragment, fragment).commit();
+			transaction.replace(R.id.base_fragment, fragment);
 			transaction.addToBackStack(null);
-			//transaction.commit();
 		}
 		transaction.commit();
 	}

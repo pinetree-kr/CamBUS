@@ -2,16 +2,11 @@ package com.pinetree.cambus.utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
-
-import com.pinetree.cambus.R;
 import com.pinetree.cambus.models.BusInfoModel;
-import com.pinetree.cambus.models.CityModel;
+import com.pinetree.cambus.models.CompanyModel;
 import com.pinetree.cambus.models.DepartureModel;
 import com.pinetree.cambus.models.DestinationModel;
+import com.pinetree.cambus.models.OfficeInfoModel;
 import com.pinetree.cambus.models.TypeModel;
 
 import android.content.ContentValues;
@@ -26,7 +21,7 @@ public class DBHandler {
 	protected SQLiteDatabase db;
 	
 	protected DBHandler(Context context){
-		this.dbHelper = new DBHelper(context);
+		this.dbHelper = new DBHelper(context, ExcelFileInfo.ExcelFileVersion);
 		this.db = dbHelper.getWritableDatabase();
 	}
 	
@@ -66,6 +61,39 @@ public class DBHandler {
 		ContentValues values = new ContentValues();
 		values.put("type_name", typeName);
 		return db.insert("CamBUS_TypeTable", null, values);
+	}
+	
+	public long insertOffice(OfficeInfoModel officeInfo){
+		ContentValues values = new ContentValues();
+		/*/
+		Cursor cursor = this.getCompanyListCursor();
+		if(cursor != null && cursor.moveToFirst()){
+			String company_name;
+			do{
+				company_name = cursor.getString(cursor.getColumnIndex("company_name"));
+				if(officeInfo.getOffice().contains(company_name)){
+					officeInfo.setCompanyNo(cursor.getInt(cursor.getColumnIndex("company_no")));
+					break;
+				}
+			}while(cursor.moveToNext());
+		}
+		cursor.close();
+		/**/
+		if(officeInfo.getCompanyNo()>=0){
+			values.put("company_no", officeInfo.getCompanyNo());
+			values.put("office_name", officeInfo.getOffice());
+			values.put("phone_no", officeInfo.getPhoneNo());
+			values.put("purchase", officeInfo.isPurchase()?1:0);
+			values.put("get_in", officeInfo.isGetIn()?1:0);
+			values.put("get_out", officeInfo.isGetOut()?1:0);
+			values.put("link", officeInfo.getLink());
+			values.put("address", officeInfo.getAddress());
+			values.put("misc_en", officeInfo.getMiscEn());
+			values.put("misc_ko", officeInfo.getMiscKo());
+			
+			return db.insert("CamBUS_OfficeTable", null, values);
+		}
+		return -1;
 	}
 	
 	public long insertDeptDest(BusInfoModel busInfo){
@@ -197,7 +225,6 @@ public class DBHandler {
 	}
 	
 	//  Departure List
-	
 	public ArrayList<DepartureModel> getBusDepartureList(){
 		Cursor cursor = getBusDepartureListCursor();
 		ArrayList<DepartureModel> departure_list = new ArrayList<DepartureModel>();
@@ -231,19 +258,11 @@ public class DBHandler {
 			cursor.close();
 		return departure_list;
 	}
-	
 	public Cursor getBusDepartureListCursor(){
 		String sql = 
 				"SELECT * " +
 				"FROM CamBUS_DepartureListView" +
 				";";
-				/*/
-				"SELECT DISTINCT city_no, city_name " +
-				"FROM CamBUS_CityTable a " +
-				"INNER JOIN CamBUS_TimeTable b " +
-				"ON a.city_no = b.departure_no " +
-				"ORDER BY city_name ASC;";
-				/**/
 		Cursor cursor = db.rawQuery(sql, null);
 		if(cursor != null){
 			cursor.moveToFirst();
@@ -251,6 +270,7 @@ public class DBHandler {
 		return cursor;
 	}
 	
+	//  Type List
 	public ArrayList<TypeModel> getBusTypeList(){
 		Cursor cursor = getBusTypeListCursor();
 		ArrayList<TypeModel> type_list = new ArrayList<TypeModel>();
@@ -271,7 +291,6 @@ public class DBHandler {
 			cursor.close();
 		return type_list;
 	}
-
 	public Cursor getBusTypeListCursor(){
 		String sql = 
 				"SELECT type_no, type_name " +
@@ -283,6 +302,8 @@ public class DBHandler {
 		}
 		return cursor;
 	}
+	
+	//  Destination List
 	public ArrayList<DestinationModel> getBusDestinationList(int departure_no){
 		Cursor cursor = getBusDestinationListCursor(departure_no);
 		ArrayList<DestinationModel> destination_list = new ArrayList<DestinationModel>();
@@ -316,24 +337,14 @@ public class DBHandler {
 			cursor.close();
 		return destination_list;
 	}
-	
 	public Cursor getBusDestinationListCursor(int departure_no){
 		String sql =
-				/**/
 				"SELECT a.* " +
 				"FROM CamBUS_DestinationListView a " +
 				"INNER JOIN CamBUS_DeptDestTable b " +
 				"ON a.city_no = b.dest_no " +
 				"WHERE b.dept_no = '" + departure_no + "' " +
 				";";
-				/*/
-				"SELECT DISTINCT city_no, city_name " +
-				"FROM CamBUS_CityTable a " +
-				"INNER JOIN CamBUS_TimeTable b " +
-				"ON a.city_no = b.destination_no " +
-				"WHERE b.departure_no = '" + departure_no + "' " +
-				"ORDER BY city_name ASC;";
-				/**/
 		Cursor cursor = db.rawQuery(sql, null);
 		if(cursor != null){
 			cursor.moveToFirst();
@@ -342,6 +353,7 @@ public class DBHandler {
 		return cursor;
 	}
 	
+	//  Bus Info List
 	public ArrayList<BusInfoModel> getBusInfoList(int departure_no, int destination_no, int time, int bustype_no){
 		Cursor cursor = getBusInfoListCursor(departure_no, destination_no, time, bustype_no);
 		ArrayList<BusInfoModel> objects = new ArrayList<BusInfoModel>();
@@ -399,7 +411,6 @@ public class DBHandler {
 			cursor.close();
 		return objects;
 	}
-	
 	public Cursor getBusInfoListCursor(int departure_no, int destination_no, int time, int type_no){
 		String sql =
 				"SELECT * " +
@@ -407,29 +418,12 @@ public class DBHandler {
 				"WHERE dept_no='" + departure_no + "' " +
 				"AND dest_no='" + destination_no +"' " +
 				"AND departure_time>='" + String.format("%02d:00",time) + "' ";
-						
-				/*/
-				"SELECT * " +
-				"FROM CamBUS_TimeTable a " +
-				"WHERE departure_no='" + departure_no + "' " +
-				"AND destination_no='" + destination_no +"' " +
-				"AND departure_time>='" + String.format("%02d:00",time) + "' ";
-				/**/
+				
 		if(type_no>=0){
 			sql +=
 				"AND type_no='" + type_no +"' ";
 		}
-		/*
-		String orderBy = "ORDER BY ";
-		if(order.equals("time")){
-			orderBy += "departure_time ASC;";
-		}else if(order.equals("price")){
-			orderBy += "foreigner_price ASC;";
-		}else if(order.equals("nearby")){
-			orderBy += "duration_time ASC;";
-		}
-		Cursor cursor = db.rawQuery(sql + orderBy, null);
-		 */
+		
 		Cursor cursor = db.rawQuery(sql+";", null);
 		
 		if(cursor != null){
@@ -437,7 +431,8 @@ public class DBHandler {
 		}
 		return cursor;
 	}
-	
+
+	//  Bus Info
 	public Cursor getBusInfoByBusNo(int time_no){
 		Cursor cursor = db.query(
 				true,
@@ -451,7 +446,6 @@ public class DBHandler {
 		}
 		return cursor;
 	}
-	
 	public Cursor getCityNumberCursor(String cityName){
 		if(cityName.equals("")){
 			throw new NullPointerException("NullCity:"+cityName);
@@ -468,7 +462,6 @@ public class DBHandler {
 		}
 		return cursor;
 	}
-	
 	
 	public String getCityName(int cityNo){
 		Cursor cursor = getCityNameCursor(cityNo);
@@ -594,6 +587,95 @@ public class DBHandler {
 				"company_name='"+companyName+"'",
 				null, null, null, null, null, null);
 		
+		if(cursor != null){
+			cursor.moveToFirst();
+		}
+		return cursor;
+	}
+	public ArrayList<CompanyModel> getCompanyList(){
+		ArrayList<CompanyModel> objects = new ArrayList<CompanyModel>();
+		
+		Cursor cursor = getCompanyListCursor();
+		if(cursor != null && cursor.moveToFirst()){
+			CompanyModel object;
+			do{
+				object = new CompanyModel();
+				
+				object.setCompanyNo(cursor.getInt(cursor.getColumnIndex("company_no")));
+				object.setCompanyName(cursor.getString(cursor.getColumnIndex("company_name")));
+							
+				objects.add(object);
+			}while(cursor.moveToNext());
+		}
+		
+		if(cursor!=null)
+			cursor.close();
+		return objects;
+	}
+	public Cursor getCompanyListCursor(){
+		Cursor cursor = db.query(
+				true,
+				"CamBUS_CompanyTable",
+				null,
+				null,
+				null, null, null, null, null, null);
+		if(cursor != null){
+			cursor.moveToFirst();
+		}
+		return cursor;
+	}
+	public ArrayList<OfficeInfoModel> getOfficeList(int company_no){
+		Cursor cursor = this.getOfficeListCursor(company_no);
+		ArrayList<OfficeInfoModel> objects = new ArrayList<OfficeInfoModel>();
+		
+		if(cursor != null && cursor.moveToFirst()){
+			OfficeInfoModel object;
+			do{
+				object = new OfficeInfoModel();
+				
+				object.setOfficeNo(cursor.getInt(cursor.getColumnIndex("office_no")));
+				object.setOffice(cursor.getString(cursor.getColumnIndex("office_name")));
+				object.setCompanyNo(cursor.getInt(cursor.getColumnIndex("company_no")));
+				object.setCompany(cursor.getString(cursor.getColumnIndex("company_name")));
+				object.setPhoneNo(cursor.getString(cursor.getColumnIndex("phone_no")));
+				object.setLink(cursor.getString(cursor.getColumnIndex("link")));
+				object.setAddress(cursor.getString(cursor.getColumnIndex("address")));
+				object.setPurchase(cursor.getInt(cursor.getColumnIndex("purchase"))>0?true:false);
+				object.setGetIn(cursor.getInt(cursor.getColumnIndex("get_in"))>0?true:false);
+				object.setGetOut(cursor.getInt(cursor.getColumnIndex("get_out"))>0?true:false);
+				object.setMiscEn(cursor.getString(cursor.getColumnIndex("misc_en")));
+				object.setMiscKo(cursor.getString(cursor.getColumnIndex("misc_ko")));
+							
+				objects.add(object);
+			}while(cursor.moveToNext());
+		}
+		
+		if(cursor!=null)
+			cursor.close();
+		return objects;
+	}
+	public Cursor getOfficeListCursor(int company_no){
+		if(company_no<0){
+			throw new NullPointerException("NullCompany:"+company_no);
+		}
+		Cursor cursor = db.query(
+				true,
+				"CamBUS_OfficeListTable",
+				null,
+				"company_no='"+company_no+"'",
+				null, null, null, null, null, null);
+		if(cursor != null){
+			cursor.moveToFirst();
+		}
+		return cursor;
+	}
+	public Cursor getOfficeListCursor(){
+		Cursor cursor = db.query(
+				true,
+				"CamBUS_OfficeListTable",
+				null,
+				null,
+				null, null, null, null, null, null);
 		if(cursor != null){
 			cursor.moveToFirst();
 		}

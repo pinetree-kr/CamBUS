@@ -8,10 +8,13 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DBHelper extends SQLiteOpenHelper{
 
 	protected final static String DB_NAME = "CamBUS_DB";
-	protected final static int DB_VERSION = 2;
+	protected final static int DB_VERSION = 3;
 	
 	public DBHelper(Context context){
 		this(context, DB_NAME, null, DB_VERSION);
+	}
+	public DBHelper(Context context, int db_version){
+		this(context, DB_NAME, null, db_version);
 	}
 	
 	public DBHelper(Context context, String name, CursorFactory factory,
@@ -55,7 +58,13 @@ public class DBHelper extends SQLiteOpenHelper{
 				"INNER JOIN CamBUS_TypeTable g " +
 				"ON a.type_no = g.type_no " +
 				"ORDER BY time_no ASC;";
-		
+		String createCamBUSOfficeListViewSql = 
+				"CREATE VIEW CamBUS_OfficeListView AS " +
+				"SELECT a.*, company_name " +
+				"FROM CamBUS_OfficeTable a " +
+				"INNER JOIN CamBUS_CompanyTable b " +
+				"ON a.company_no = b.company_no " +
+				"ORDER BY office_no ASC;";
 		String createCamBUSCityTableSql =
 				"CREATE TABLE CamBUS_CityTable (" +
 				"city_no INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
@@ -71,12 +80,20 @@ public class DBHelper extends SQLiteOpenHelper{
 				"CREATE TABLE CamBUS_TypeTable (" +
 				"type_no INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
 				"type_name TEXT NOT NULL);";
-		/*/
-		String createCamBUSOperationTableSql =
-				"CREATE TABLE CamBUS_OperationTable (" +
-						"op_no INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-						"op_name TEXT NOT NULL);";
-		/**/
+		String createCamBUSOfficeTableSql =
+				"CREATE TABLE CamBUS_OfficeTable (" +
+						"office_no INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+						"office_name TEXT NOT NULL, " +
+						"company_no INTEGER NOT NULL, " +
+						"phone_no TEXT NOT NULL, " +
+						"purchase INTEGER NOT NULL, " +
+						"get_in INTEGER NOT NULL, " +
+						"get_out INTEGER NOT NULL, " +
+						"link TEXT NOT NULL, " +
+						"address TEXT NOT NULL, " +
+						"misc_en TEXT NOT NULL, " +
+						"misc_ko TEXT NOT NULL " +
+						");";
 		String createCamBUSDeptDestTableSql = 
 				"CREATE TABLE CamBUS_DeptDestTable (" +
 						"dept_no INTEGER NOT NULL, " +
@@ -106,53 +123,17 @@ public class DBHelper extends SQLiteOpenHelper{
 						"arrival_time TEXT NULL" +
 						");";
 						//"PRIMARY KEY(time_no, dept_no, dest_no, company_no, type_no));";
-		/*/
-		String createCamBUSTimeTableSql = 
-				"CREATE TABLE CamBUS_TimeTable (" +
-				"bus_no INTEGER PRIMARY KEY NOT NULL, " +
-				"preference TEXT NOT NULL, " +
-				"departure_no INTEGER NOT NULL, " +
-				"destination_no INTEGER NOT NULL, " +
-				"middlecity_no INTEGER NULL, " +
-				"company_no INTEGER NOT NULL, " +
-				"departure_time TEXT NOT NULL, " +
-				"arrival_time TEXT NULL, " +
-				"duration_time REAL NOT NULL, " +
-				"remarks TEXT NULL, " +
-				"quality TEXT NULL, " +
-				"operation TEXT NULL, " +
-				"type_no INTEGER NOT NULL, " +
-				//나중에 REAL로 변경예
-				"native_price REAL NOT NULL, " +
-				"foreigner_price REAL NOT NULL, " +
-				"visa REAL NULL, " +
-				
-				"dn TEXT NULL, " +
-				"last_updated TEXT NULL);";
-		String createCamBUSCityTableSql =
-				"CREATE TABLE CamBUS_CityTable (" +
-				"city_no INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-				"city_name TEXT NOT NULL);";
-
-		String createCamBUSCompanyTableSql =
-				"CREATE TABLE CamBUS_CompanyTable (" +
-				"company_no INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-				"company_name TEXT NOT NULL);";
-		
-		String createCamBUSTypeTableSql =
-				"CREATE TABLE CamBUS_TypeTable (" +
-				"type_no INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-				"type_name TEXT NOT NULL);";
-		/**/
 		//db.execSQL(createCamBUSOperationTableSql);
 		db.execSQL(createCamBUSCityTableSql);
 		db.execSQL(createCamBUSCompanyTableSql);
+		db.execSQL(createCamBUSOfficeTableSql);
 		db.execSQL(createCamBUSTypeTableSql);
 		db.execSQL(createCamBUSDeptDestTableSql);
 		db.execSQL(createCamBUSTimeTableSql);
 		db.execSQL(createCamBUSBusListViewSql);
 		db.execSQL(createCamBUSDeptListViewSql);
 		db.execSQL(createCamBUSDestListViewSql);
+		db.execSQL(createCamBUSOfficeListViewSql);
 	}
 
 	@Override
@@ -160,11 +141,13 @@ public class DBHelper extends SQLiteOpenHelper{
 		db.execSQL("DROP TABLE IF EXISTS CamBUS_TimeTable");
 		db.execSQL("DROP TABLE IF EXISTS CamBUS_CityTable");
 		db.execSQL("DROP TABLE IF EXISTS CamBUS_CompanyTable");
+		db.execSQL("DROP TABLE IF EXISTS CamBUS_OfficeTable");
 		db.execSQL("DROP TABLE IF EXISTS CamBUS_DeptDestTable");
 		db.execSQL("DROP TABLE IF EXISTS CamBUS_TypeTable");
 		db.execSQL("DROP VIEW IF EXISTS CamBUS_BusListView");
 		db.execSQL("DROP VIEW IF EXISTS CamBUS_DepartureListView");
 		db.execSQL("DROP VIEW IF EXISTS CamBUS_DestinationListView");
+		db.execSQL("DROP VIEW IF EXISTS CamBUS_OfficeListView");
 		onCreate(db);
 	}
 

@@ -288,7 +288,7 @@ public class FilterFragment extends BaseFragment {
 				if(object.getClass().equals(DepartureModel.class)){
 					DepartureModel model = (DepartureModel)object;
 					if(model.getCityNo()>=0){
-						filter.setDestinationList(model.getCityNo(), getActivity().getApplicationContext(), handler);
+						filter.updateDestinationList(handler, model.getCityNo());
 					}else{
 						filter.getDestinationList().clear();
 						filter.getDestinationList().add(new DestinationModel());

@@ -78,7 +78,7 @@ public class SplashFragment extends BaseFragment {
 		
 		/**/
 		filter.setCallback(new SplashCallbackInterface());
-		filter.getBusData(getActivity(), handler, ExcelFileInfo.ExcelFileName);
+		filter.getBusData(getActivity(), handler);
 		/**/
 	}
 	@Override

@@ -11,6 +11,7 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
 import com.pinetree.cambus.models.BusInfoModel;
+import com.pinetree.cambus.models.OfficeInfoModel;
 
 import android.content.Context;
 import android.util.Log;
@@ -27,7 +28,8 @@ public class ExcelHandler {
 				
 				HSSFWorkbook workbook = new HSSFWorkbook(is);
 				if(workbook != null){
-					HSSFSheet sheet = workbook.getSheetAt(0);
+					//HSSFSheet sheet = workbook.getSheetAt(0);
+					HSSFSheet sheet = workbook.getSheet("버스Data");
 					if(sheet != null){
 						int rowStartIndex = 1;
 						int rowEndIndex = sheet.getLastRowNum();
@@ -38,8 +40,8 @@ public class ExcelHandler {
 						HSSFCell cell;
 						BusInfoModel object;
 
-						Log.i("DebugPrint","row:"+rowEndIndex);
-						Log.i("DebugPrint","col:"+colEndIndex);
+						Log.i("DebugPrint","bus-row:"+rowEndIndex);
+						Log.i("DebugPrint","bus-col:"+colEndIndex);
 						for(int i = rowStartIndex; i<rowEndIndex; i++){
 							row = sheet.getRow(i);
 							
@@ -107,6 +109,93 @@ public class ExcelHandler {
 								case 16:
 									if(cell.getDateCellValue()!=null)
 										object.setLastUpdate(cell.getDateCellValue());
+									break;
+								}
+							}
+							objects.add(object);
+						}
+						
+					}
+				}
+				workbook.close();
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		/*/ catch (BiffException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}/**/
+		return objects;
+	}
+	
+	public static ArrayList<OfficeInfoModel> getOfficeFromXLS(Context context, String fileName){
+		ArrayList<OfficeInfoModel> objects = new ArrayList<OfficeInfoModel>();
+		try {
+			InputStream is = new BufferedInputStream(context.getResources().getAssets().open(fileName));
+			
+			if(fileName.endsWith(".xlsx")){
+				throw new IOException("unabled file extension");
+			}else if(fileName.endsWith(".xls")){
+				
+				HSSFWorkbook workbook = new HSSFWorkbook(is);
+				if(workbook != null){
+					//HSSFSheet sheet = workbook.getSheetAt(0);
+					HSSFSheet sheet = workbook.getSheet("회사Data");
+					if(sheet != null){
+						int rowStartIndex = 1;
+						int rowEndIndex = sheet.getLastRowNum();
+						int colStartIndex = 0;
+						int colEndIndex = sheet.getRow(1).getLastCellNum();
+						
+						HSSFRow row;
+						HSSFCell cell;
+						OfficeInfoModel object;
+
+						Log.i("DebugPrint","office-row:"+rowEndIndex);
+						Log.i("DebugPrint","office-col:"+colEndIndex);
+						for(int i = rowStartIndex; i<rowEndIndex; i++){
+							row = sheet.getRow(i);
+							
+							if(row == null)
+								continue;
+							
+							object = new OfficeInfoModel();
+							
+							for(int col = colStartIndex; col<colEndIndex; col++){
+								cell = row.getCell(col);
+								if(cell == null){
+									//Log.i("DebugPrint",i+","+col);
+									continue;
+								}
+								
+								switch(col){
+								case 0:
+									object.setOffice(cell.getStringCellValue().trim());
+									break;
+								case 1:
+									object.setPhoneNo(cell.getStringCellValue().trim());
+									break;
+								case 2:
+									object.setPurchase(cell.getStringCellValue().trim().equals("O")?true:false);
+									break;
+								case 3:
+									object.setGetIn(cell.getStringCellValue().trim().equals("O")?true:false);
+									break;
+								case 4:
+									object.setGetOut(cell.getStringCellValue().trim().equals("O")?true:false);
+									break;
+								case 5:
+									object.setLink(cell.getStringCellValue().trim());
+									break;
+								case 6:
+									object.setAddress(cell.getStringCellValue().trim());
+									break;
+								case 7:
+									object.setMiscEn(cell.getStringCellValue().trim());
+									break;
+								case 8:
+									object.setMiscKo(cell.getStringCellValue().trim());
 									break;
 								}
 							}

@@ -1,15 +1,14 @@
 package com.pinetree.cambus.fragments;
 
+import io.userhabit.service.Userhabit;
+
 import java.util.Locale;
 
 import com.pinetree.cambus.R;
-import com.pinetree.cambus.interfaces.FragmentCallbackInterface;
 import com.pinetree.cambus.interfaces.SwitchActivityInterface;
 import com.pinetree.cambus.interfaces.SwitchFragmentInterface;
-import com.pinetree.cambus.models.Model;
 import com.pinetree.cambus.utils.DeviceInfo;
 
-import android.R.drawable;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.res.Configuration;
@@ -38,7 +37,7 @@ public abstract class BaseFragment extends Fragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
-		
+		fragmentTitle = this.getClass().getSimpleName();
 		// use menu button
 		//this.setHasOptionsMenu(true);
 	}
@@ -78,9 +77,47 @@ public abstract class BaseFragment extends Fragment {
 	}
 	
 	@Override
+	public void onActivityCreated(Bundle savedInstanceState){
+		super.onActivityCreated(savedInstanceState);
+		//Log.i("DebugPrint","onActivityCreated:"+fragmentTitle);
+		//Userhabit.openSubview(fragmentTitle.toString());		
+	}
+	
+	@Override
 	public void onResume(){
 		super.onResume();
 		loadTextView();
+	}
+	@Override
+	public void onPause(){
+		super.onPause();
+		//Log.i("DebugPrint","onPause");
+		//Userhabit.closeSubview();
+	}
+	@Override
+	public void onStop(){
+		super.onStop();
+		//Userhabit.activityStop(getActivity());
+		Userhabit.closeSubview();
+		//Log.i("DebugPrint","onStop");
+	}
+	@Override
+	public void onStart(){
+		super.onStart();
+		//Userhabit.activityStart(getActivity());
+		Userhabit.openSubview(fragmentTitle.toString());
+		//Log.i("DebugPrint","onStart");
+	}
+	@Override
+	public void onDestroyView(){
+		super.onDestroyView();
+		Log.i("DebugPrint","onDestroyView:"+fragmentTitle);
+		//Userhabit.closeSubview();
+	}
+	@Override
+	public void onDestroy(){
+		super.onDestroy();
+		//Log.i("DebugPrint","onDestroy");
 	}
 	
 	protected abstract void loadTextView();
