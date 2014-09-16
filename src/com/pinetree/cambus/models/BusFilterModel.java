@@ -34,7 +34,6 @@ public class BusFilterModel extends Model implements ModelCallbackInterface, Mod
 	protected ArrayList<CompanyModel> company_list;
 	protected ArrayList<Integer> time_list;
 	protected ArrayList<TypeModel> type_list;
-	public boolean isLoaded;
 	
 	protected Context context;
 	protected DBHandler handler;
@@ -50,7 +49,6 @@ public class BusFilterModel extends Model implements ModelCallbackInterface, Mod
 		company_list = new ArrayList<CompanyModel>();
 		time_list = new ArrayList<Integer>();
 		type_list = new ArrayList<TypeModel>();
-		isLoaded = false;
 		context = null;
 		handler = null;
 		request = null;
@@ -118,12 +116,17 @@ public class BusFilterModel extends Model implements ModelCallbackInterface, Mod
 		}
 		// company list update
 		updateCompanyList(handler);
+		//Log.i("DebugPrint","company-size:"+company_list.size());
 		
 		// insert officeInfo to sqlite
 		for(OfficeInfoModel object : ExcelHandler.getOfficeFromXLS(context, ExcelFileInfo.ExcelFile)){
 			// check company name
+			//Log.i("DebugPrint","company:"+object.getOffice());
 			for(CompanyModel company : company_list){
-				if(object.getCompany().contains(company.getCompanyName())){
+				//Log.i("DebugPrint","office:"+company.getCompanyName());
+				if(company.getCompanyName().contains(object.getOffice())){
+					//Log.i("DebugPrint","true");
+					Log.i("DebugPrint","company:"+company.getCompanyName());					
 					object.setCompanyNo(company.getCompanyNo());
 					break;
 				}
@@ -138,13 +141,13 @@ public class BusFilterModel extends Model implements ModelCallbackInterface, Mod
 		//XLS2SQLite(context, fileName, handler);
 		/**/
 		departure_list = handler.getBusDepartureList();
+		
 		// 로컬에 저장되어 있는 데이터가 없으면 XLS을 읽어들여 옮긴다.
 		
 		if(departure_list.size() < 2){
 			// 로컬db로의 저장
 			XLS2SQLite(context, handler);
 			this.updateDepartureList(handler);
-			isLoaded = true;
 		}
 		
 		this.updateBusTypeList(handler);
