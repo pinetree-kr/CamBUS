@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.pinetree.cambus"
     android:versionCode="1"
-    android:versionName="1.14.9.13.23" >
+    android:versionName="1.14.9.23" >
 
     <uses-sdk
         android:minSdkVersion="16"
@@ -19,13 +19,16 @@
             android:name="userhabitApiKey" 
             android:value="75c49905aadba919e35a3ee1270622dfd0e435cc" />
         <activity
-            android:name=".MainActivity"
-            android:label="@string/app_name" >
+            android:name=".SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".FilterActivity" />
+        <activity
+            android:name=".BusListActivity" />
     </application>
 	
 </manifest>

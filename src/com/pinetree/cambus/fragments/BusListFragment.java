@@ -1,18 +1,17 @@
 package com.pinetree.cambus.fragments;
 
-import java.util.Collections;
-
 import com.pinetree.cambus.R;
 import com.pinetree.cambus.adapters.ModelListAdapter;
-import com.pinetree.cambus.models.BusInfoModel;
-import com.pinetree.cambus.models.BusListModel;
 import com.pinetree.cambus.models.BusFilterModel;
+import com.pinetree.cambus.models.BusListModel;
+import com.pinetree.cambus.models.DBModel.LineBusTime;
+import com.pinetree.cambus.models.Model;
 import com.pinetree.cambus.utils.DBHandler;
 import com.pinetree.cambus.utils.DateUtils;
 import com.pinetree.cambus.utils.FontLoader;
 import com.pinetree.cambus.utils.ImageLoader;
 
-import android.graphics.Color;
+import android.app.Fragment;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
@@ -20,7 +19,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -29,7 +27,6 @@ import android.widget.TextView;
 public class BusListFragment extends BaseFragment {
 	protected TextView textTitle;
 	protected TextView filterInfo, timeInfo, distanceInfo;
-	//protected View btnTime, btnPrice, btnNearBy;
 	protected TextView textBtnTime, textBtnPrice, textBtnNearBy;
 	
 	protected ImageView imageTime, imagePrice, imageNearby;
@@ -37,20 +34,31 @@ public class BusListFragment extends BaseFragment {
 	
 	protected ListView listView;
 	protected ListAdapter listAdapter;
-	protected BusListModel bus_list;
-
+	//protected LineBusTime linebustime_list;
+	protected BusListModel buslistinfo;
 	
 	protected int list_type;
 	protected DBHandler handler;
 	
-	public BusListFragment(BusListModel bus_list){
-		this.bus_list = bus_list;
-		list_type = 0;
+	public static Fragment getInstances(Model model){
+		Bundle args = new Bundle();
+		args.putSerializable("model", model);
+		
+		Fragment fragment = new BusListFragment();
+		fragment.setArguments(args);
+		return fragment;
 	}
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
+		
+		Bundle args = this.getArguments();
+		if(args != null){
+			//bus_list = (LineBusTime)args.getSerializable("model");
+			buslistinfo = (BusListModel)args.getSerializable("model");
+			list_type = 0;
+		}
 	}
 	
 	@Override
@@ -135,6 +143,7 @@ public class BusListFragment extends BaseFragment {
 	@Override
 	public void onResume(){
 		super.onResume();
+		loadTextView();
 	}
 	
 	@Override
@@ -211,10 +220,13 @@ public class BusListFragment extends BaseFragment {
 	}
 	
 	public void loadListAdapter(String order){
-		listAdapter = new ModelListAdapter<BusInfoModel>(
+		
+		listAdapter = new ModelListAdapter<LineBusTime>(
 				this.getActivity().getApplicationContext(),
 				R.layout.bus_list_row,
-				bus_list.getBusList(order));
+				//TODO order
+				buslistinfo.getSortedLineBusTimeList(order));
+				//bus_list.getBusList(order));
 		listView.setAdapter(listAdapter);
 		
 		loadBtn(order);
@@ -225,13 +237,13 @@ public class BusListFragment extends BaseFragment {
 		public void onClick(View v) {
 			
 			String order = (String)v.getTag();
-			if(order==null || order.equals(bus_list.getOrder()))
+			
+			if(order==null || order.equals(buslistinfo.getOrder()))
 				return ;
 			loadListAdapter(order);
 		}
 	}
 
-	@Override
 	protected void loadTextView() {
 		textTitle.setTypeface(FontLoader.getFontTypeface(
 				getActivity().getAssets(),
@@ -239,26 +251,26 @@ public class BusListFragment extends BaseFragment {
 		textTitle.setTextSize(FontLoader.getFontSizeFromPt(app.rateDpi, 8));
 		
 		// Text FilterInfos
-		String dep2des = bus_list.getDeparture().getCityName() + " > " + bus_list.getDestination().getCityName();
+		String dep2des = buslistinfo.getLineInfo().dept_name + " > " + buslistinfo.getLineInfo().dest_name;
 		filterInfo.setText(dep2des);
 		filterInfo.setTypeface(FontLoader.getFontTypeface(
 				getActivity().getAssets(),
 				"HelveticaNeueLTStd-Lt.otf"));
 		filterInfo.setTextSize(FontLoader.getFontSizeFromPt(app.rateDpi, (float)5.5));
 		
-		timeInfo.setText(DateUtils.getTimes(bus_list.getTime()));
+		timeInfo.setText(DateUtils.getTimes(buslistinfo.getDeptTime()));
 		timeInfo.setTypeface(FontLoader.getFontTypeface(
 				getActivity().getAssets(),
 				"HelveticaNeueLTStd-Lt.otf"));
 		timeInfo.setTextSize(FontLoader.getFontSizeFromPt(app.rateDpi, (float)5.5));
 		
-		
-		distanceInfo.setText("-- km");
+		int distance = buslistinfo.getLineInfo().distance;
+		String km = distance > 0 ? String.valueOf(distance):"--";
+		distanceInfo.setText(km+" km");
 		distanceInfo.setTypeface(FontLoader.getFontTypeface(
 				getActivity().getAssets(),
 				"HelveticaNeueLTStd-Lt.otf"));
 		distanceInfo.setTextSize(FontLoader.getFontSizeFromPt(app.rateDpi, (float)5.5));
-		
 		
 	}
 }

@@ -33,8 +33,4 @@ public class MainFragment extends BaseFragment {
 		super.onResume();
 	}
 
-	@Override
-	protected void loadTextView() {
-	}
-	
 }

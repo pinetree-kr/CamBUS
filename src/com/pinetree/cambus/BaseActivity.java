@@ -8,6 +8,9 @@ import com.pinetree.cambus.handlers.SwitchActivityHandler;
 import com.pinetree.cambus.handlers.SwitchFragmentHandler;
 import com.pinetree.cambus.interfaces.SwitchActivityInterface;
 import com.pinetree.cambus.interfaces.SwitchFragmentInterface;
+import com.pinetree.cambus.utils.DeviceInfo;
+import com.pinetree.cambus.utils.ExcelFileInfo;
+import com.pinetree.cambus.utils.FontLoader;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -15,6 +18,8 @@ import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
+import android.widget.TextView;
 
 public abstract class BaseActivity extends Activity
 		implements SwitchActivityInterface, SwitchFragmentInterface{
@@ -22,9 +27,16 @@ public abstract class BaseActivity extends Activity
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().setWindowAnimations(android.R.style.Animation_Toast);
+        //getWindow().setWindowAnimations(android.R.style.Animation_Toast);
+        getWindow().setWindowAnimations(android.R.style.Animation);
+        
     }
     
+	@Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
+	
 	@Override
 	protected void onResume(){
 		super.onResume();
@@ -71,8 +83,7 @@ public abstract class BaseActivity extends Activity
 	}
 
 	@Override
-	public void switchActivity(Class<?> name, boolean close) {
-		Intent intent = new Intent(this, name);
+	public void switchActivity(Intent intent, boolean close) {
 		startActivity(intent);
 		
 		if(close)
@@ -80,9 +91,9 @@ public abstract class BaseActivity extends Activity
 	}
 
 	@Override
-	public void switchActivity(Class<?> name, int time, boolean close) {
+	public void switchActivity(Intent intent, int time, boolean close) {
 		Handler handler = new Handler();
-		handler.postDelayed(new SwitchActivityHandler(this, name, close),  time);
+		handler.postDelayed(new SwitchActivityHandler(this, intent, close),  time);
 	}
 
 }

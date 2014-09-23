@@ -10,13 +10,439 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
-import com.pinetree.cambus.models.BusInfoModel;
-import com.pinetree.cambus.models.OfficeInfoModel;
+import com.pinetree.cambus.models.DBModel.*;
 
 import android.content.Context;
+import android.database.SQLException;
 import android.util.Log;
 
 public class ExcelHandler {
+	// 엑셀로 부터 불러온 데이터들을 SQLite로 전환하는 작업
+	public static void Data2SQLite(Context context, DBHandler handler, String fileName) throws IOException{
+		try{
+			// begin transaction
+			handler.beginTransaction();
+
+			// FileIO
+			InputStream is = new BufferedInputStream(context.getResources().getAssets().open(fileName));
+			
+			if(fileName.endsWith(".xlsx")){
+				throw new IOException("unabled file extension");
+			}else if(fileName.endsWith(".xls")){
+				
+				// load workbook
+				HSSFWorkbook workbook = new HSSFWorkbook(is);
+				HSSFSheet sheet;
+				if(workbook != null){
+					int rowStart = 1, rowEnd;
+					int colStart = 0, colEnd;
+					
+					HSSFRow row;
+					HSSFCell cell;
+					
+					/*
+					 * City Table
+					 */
+					ArrayList<City> city_list = new ArrayList<City>();
+					sheet = workbook.getSheet("CityData");
+					if(sheet != null){
+						rowEnd = sheet.getLastRowNum();
+						Log.i("DebugPrint","city-row:"+rowEnd);
+						colEnd = sheet.getRow(1).getLastCellNum();
+						Log.i("DebugPrint","city-end:"+colEnd);
+						
+						City city;
+						for(int i = rowStart; i<=rowEnd; i++){
+							row = sheet.getRow(i);
+							
+							if(row == null)
+								continue;
+							
+							city = new City();
+							for(int col = colStart; col<=colEnd; col++){
+								cell = row.getCell(col);
+								if(cell == null){
+									continue;
+								}
+								
+								switch(col){
+								case 1:
+									city.city_name = cell.getStringCellValue().trim();
+									break;
+								case 2:
+									city.high = cell.getStringCellValue().trim().equals("High")?true:false;
+									break;
+								}
+							}
+							city.city_no = (int)handler.insertCity(city);
+							city_list.add(city);
+						}
+					}
+					
+					/*
+					 * Company Table
+					 */
+					ArrayList<Company> company_list = new ArrayList<Company>();
+					sheet = workbook.getSheet("CompanyData");
+					if(sheet != null){
+						rowEnd = sheet.getLastRowNum();
+						Log.i("DebugPrint","company-row:"+rowEnd);
+						colEnd = sheet.getRow(1).getLastCellNum();
+						Log.i("DebugPrint","company-end:"+colEnd);
+						
+						Company company;
+						for(int i = rowStart; i<=rowEnd; i++){
+							row = sheet.getRow(i);
+							
+							if(row == null)
+								continue;
+							
+							company = new Company();
+							for(int col = colStart; col<=colEnd; col++){
+								cell = row.getCell(col);
+								if(cell == null){
+									continue;
+								}
+								
+								switch(col){
+								case 1:
+									company.company_name = cell.getStringCellValue().trim();
+									break;
+								}
+							}
+							company.company_no = (int)handler.insertCompany(company);
+							company_list.add(company);
+						}
+					}
+					
+					/*
+					 * Type Table
+					 */
+					ArrayList<BusType> type_list = new ArrayList<BusType>();
+					sheet = workbook.getSheet("BusTypeData");
+					if(sheet != null){
+						rowEnd = sheet.getLastRowNum();
+						Log.i("DebugPrint","type-row:"+rowEnd);
+						colEnd = sheet.getRow(1).getLastCellNum();
+						Log.i("DebugPrint","type-end:"+colEnd);
+						
+						BusType type;
+						for(int i = rowStart; i<=rowEnd; i++){
+							row = sheet.getRow(i);
+							
+							if(row == null)
+								continue;
+							
+							type = new BusType();
+							for(int col = colStart; col<=colEnd; col++){
+								cell = row.getCell(col);
+								if(cell == null){
+									continue;
+								}
+								
+								switch(col){
+								case 1:
+									type.type_name = cell.getStringCellValue().trim();
+									break;
+								}
+							}
+							type.type_no = (int)handler.insertBusType(type);
+							type_list.add(type);
+						}
+					}
+					
+					/*
+					 * Office Table
+					 */
+					ArrayList<Office> office_list = new ArrayList<Office>();
+					sheet = workbook.getSheet("OfficeData");
+					if(sheet != null){
+						rowEnd = sheet.getLastRowNum();
+						Log.i("DebugPrint","office-row:"+rowEnd);
+						colEnd = sheet.getRow(1).getLastCellNum();
+						Log.i("DebugPrint","office-end:"+colEnd);
+						
+						Office office;
+						for(int i = rowStart; i<=rowEnd; i++){
+							row = sheet.getRow(i);
+							
+							if(row == null)
+								continue;
+							
+							office = new Office();
+							for(int col = colStart; col<=colEnd; col++){
+								cell = row.getCell(col);
+								if(cell == null){
+									continue;
+								}
+								
+								switch(col){
+								case 1:
+									office.city_name = cell.getStringCellValue().trim();
+									for(City object : city_list){
+										if(object.city_name.equals(office.city_name)){
+											office.city_no = object.city_no;
+											break;
+										}
+									}
+									break;
+								case 2:
+									office.company_name = cell.getStringCellValue().trim();
+									for(Company object : company_list){
+										if(object.company_name.equals(office.company_name)){
+											office.company_no = object.company_no;
+											break;
+										}
+									}
+									break;
+								case 3:
+									office.office_name = cell.getStringCellValue().trim();
+									break;
+								case 4:
+									office.phone_no = cell.getStringCellValue().trim();
+									break;
+								case 5:
+									office.purchase = cell.getStringCellValue().trim().equals("O")?true:false;
+									break;
+								case 6:
+									office.get_in = cell.getStringCellValue().trim().equals("O")?true:false;
+									break;
+								case 7:
+									office.get_off = cell.getStringCellValue().trim().equals("O")?true:false;
+									break;
+								case 8:
+									office.link = cell.getStringCellValue().trim();
+									break;
+								case 9:
+									office.address = cell.getStringCellValue().trim();
+									break;
+								case 10:
+									office.misc_en = cell.getStringCellValue().trim();
+									break;
+								case 11:
+									office.misc_ko = cell.getStringCellValue().trim();
+									break;
+								}
+							}
+							office.office_no = (int)handler.insertOffice(office);
+							office_list.add(office);
+						}
+					}
+					
+					/*
+					 * Line Table
+					 */
+					ArrayList<Line> line_list = new ArrayList<Line>();
+					sheet = workbook.getSheet("LineData");
+					if(sheet != null){
+						rowEnd = sheet.getLastRowNum();
+						Log.i("DebugPrint","line-row:"+rowEnd);
+						colEnd = sheet.getRow(1).getLastCellNum();
+						Log.i("DebugPrint","line-end:"+colEnd);
+						
+						Line line;
+						for(int i = rowStart; i<=rowEnd; i++){
+							row = sheet.getRow(i);
+							
+							if(row == null)
+								continue;
+							
+							line = new Line();
+							for(int col = colStart; col<=colEnd; col++){
+								cell = row.getCell(col);
+								if(cell == null){
+									continue;
+								}
+								
+								switch(col){
+								case 1:
+									line.dept_name = cell.getStringCellValue().trim();
+									for(City object : city_list){
+										if(object.city_name.equals(line.dept_name)){
+											line.dept_no = object.city_no;
+											break;
+										}
+									}
+									break;
+								case 2:
+									line.dest_name = cell.getStringCellValue().trim();
+									for(City object : city_list){
+										if(object.city_name.equals(line.dest_name)){
+											line.dest_no = object.city_no;
+											break;
+										}
+									}
+									break;
+								case 3:
+									line.distance = (int) cell.getNumericCellValue();
+									break;
+								}
+							}
+							line.line_no = (int)handler.insertLine(line);
+							line_list.add(line);
+						}
+					}
+					
+					/*
+					 * LineBus Table
+					 */
+					ArrayList<LineBus> linebus_list = new ArrayList<LineBus>();
+					sheet = workbook.getSheet("LineBusData");
+					if(sheet != null){
+						rowEnd = sheet.getLastRowNum();
+						Log.i("DebugPrint","linebus-row:"+rowEnd);
+						colEnd = sheet.getRow(1).getLastCellNum();
+						Log.i("DebugPrint","linebus-end:"+colEnd);
+						
+						LineBus linebus;
+						for(int i = rowStart; i<=rowEnd; i++){
+							row = sheet.getRow(i);
+							
+							if(row == null)
+								continue;
+							
+							linebus = new LineBus();
+							for(int col = colStart; col<=colEnd; col++){
+								cell = row.getCell(col);
+								if(cell == null){
+									continue;
+								}
+								
+								switch(col){
+								case 1:
+									linebus.dept_name = cell.getStringCellValue().trim();
+									break;
+								case 2:
+									linebus.dest_name = cell.getStringCellValue().trim();
+									for(Line object : line_list){
+										if(object.dept_name.equals(linebus.dept_name)
+												&& object.dest_name.equals(linebus.dest_name)){
+											linebus.line_no = object.line_no;
+											break;
+										}
+									}
+									break;
+								case 3:
+									linebus.company_name = cell.getStringCellValue().trim();
+									for(Company object : company_list){
+										if(object.company_name.equals(linebus.company_name)){
+											linebus.company_no = object.company_no;
+											break;
+										}
+									}
+									break;
+								case 4:
+									linebus.type_name = cell.getStringCellValue().trim();
+									for(BusType object : type_list){
+										if(object.type_name.equals(linebus.type_name)){
+											linebus.type_no = object.type_no;
+											break;
+										}
+									}
+									break;
+								case 5:
+									linebus.duration_time = cell.getNumericCellValue();
+									break;
+								case 6:
+									linebus.native_price = cell.getNumericCellValue();
+									break;
+								case 7:
+									linebus.foreigner_price = cell.getNumericCellValue();
+									break;
+								case 8:
+									linebus.visa = cell.getNumericCellValue();
+									break;
+								case 9:
+									linebus.dn = cell.getStringCellValue().trim();
+									break;
+								}
+							}
+							linebus.linebus_no = (int)handler.insertLineBus(linebus);
+							linebus_list.add(linebus);
+						}
+					}
+					
+					/*
+					 * LineBus Table
+					 */
+					ArrayList<LineBusTime> linebustime_list = new ArrayList<LineBusTime>();
+					sheet = workbook.getSheet("LineBusTimeData");
+					if(sheet != null){
+						rowEnd = sheet.getLastRowNum();
+						Log.i("DebugPrint","linebustime-row:"+rowEnd);
+						colEnd = sheet.getRow(1).getLastCellNum();
+						Log.i("DebugPrint","linebustime-end:"+colEnd);
+						
+						LineBusTime linebustime;
+						for(int i = rowStart; i<=rowEnd; i++){
+							row = sheet.getRow(i);
+							
+							if(row == null)
+								continue;
+							
+							linebustime = new LineBusTime();
+							for(int col = colStart; col<=colEnd; col++){
+								cell = row.getCell(col);
+								if(cell == null){
+									continue;
+								}
+								
+								switch(col){
+								case 1:
+									linebustime.dept_name = cell.getStringCellValue().trim();
+									break;
+								case 2:
+									linebustime.dest_name = cell.getStringCellValue().trim();
+									break;
+								case 3:
+									linebustime.company_name = cell.getStringCellValue().trim();
+									break;
+								case 4:
+									linebustime.type_name = cell.getStringCellValue().trim();
+									for(LineBus object : linebus_list){
+										if(object.dept_name.equals(linebustime.dept_name)
+											&& object.dest_name.equals(linebustime.dest_name)
+											&& object.company_name.equals(linebustime.company_name)
+											&& object.type_name.equals(linebustime.type_name)){
+											linebustime.linebus_no = object.linebus_no;
+											break;
+										}
+									}
+									break;
+								case 5:
+									linebustime.middle_city = cell.getStringCellValue().trim();
+									for(City object : city_list){
+										if(object.city_name.equals(linebustime.middle_city)){
+											linebustime.mid_no = object.city_no;
+											break;
+										}
+									}
+									break;
+								case 6:
+									linebustime.setDeptTime(cell.getStringCellValue().trim());
+									break;
+								case 7:
+									linebustime.setArrivalTime(cell.getStringCellValue().trim());
+									break;
+								}
+							}
+							linebustime.linebus_no = (int)handler.insertLineBusTime(linebustime);
+							linebustime_list.add(linebustime);
+						}
+					}
+				}
+			}
+			
+			// set transaction successful
+			handler.setTransactionSuccessful();
+		}catch(SQLException e){
+			Log.i("DebugPrint",e.getMessage());
+		}finally{
+			// end transaction
+			handler.endTransaction();
+		}
+	}
+	/*
 	public static ArrayList<BusInfoModel> getBusFromXLS(Context context, String fileName){
 		ArrayList<BusInfoModel> objects = new ArrayList<BusInfoModel>();
 		try {
@@ -29,7 +455,7 @@ public class ExcelHandler {
 				HSSFWorkbook workbook = new HSSFWorkbook(is);
 				if(workbook != null){
 					//HSSFSheet sheet = workbook.getSheetAt(0);
-					HSSFSheet sheet = workbook.getSheet("버스Data");
+					HSSFSheet sheet = workbook.getSheet("버스Backup");
 					if(sheet != null){
 						int rowStartIndex = 1;
 						int rowEndIndex = sheet.getLastRowNum();
@@ -42,7 +468,7 @@ public class ExcelHandler {
 
 						Log.i("DebugPrint","bus-row:"+rowEndIndex);
 						Log.i("DebugPrint","bus-col:"+colEndIndex);
-						for(int i = rowStartIndex; i<rowEndIndex; i++){
+						for(int i = rowStartIndex; i<=rowEndIndex; i++){
 							row = sheet.getRow(i);
 							
 							if(row == null)
@@ -59,54 +485,51 @@ public class ExcelHandler {
 								
 								switch(col){
 								case 0:
-									//object.setPreference(cell.getStringCellValue().trim());
-									break;
-								case 1:
 									object.setDeparture(cell.getStringCellValue().trim());
 									break;
-								case 2:
+								case 1:
 									object.setDestination(cell.getStringCellValue().trim());
 									break;
-								case 3:
+								case 2:
 									object.setCompany(cell.getStringCellValue().trim());
 									break;
-								case 4:
+								case 3:
 									object.setMiddleCity(cell.getStringCellValue().trim());
 									break;
-								case 5:
+								case 4:
 									object.setDepartureTime(cell.getDateCellValue());
 									break;
-								case 6:
+								case 5:
 									object.setArrivalTime(cell.getDateCellValue());
 									break;
-								case 7:
+								case 6:
 									object.setDurationTime(cell.getNumericCellValue());
 									break;
-								case 8:
+								case 7:
 									//object.setRemarks(cell.getStringCellValue().trim());
 									break;
-								case 9:
+								case 8:
 									//object.setQuality(cell.getStringCellValue().trim());
 									break;
-								case 10:
+								case 9:
 									//object.setOperation(cell.getStringCellValue().trim());
 									break;
-								case 11:
+								case 10:
 									object.setType(cell.getStringCellValue().trim());
 									break;
-								case 12:
+								case 11:
 									object.setNativePrice(cell.getNumericCellValue());
 									break;
-								case 13:
+								case 12:
 									object.setForeignerPrice(cell.getNumericCellValue());
 									break;
-								case 14:
+								case 13:
 									object.setVisa(cell.getNumericCellValue());
 									break;
-								case 15:
+								case 14:
 									object.setDN(cell.getStringCellValue().trim());
 									break;
-								case 16:
+								case 15:
 									if(cell.getDateCellValue()!=null)
 										object.setLastUpdate(cell.getDateCellValue());
 									break;
@@ -122,10 +545,7 @@ public class ExcelHandler {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		/*/ catch (BiffException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}/**/
+		
 		return objects;
 	}
 	
@@ -141,7 +561,7 @@ public class ExcelHandler {
 				HSSFWorkbook workbook = new HSSFWorkbook(is);
 				if(workbook != null){
 					//HSSFSheet sheet = workbook.getSheetAt(0);
-					HSSFSheet sheet = workbook.getSheet("회사Data");
+					HSSFSheet sheet = workbook.getSheet("CityCompanyData");
 					if(sheet != null){
 						int rowStartIndex = 1;
 						int rowEndIndex = sheet.getLastRowNum();
@@ -154,7 +574,7 @@ public class ExcelHandler {
 
 						Log.i("DebugPrint","office-row:"+rowEndIndex);
 						Log.i("DebugPrint","office-col:"+colEndIndex);
-						for(int i = rowStartIndex; i<rowEndIndex; i++){
+						for(int i = rowStartIndex; i<=rowEndIndex; i++){
 							row = sheet.getRow(i);
 							
 							if(row == null)
@@ -170,31 +590,37 @@ public class ExcelHandler {
 								}
 								
 								switch(col){
-								case 0:
-									object.setOffice(cell.getStringCellValue().trim());
-									break;
 								case 1:
-									object.setPhoneNo(cell.getStringCellValue().trim());
+									object.setCity(cell.getStringCellValue().trim());
 									break;
 								case 2:
-									object.setPurchase(cell.getStringCellValue().trim().equals("O")?true:false);
+									object.setCompany(cell.getStringCellValue().trim());
 									break;
 								case 3:
-									object.setGetIn(cell.getStringCellValue().trim().equals("O")?true:false);
+									object.setOffice(cell.getStringCellValue().trim());
 									break;
 								case 4:
-									object.setGetOut(cell.getStringCellValue().trim().equals("O")?true:false);
+									object.setPhoneNo(cell.getStringCellValue().trim());
 									break;
 								case 5:
-									object.setLink(cell.getStringCellValue().trim());
+									object.setPurchase(cell.getStringCellValue().trim().equals("O")?true:false);
 									break;
 								case 6:
-									object.setAddress(cell.getStringCellValue().trim());
+									object.setGetIn(cell.getStringCellValue().trim().equals("O")?true:false);
 									break;
 								case 7:
-									object.setMiscEn(cell.getStringCellValue().trim());
+									object.setGetOut(cell.getStringCellValue().trim().equals("O")?true:false);
 									break;
 								case 8:
+									object.setLink(cell.getStringCellValue().trim());
+									break;
+								case 9:
+									object.setAddress(cell.getStringCellValue().trim());
+									break;
+								case 10:
+									object.setMiscEn(cell.getStringCellValue().trim());
+									break;
+								case 11:
 									object.setMiscKo(cell.getStringCellValue().trim());
 									break;
 								}
@@ -209,10 +635,8 @@ public class ExcelHandler {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		/*/ catch (BiffException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}/**/
+		Log.i("DebugPrint","officeSize:"+objects.size());
 		return objects;
 	}
+	*/
 }

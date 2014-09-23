@@ -1,20 +1,32 @@
 package com.pinetree.cambus.fragments;
 
+import java.io.IOException;
+import java.io.Serializable;
+
+import com.pinetree.cambus.FilterActivity;
 import com.pinetree.cambus.R;
 import com.pinetree.cambus.interfaces.FragmentCallbackInterface;
+import com.pinetree.cambus.interfaces.ModelCallbackInterface;
 import com.pinetree.cambus.models.BusFilterModel;
 import com.pinetree.cambus.models.Model;
 import com.pinetree.cambus.utils.DBHandler;
 import com.pinetree.cambus.utils.DeviceInfo;
 import com.pinetree.cambus.utils.ExcelFileInfo;
+import com.pinetree.cambus.utils.ExcelHandler;
 import com.pinetree.cambus.utils.FontLoader;
 import com.pinetree.cambus.utils.ImageLoader;
+import com.pinetree.cambus.utils.ModelAsyncTask;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.ProgressDialog;
+import android.content.Intent;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteException;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,7 +36,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 public class SplashFragment extends BaseFragment {
-	protected BusFilterModel filter;
+	
+	protected ModelAsyncTask request;
 	protected DBHandler handler;
 	
 	protected ProgressDialog dialog;
@@ -32,7 +45,6 @@ public class SplashFragment extends BaseFragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
-		filter = new BusFilterModel();
 		this.setHasOptionsMenu(false);
 	}
 	
@@ -52,17 +64,14 @@ public class SplashFragment extends BaseFragment {
 				app.rateWidth,
 				app.rateHeight
 				);
-		//imageTitle.setImageResource(R.drawable.logo);
 		imageTitle.setImageDrawable(dTitle);
 		
 		// title text
 		TextView textTitle = (TextView)view.findViewById(R.id.TextTitle);
-		//textTitle.setText(R.string.app_name);
 		textTitle.setTypeface(FontLoader.getFontTypeface(
 				getActivity().getAssets(),
 				"HelveticaNeueLTStd-UltLt.otf"));
 		textTitle.setTextSize(FontLoader.getFontSizeFromPt(app.rateDpi, 19));
-		
 		
 		return view;
 	}
@@ -75,11 +84,12 @@ public class SplashFragment extends BaseFragment {
 	@Override
 	public void onStart(){
 		super.onStart();
-		
 		/**/
+		BusFilterModel filter = new BusFilterModel();
 		filter.setCallback(new SplashCallbackInterface());
-		filter.getBusData(getActivity(), handler);
+		this.getBusData(filter);
 		/**/
+		
 	}
 	@Override
 	public void onResume(){
@@ -93,19 +103,71 @@ public class SplashFragment extends BaseFragment {
 		handler.close();
 	}
 	
+	// AsyncTask 후의 Callback
 	protected class SplashCallbackInterface implements FragmentCallbackInterface{
+
 		@Override
 		public void onCallback(Model object) {
-			Fragment fragment = new FilterFragment((BusFilterModel)object);
+			Intent intent = new Intent(getActivity(), FilterActivity.class);
+			intent.putExtra("model", object);
 			
-			sfInterface.switchFragment(fragment, 2000, true);
+			saInterface.switchActivity(intent, 2000, true);
+		}
+
+		@Override
+		public void onPreAsyncTask() {
+			preAsyncTask();
+		}
+
+		@Override
+		public void onPostAsyncTask() {
+			postAsyncTask();
+		}
+
+		@Override
+		public void onAsyncTask(Model object) {
+			/*
+			 * TODO
+			 * DB 재저장의 상황을 조절할 필요가 있음
+			 * 현재는 Departure리스트가 비어있을때 DB 재저장을 실행함
+			 * lastupdate로 조정/shared preferences랑 함께
+			 */
+			BusFilterModel model = (BusFilterModel)object;
+			
+			model.updateLineList(handler);
+			try {
+				// 로컬에 저장되어 있는 데이터가 없으면 XLS을 읽어들여 옮긴다.
+				if(model.getLineList().size() < 1){
+					// 로컬db로의 저장
+					ExcelHandler.Data2SQLite(getActivity(), handler, ExcelFileInfo.ExcelFile);
+					model.updateLineList(handler);
+				}
+			} catch (SQLException | IOException e) {
+				e.printStackTrace();
+			}
+			//model.updateCityList(handler);
+			model.updateBusTypeList(handler);
 		}
 		
 	}
-
-	@Override
-	protected void loadTextView() {
-		// TODO Auto-generated method stub
+	
+	public void getBusData(Model object){
+		preAsyncTask();
 		
+		if(request==null || request.getStatus().equals(AsyncTask.Status.FINISHED)){
+			request = new ModelAsyncTask();
+		}
+		if(request.getStatus().equals(AsyncTask.Status.PENDING)){
+			request.execute(object);
+		}
+	}
+	
+	public void preAsyncTask() {
+		if(this.getActivity()!=null)
+			dialog = ProgressDialog.show(this.getActivity(), "", "Converting to DB..",true);
+	}
+	public void postAsyncTask() {
+		if(dialog!=null)
+			dialog.dismiss();
 	}
 }

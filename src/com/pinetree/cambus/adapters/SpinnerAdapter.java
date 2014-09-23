@@ -3,16 +3,10 @@ package com.pinetree.cambus.adapters;
 import java.util.ArrayList;
 
 import com.pinetree.cambus.R;
-import com.pinetree.cambus.interfaces.ModelCallbackInterface;
-import com.pinetree.cambus.models.CityModel;
-import com.pinetree.cambus.models.DepartureModel;
-import com.pinetree.cambus.models.DestinationModel;
-import com.pinetree.cambus.models.TypeModel;
+import com.pinetree.cambus.models.DBModel.*;
 import com.pinetree.cambus.utils.DateUtils;
 import com.pinetree.cambus.utils.DeviceInfo;
 import com.pinetree.cambus.utils.FontLoader;
-import com.pinetree.cambus.viewholders.ViewHolder;
-import com.pinetree.cambus.viewholders.ViewHolder;
 
 import android.R.color;
 import android.content.Context;
@@ -61,9 +55,9 @@ public class SpinnerAdapter<T> extends ArrayAdapter<T>{
 		view.setTag(object);
 		textPreference.setText("");
 		// city이면
-		if(object.getClass().getSuperclass().equals(CityModel.class)){
-			String cityName =((CityModel)object).getCityName();
-			if(((CityModel)object).isHigh()){
+		if(object.getClass().getSuperclass().equals(City.class)){
+			String cityName =((City)object).city_name;
+			if(((City)object).high){
 				textName.setTextColor(Color.RED);
 				textName.setText("*"+cityName);
 			}else{
@@ -73,11 +67,11 @@ public class SpinnerAdapter<T> extends ArrayAdapter<T>{
 			textName.setHint(R.string.select_city);
 		}
 		// type이면
-		else if(object.getClass().equals(TypeModel.class)){
-			if((((TypeModel)object).getTypeNo()<0))
+		else if(object.getClass().equals(BusType.class)){
+			if((((BusType)object).type_no<1))
 				textName.setText(R.string.all_type);
 			else	
-				textName.setText(((TypeModel)object).getTypeName());
+				textName.setText(((BusType)object).type_name);
 			textName.setHint(R.string.select_type);
 		}
 		// time이면

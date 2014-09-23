@@ -7,6 +7,8 @@ import java.util.Locale;
 import com.pinetree.cambus.R;
 import com.pinetree.cambus.interfaces.SwitchActivityInterface;
 import com.pinetree.cambus.interfaces.SwitchFragmentInterface;
+import com.pinetree.cambus.models.BusFilterModel;
+import com.pinetree.cambus.models.Model;
 import com.pinetree.cambus.utils.DeviceInfo;
 
 import android.app.Activity;
@@ -86,7 +88,6 @@ public abstract class BaseFragment extends Fragment {
 	@Override
 	public void onResume(){
 		super.onResume();
-		loadTextView();
 	}
 	@Override
 	public void onPause(){
@@ -98,20 +99,20 @@ public abstract class BaseFragment extends Fragment {
 	public void onStop(){
 		super.onStop();
 		//Userhabit.activityStop(getActivity());
-		Userhabit.closeSubview();
+		//Userhabit.closeSubview();
 		//Log.i("DebugPrint","onStop");
 	}
 	@Override
 	public void onStart(){
 		super.onStart();
 		//Userhabit.activityStart(getActivity());
-		Userhabit.openSubview(fragmentTitle.toString());
+		//Userhabit.openSubview(fragmentTitle.toString());
 		//Log.i("DebugPrint","onStart");
 	}
 	@Override
 	public void onDestroyView(){
 		super.onDestroyView();
-		Log.i("DebugPrint","onDestroyView:"+fragmentTitle);
+		//Log.i("DebugPrint","onDestroyView:"+fragmentTitle);
 		//Userhabit.closeSubview();
 	}
 	@Override
@@ -119,7 +120,5 @@ public abstract class BaseFragment extends Fragment {
 		super.onDestroy();
 		//Log.i("DebugPrint","onDestroy");
 	}
-	
-	protected abstract void loadTextView();
 	
 }

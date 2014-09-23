@@ -1,17 +1,21 @@
 package com.pinetree.cambus.fragments;
 
+import com.pinetree.cambus.BusListActivity;
+import com.pinetree.cambus.FilterActivity;
 import com.pinetree.cambus.R;
 import com.pinetree.cambus.adapters.SpinnerAdapter;
-import com.pinetree.cambus.models.BusListModel;
+import com.pinetree.cambus.interfaces.ModelCallbackInterface;
 import com.pinetree.cambus.models.BusFilterModel;
-import com.pinetree.cambus.models.DepartureModel;
-import com.pinetree.cambus.models.DestinationModel;
-import com.pinetree.cambus.models.TypeModel;
+import com.pinetree.cambus.models.BusListModel;
+import com.pinetree.cambus.models.Model;
+import com.pinetree.cambus.models.DBModel.*;
 import com.pinetree.cambus.utils.DBHandler;
+import com.pinetree.cambus.utils.ExcelFileInfo;
 import com.pinetree.cambus.utils.FontLoader;
 import com.pinetree.cambus.utils.ImageLoader;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
@@ -50,14 +54,24 @@ public class FilterFragment extends BaseFragment {
 	protected View search;
 	protected DBHandler handler;
 	
-	public FilterFragment(BusFilterModel filter){
-		this.filter = filter;
+
+	public static Fragment getInstances(Model model){
+		Bundle args = new Bundle();
+		args.putSerializable("model", model);
+		
+		Fragment fragment = new FilterFragment();
+		fragment.setArguments(args);
+		return fragment;
 	}
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		
+		Bundle args = this.getArguments();
+		if(args != null){
+			filter = (BusFilterModel)args.getSerializable("model");
+		}
 	}
 	
 	@Override
@@ -177,9 +191,9 @@ public class FilterFragment extends BaseFragment {
 	@Override
 	public void onResume(){
 		super.onResume();
+		loadTextView();
 	}
 	
-	@Override
 	protected void loadTextView(){
 		textDeparture.setText(R.string.departure);
 		textDestination.setText(R.string.destination);
@@ -210,7 +224,7 @@ public class FilterFragment extends BaseFragment {
 	}
 	
 	protected void loadDepartureAdapter(){
-		adapterDeparture = new SpinnerAdapter<DepartureModel>(
+		adapterDeparture = new SpinnerAdapter<DepartureCity>(
 			this.getActivity().getApplicationContext(),
 			R.layout.custom_spinner,
 			filter.getDepartureList());
@@ -219,11 +233,11 @@ public class FilterFragment extends BaseFragment {
 		this.spinnerDeparture.setSelection(0);		
 	}
 	
-	protected void loadDestinationAdapter(){
-		adapterDestination = new SpinnerAdapter<DestinationModel>(
+	protected void loadDestinationAdapter(int dept_no){
+		adapterDestination = new SpinnerAdapter<DestinationCity>(
 			this.getActivity().getApplicationContext(),
 			R.layout.custom_spinner,
-			filter.getDestinationList());
+			filter.getDestinationList(dept_no));
 		
 		this.spinnerDestination.setAdapter(adapterDestination);
 		this.spinnerDestination.setSelection(0);
@@ -239,7 +253,7 @@ public class FilterFragment extends BaseFragment {
 		this.spinnerTime.setSelection(0);
 	}
 	protected void loadTypeAdapter(){
-		adapterType = new SpinnerAdapter<TypeModel>(
+		adapterType = new SpinnerAdapter<BusType>(
 				this.getActivity().getApplicationContext(),
 				R.layout.custom_spinner,
 				filter.getTypeList());
@@ -252,27 +266,29 @@ public class FilterFragment extends BaseFragment {
 	protected class OnButtonClickListener implements OnClickListener{
 		@Override
 		public void onClick(View v) {
-			DepartureModel departure = (DepartureModel) spinnerDeparture.getSelectedItem();
-			DestinationModel destination = (DestinationModel) spinnerDestination.getSelectedItem();
+			DepartureCity departure = (DepartureCity) spinnerDeparture.getSelectedItem();
+			DestinationCity destination = (DestinationCity) spinnerDestination.getSelectedItem();
 			int time = (Integer) spinnerTime.getSelectedItem();
-			TypeModel type = (TypeModel) spinnerType.getSelectedItem();
+			BusType type = (BusType) spinnerType.getSelectedItem();
 			
-			if(departure.getCityNo()<0){
+			if(departure.city_no < 1){
 				Toast.makeText(getActivity().getApplicationContext(), "Select Departure", 1000).show();
-			}else if(destination.getCityNo()<0){
+			}else if(destination.city_no < 1){
 				Toast.makeText(getActivity().getApplicationContext(), "Select Destination", 1000).show();
 			}else if(time<0){
 				Toast.makeText(getActivity().getApplicationContext(), "Select Time", 1000).show();
 			}else{
-				BusListModel bus_list = new BusListModel();
-				bus_list.setDeparture(departure);
-				bus_list.setDestination(destination);
-				bus_list.setTime(time);
-				bus_list.setType(type);
-				
-				bus_list.getBusList(handler);
-				Fragment fragment = new BusListFragment(bus_list);
-				sfInterface.switchFragment(fragment, false);
+				Line line_info = filter.getLineInfo(departure.city_no, destination.city_no);
+				if(line_info!=null){
+					BusListModel model = new BusListModel(line_info, time, type.type_no);
+					model.updateLineBusTimeList(handler);
+					
+					Intent intent = new Intent(getActivity(), BusListActivity.class);
+					
+					intent.putExtra("model", model);
+					
+					saInterface.switchActivity(intent, false);
+				}
 			}
 		}
 		
@@ -285,16 +301,10 @@ public class FilterFragment extends BaseFragment {
 			if(view!=null){
 				Object object = view.getTag();
 				
-				if(object.getClass().equals(DepartureModel.class)){
-					DepartureModel model = (DepartureModel)object;
-					if(model.getCityNo()>=0){
-						filter.updateDestinationList(handler, model.getCityNo());
-					}else{
-						filter.getDestinationList().clear();
-						filter.getDestinationList().add(new DestinationModel());
-					}
-					loadDestinationAdapter();
-				}else if(object.getClass().equals(DestinationModel.class)){
+				if(object.getClass().equals(DepartureCity.class)){
+					DepartureCity model = (DepartureCity)object;
+					loadDestinationAdapter(model.city_no);
+				}else if(object.getClass().equals(DestinationCity.class)){
 					//DestinationModel model = (DestinationModel)object;
 				}
 			}

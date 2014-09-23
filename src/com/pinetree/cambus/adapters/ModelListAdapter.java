@@ -3,7 +3,7 @@ package com.pinetree.cambus.adapters;
 import java.util.ArrayList;
 
 import com.pinetree.cambus.R;
-import com.pinetree.cambus.models.BusInfoModel;
+import com.pinetree.cambus.models.DBModel.LineBusTime;
 import com.pinetree.cambus.utils.DateUtils;
 import com.pinetree.cambus.utils.DeviceInfo;
 import com.pinetree.cambus.utils.FontLoader;
@@ -68,15 +68,15 @@ public class ModelListAdapter<T> extends ArrayAdapter<T>{
 		TextView textNextTime = ViewHolder.get(view, R.id.TextNextTime);
 		TextView NextTimeInfo = ViewHolder.get(view, R.id.NextTimeInfo);
 		
-		BusInfoModel object = (BusInfoModel) getItem(position);
+		LineBusTime object = (LineBusTime) getItem(position);
 		
-		textCompany.setText((position+1) + ". "+object.getCompany());
+		textCompany.setText((position+1) + ". "+object.company_name);
 		textCompany.setTypeface(FontLoader.getFontTypeface(
 				getContext().getAssets(),
 				"HelveticaNeueLTStd-Lt.otf"));
 		textCompany.setTextSize(FontLoader.getFontSizeFromPt(app.rateDpi, (float)7.2));
 		
-		textType.setText("["+object.getType()+"]");
+		textType.setText("["+object.type_name+"]");
 		textType.setTypeface(FontLoader.getFontTypeface(
 				getContext().getAssets(),
 				"HelveticaNeueLTStd-Lt.otf"));
@@ -87,7 +87,7 @@ public class ModelListAdapter<T> extends ArrayAdapter<T>{
 				getContext().getAssets(),
 				"HelveticaNeueLTStd-Lt.otf"));
 		textFee.setTextSize(FontLoader.getFontSizeFromPt(app.rateDpi, (float)5));
-		FeeInfo.setText(String.valueOf(object.getForeignerPrice())+"$");
+		FeeInfo.setText(String.valueOf(object.foreigner_price)+"$");
 		FeeInfo.setTypeface(FontLoader.getFontTypeface(
 				getContext().getAssets(),
 				"HelveticaNeueLTStd-Lt.otf"));
@@ -104,7 +104,7 @@ public class ModelListAdapter<T> extends ArrayAdapter<T>{
 				"HelveticaNeueLTStd-Lt.otf"));
 		textAverage.setTextSize(FontLoader.getFontSizeFromPt(app.rateDpi, (float)5));
 		
-		if(object.getDurationTime()<=1){
+		if(object.duration_time<=1){
 			textHour.setText(R.string.hour);
 		}else{
 			textHour.setText(R.string.hours);
@@ -114,7 +114,7 @@ public class ModelListAdapter<T> extends ArrayAdapter<T>{
 				"HelveticaNeueLTStd-Lt.otf"));
 		textHour.setTextSize(FontLoader.getFontSizeFromPt(app.rateDpi, (float)5));
 		
-		DurationTimeInfo.setText(object.getNearBy());
+		DurationTimeInfo.setText(String.valueOf(object.duration_time));
 		DurationTimeInfo.setTypeface(FontLoader.getFontTypeface(
 				getContext().getAssets(),
 				"HelveticaNeueLTStd-Lt.otf"));
@@ -126,7 +126,7 @@ public class ModelListAdapter<T> extends ArrayAdapter<T>{
 		textNextTime.setTextSize(FontLoader.getFontSizeFromPt(app.rateDpi, (float)5));
 		
 		NextTimeInfo.setText(
-				DateUtils.getTimes(object.getDepartureTime()));
+				DateUtils.getTimes(object.getDeptTime()));
 		NextTimeInfo.setTypeface(FontLoader.getFontTypeface(
 				getContext().getAssets(),
 				"HelveticaNeueLTStd-Lt.otf"));

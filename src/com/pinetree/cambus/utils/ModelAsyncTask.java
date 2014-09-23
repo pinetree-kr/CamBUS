@@ -15,7 +15,8 @@ public class ModelAsyncTask extends AsyncTask<Model, Model, Model>{
 			return null;
 		}
 		//Log.i("DebugPrint","doInBackground");
-		((ModelAsyncTaskInterface)objects[0]).onAsyncTask();
+		
+		((ModelAsyncTaskInterface)objects[0]).onAsyncTask(objects[0]);
 		
 		return objects[0];
 	}

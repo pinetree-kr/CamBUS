@@ -1,58 +1,36 @@
 package com.pinetree.cambus.models;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
-import java.util.List;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
-
-import android.app.Activity;
-import android.app.ProgressDialog;
-import android.content.Context;
-import android.database.Cursor;
-import android.os.AsyncTask;
 import android.util.Log;
 
 import com.pinetree.cambus.interfaces.FragmentCallbackInterface;
 import com.pinetree.cambus.interfaces.ModelAsyncTaskInterface;
 import com.pinetree.cambus.interfaces.ModelCallbackInterface;
 import com.pinetree.cambus.utils.DBHandler;
-import com.pinetree.cambus.utils.ExcelFileInfo;
-import com.pinetree.cambus.utils.ExcelHandler;
-import com.pinetree.cambus.utils.ModelAsyncTask;
+import com.pinetree.cambus.models.DBModel.*;
 
 public class BusFilterModel extends Model implements ModelCallbackInterface, ModelAsyncTaskInterface, Serializable{
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 20140825L;
-	protected ArrayList<DepartureModel> departure_list;
-	protected ArrayList<DestinationModel> destination_list;
-	protected ArrayList<CompanyModel> company_list;
+	
+	protected ArrayList<Line> line_list;
+	
+	protected ArrayList<BusType> type_list;
 	protected ArrayList<Integer> time_list;
-	protected ArrayList<TypeModel> type_list;
-	
-	protected Context context;
-	protected DBHandler handler;
-	//protected int version;
-	
-	protected ModelAsyncTask request;
-	protected ProgressDialog dialog;
 	
 	public BusFilterModel(){
-		//bus_list = new ArrayList<BusInfoModel>();
-		departure_list = new ArrayList<DepartureModel>();
-		destination_list = new ArrayList<DestinationModel>();
-		company_list = new ArrayList<CompanyModel>();
+		line_list = new ArrayList<Line>();
+		
+		type_list = new ArrayList<BusType>();
 		time_list = new ArrayList<Integer>();
-		type_list = new ArrayList<TypeModel>();
-		context = null;
-		handler = null;
-		request = null;
-		dialog = null;
+		
 		initTimeList();
 	}
 	public void initTimeList(){
@@ -63,112 +41,94 @@ public class BusFilterModel extends Model implements ModelCallbackInterface, Mod
 		}
 	}
 	
-	public ArrayList<CompanyModel> getCompanyList(){
-		return company_list;
-	}
-	public ArrayList<DepartureModel> getDepartureList(){
-		return departure_list;
-	}
-	public ArrayList<DestinationModel> getDestinationList(){
-		return destination_list;
+	public ArrayList<Line> getLineList(){
+		return line_list;
 	}
 	public ArrayList<Integer> getTimeList(){
 		return time_list;
 	}
-	public ArrayList<TypeModel> getTypeList(){
+	public void setTypeList(ArrayList<BusType> list){
+		type_list = list;
+	}
+	public ArrayList<BusType> getTypeList(){
 		return type_list;
 	}
 	
-	// 로컬에 저장된 버스데이터를 불러온다
-	public void getBusData(Activity activity, DBHandler handler){
-		this.context = activity.getApplicationContext();
-		this.handler = handler;
-		//this.fileName = fileName;
-		//this.version = Integer.parseInt(fileName.split(".")[0].split("_")[1]);
+	public ArrayList<DepartureCity> getDepartureList(){
+		ArrayList<DepartureCity> objects = new ArrayList<DepartureCity>();
+		HashMap<String, String> hash = new HashMap<String,String>();
+		DepartureCity city;
+		// dummy : select ...
+		objects.add(new DepartureCity());
 		
-		preAsyncTask(activity);
-		if(request==null || request.getStatus().equals(AsyncTask.Status.FINISHED)){
-			request = new ModelAsyncTask();
+		for(Line object : line_list){
+			
+			city = new DepartureCity();
+			city.city_no = object.dept_no;
+			city.city_name = object.dept_name;
+			city.high = object.dept_high;
+			
+			if(!hash.containsKey(String.valueOf(city.city_no))){
+				hash.put(String.valueOf(city.city_no), city.city_name);
+				objects.add(city);
+			}
 		}
-		if(request.getStatus().equals(AsyncTask.Status.PENDING)){
-			request.execute(this);
+		hash.clear();
+		// 추천수가 높은 순으로 정렬
+		Collections.sort(objects, new City.PreferenceDescCompare());
+		return objects;
+	}
+	public ArrayList<DestinationCity> getDestinationList(int dept_no){
+		ArrayList<DestinationCity> objects = new ArrayList<DestinationCity>();
+		HashMap<String, String> hash = new HashMap<String,String>();
+		DestinationCity city;
+		// dummy : select ...
+		objects.add(new DestinationCity());
+		
+		for(Line object : line_list){
+			// dept_no 가 같은 라인만
+			if(object.dept_no == dept_no){
+				city = new DestinationCity();
+				city.city_no = object.dest_no;
+				city.city_name = object.dest_name;
+				city.high = object.dest_high;
+				
+				if(!hash.containsKey(String.valueOf(city.city_no))){
+					hash.put(String.valueOf(city.city_no), city.city_name);
+					objects.add(city);
+				}
+			}
 		}
+		hash.clear();
+		// 추천수가 높은 순으로 정렬
+		Collections.sort(objects, new City.PreferenceDescCompare());
+		return objects;
 	}
-	
-	public void updateDepartureList(DBHandler handler){
-		departure_list = handler.getBusDepartureList();
+	public Line getLineInfo(int dept_no, int dest_no){
+		for(Line object : line_list){
+			if(object.dept_no == dept_no && object.dest_no == dest_no){
+				return object;
+			}
+		}
+		return null;
 	}
-	public void updateCompanyList(DBHandler handler){
-		company_list = handler.getCompanyList();
-	}
-	public void updateDestinationList(DBHandler handler, int departure_no){
-		destination_list = handler.getBusDestinationList(departure_no);
+	public void updateLineList(DBHandler handler){
+		line_list = handler.getLineList();
 	}
 	public void updateBusTypeList(DBHandler handler){
 		type_list = handler.getBusTypeList();
 	}
-	// XLS에 있는 데이터를 로컬DB로 옮긴
-	private void XLS2SQLite(Context context, DBHandler handler){
-		// insert busInfo to sqlite
-		for(BusInfoModel object : ExcelHandler.getBusFromXLS(context, ExcelFileInfo.ExcelFile)){
-			handler.insertBusTime(object);
-			//object.setBusNo((int)handler.insertBusTime(object));
-		}
-		// company list update
-		updateCompanyList(handler);
-		//Log.i("DebugPrint","company-size:"+company_list.size());
-		
-		// insert officeInfo to sqlite
-		for(OfficeInfoModel object : ExcelHandler.getOfficeFromXLS(context, ExcelFileInfo.ExcelFile)){
-			// check company name
-			//Log.i("DebugPrint","company:"+object.getOffice());
-			for(CompanyModel company : company_list){
-				//Log.i("DebugPrint","office:"+company.getCompanyName());
-				if(company.getCompanyName().contains(object.getOffice())){
-					//Log.i("DebugPrint","true");
-					Log.i("DebugPrint","company:"+company.getCompanyName());					
-					object.setCompanyNo(company.getCompanyNo());
-					break;
-				}
-			}
-			handler.insertOffice(object);
-			//object.setOfficeNo((int)handler.insertOffice(object));
-		}
-	}
-	
 	@Override
-	public void onAsyncTask() {
-		//XLS2SQLite(context, fileName, handler);
-		/**/
-		departure_list = handler.getBusDepartureList();
-		
-		// 로컬에 저장되어 있는 데이터가 없으면 XLS을 읽어들여 옮긴다.
-		
-		if(departure_list.size() < 2){
-			// 로컬db로의 저장
-			XLS2SQLite(context, handler);
-			this.updateDepartureList(handler);
-		}
-		
-		this.updateBusTypeList(handler);
-		//type_list = handler.getBusTypeList();
-		//Log.i("DebugPrint", "type:"+type_list.size());
-		/**/
+	public void onAsyncTask(Model object) {
+		fcInterface.onAsyncTask(object);
 	}
 	public void setCallback(FragmentCallbackInterface fcInterface){
 		this.fcInterface = fcInterface;
 	}
 	public void doCallback(){
-		postAsyncTask();
+		fcInterface.onPostAsyncTask();
 		fcInterface.onCallback(this);
 	}
-	@Override
-	public void preAsyncTask(Object object) {
-		dialog = ProgressDialog.show((Activity)object, "", "Converting to DB..",true);
-	}
-	@Override
-	public void postAsyncTask() {
-		if(dialog!=null)
-			dialog.dismiss();
-	}
+	
+	
 }
