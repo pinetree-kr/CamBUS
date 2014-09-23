@@ -271,16 +271,16 @@ public class FilterFragment extends BaseFragment {
 			int time = (Integer) spinnerTime.getSelectedItem();
 			BusType type = (BusType) spinnerType.getSelectedItem();
 			
-			if(departure.city_no < 1){
+			if(departure.getCityNo() < 1){
 				Toast.makeText(getActivity().getApplicationContext(), "Select Departure", 1000).show();
-			}else if(destination.city_no < 1){
+			}else if(destination.getCityNo() < 1){
 				Toast.makeText(getActivity().getApplicationContext(), "Select Destination", 1000).show();
 			}else if(time<0){
 				Toast.makeText(getActivity().getApplicationContext(), "Select Time", 1000).show();
 			}else{
-				Line line_info = filter.getLineInfo(departure.city_no, destination.city_no);
+				Line line_info = filter.getLineInfo(departure.getCityNo(), destination.getCityNo());
 				if(line_info!=null){
-					BusListModel model = new BusListModel(line_info, time, type.type_no);
+					BusListModel model = new BusListModel(line_info, time, type.getTypeNo());
 					model.updateLineBusTimeList(handler);
 					
 					Intent intent = new Intent(getActivity(), BusListActivity.class);
@@ -303,7 +303,7 @@ public class FilterFragment extends BaseFragment {
 				
 				if(object.getClass().equals(DepartureCity.class)){
 					DepartureCity model = (DepartureCity)object;
-					loadDestinationAdapter(model.city_no);
+					loadDestinationAdapter(model.getCityNo());
 				}else if(object.getClass().equals(DestinationCity.class)){
 					//DestinationModel model = (DestinationModel)object;
 				}

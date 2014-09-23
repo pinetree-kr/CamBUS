@@ -67,14 +67,14 @@ public class ExcelHandler {
 								
 								switch(col){
 								case 1:
-									city.city_name = cell.getStringCellValue().trim();
+									city.setCityName(cell.getStringCellValue().trim());
 									break;
 								case 2:
-									city.high = cell.getStringCellValue().trim().equals("High")?true:false;
+									city.setHigh(cell.getStringCellValue().trim().equals("High")?true:false);
 									break;
 								}
 							}
-							city.city_no = (int)handler.insertCity(city);
+							city.setCityNo((int)handler.insertCity(city));
 							city_list.add(city);
 						}
 					}
@@ -106,11 +106,11 @@ public class ExcelHandler {
 								
 								switch(col){
 								case 1:
-									company.company_name = cell.getStringCellValue().trim();
+									company.setCompanyName(cell.getStringCellValue().trim());
 									break;
 								}
 							}
-							company.company_no = (int)handler.insertCompany(company);
+							company.setCompanyNo((int)handler.insertCompany(company));
 							company_list.add(company);
 						}
 					}
@@ -142,11 +142,11 @@ public class ExcelHandler {
 								
 								switch(col){
 								case 1:
-									type.type_name = cell.getStringCellValue().trim();
+									type.setTypeName(cell.getStringCellValue().trim());
 									break;
 								}
 							}
-							type.type_no = (int)handler.insertBusType(type);
+							type.setTypeNo((int)handler.insertBusType(type));
 							type_list.add(type);
 						}
 					}
@@ -178,53 +178,53 @@ public class ExcelHandler {
 								
 								switch(col){
 								case 1:
-									office.city_name = cell.getStringCellValue().trim();
+									office.setCityName(cell.getStringCellValue().trim());
 									for(City object : city_list){
-										if(object.city_name.equals(office.city_name)){
-											office.city_no = object.city_no;
+										if(object.getCityName().equals(office.getCityName())){
+											office.setCityNo(object.getCityNo());
 											break;
 										}
 									}
 									break;
 								case 2:
-									office.company_name = cell.getStringCellValue().trim();
+									office.setCompanyName(cell.getStringCellValue().trim());
 									for(Company object : company_list){
-										if(object.company_name.equals(office.company_name)){
-											office.company_no = object.company_no;
+										if(object.getCompanyName().equals(office.getCompanyName())){
+											office.setCompanyNo(object.getCompanyNo());
 											break;
 										}
 									}
 									break;
 								case 3:
-									office.office_name = cell.getStringCellValue().trim();
+									office.setOfficeName(cell.getStringCellValue().trim());
 									break;
 								case 4:
-									office.phone_no = cell.getStringCellValue().trim();
+									office.setPhoneNo(cell.getStringCellValue().trim());
 									break;
 								case 5:
-									office.purchase = cell.getStringCellValue().trim().equals("O")?true:false;
+									office.setPurchase(cell.getStringCellValue().trim().equals("O")?true:false);
 									break;
 								case 6:
-									office.get_in = cell.getStringCellValue().trim().equals("O")?true:false;
+									office.setGetIn(cell.getStringCellValue().trim().equals("O")?true:false);
 									break;
 								case 7:
-									office.get_off = cell.getStringCellValue().trim().equals("O")?true:false;
+									office.setGetOff(cell.getStringCellValue().trim().equals("O")?true:false);
 									break;
 								case 8:
-									office.link = cell.getStringCellValue().trim();
+									office.setLink(cell.getStringCellValue().trim());
 									break;
 								case 9:
-									office.address = cell.getStringCellValue().trim();
+									office.setAddress( cell.getStringCellValue().trim());
 									break;
 								case 10:
-									office.misc_en = cell.getStringCellValue().trim();
+									office.setMiscEn(cell.getStringCellValue().trim());
 									break;
 								case 11:
-									office.misc_ko = cell.getStringCellValue().trim();
+									office.setMiscKo(cell.getStringCellValue().trim());
 									break;
 								}
 							}
-							office.office_no = (int)handler.insertOffice(office);
+							office.setOfficeNo((int)handler.insertOffice(office));
 							office_list.add(office);
 						}
 					}
@@ -256,29 +256,29 @@ public class ExcelHandler {
 								
 								switch(col){
 								case 1:
-									line.dept_name = cell.getStringCellValue().trim();
+									line.setDeptName(cell.getStringCellValue().trim());
 									for(City object : city_list){
-										if(object.city_name.equals(line.dept_name)){
-											line.dept_no = object.city_no;
+										if(object.getCityName().equals(line.getDeptName())){
+											line.setDeptNo(object.getCityNo());
 											break;
 										}
 									}
 									break;
 								case 2:
-									line.dest_name = cell.getStringCellValue().trim();
+									line.setDestName(cell.getStringCellValue().trim());
 									for(City object : city_list){
-										if(object.city_name.equals(line.dest_name)){
-											line.dest_no = object.city_no;
+										if(object.getCityName().equals(line.getDestName())){
+											line.setDestNo(object.getCityNo());
 											break;
 										}
 									}
 									break;
 								case 3:
-									line.distance = (int) cell.getNumericCellValue();
+									line.setDistance((int) cell.getNumericCellValue());
 									break;
 								}
 							}
-							line.line_no = (int)handler.insertLine(line);
+							line.setLineNo((int)handler.insertLine(line));
 							line_list.add(line);
 						}
 					}
@@ -310,54 +310,54 @@ public class ExcelHandler {
 								
 								switch(col){
 								case 1:
-									linebus.dept_name = cell.getStringCellValue().trim();
+									linebus.setDeptName(cell.getStringCellValue().trim());
 									break;
 								case 2:
-									linebus.dest_name = cell.getStringCellValue().trim();
+									linebus.setDestName(cell.getStringCellValue().trim());
 									for(Line object : line_list){
-										if(object.dept_name.equals(linebus.dept_name)
-												&& object.dest_name.equals(linebus.dest_name)){
-											linebus.line_no = object.line_no;
+										if(object.getDeptName().equals(linebus.getDeptName())
+												&& object.getDestName().equals(linebus.getDestName())){
+											linebus.setLineNo(object.getLineNo());
 											break;
 										}
 									}
 									break;
 								case 3:
-									linebus.company_name = cell.getStringCellValue().trim();
+									linebus.setCompanyName(cell.getStringCellValue().trim());
 									for(Company object : company_list){
-										if(object.company_name.equals(linebus.company_name)){
-											linebus.company_no = object.company_no;
+										if(object.getCompanyName().equals(linebus.getCompanyName())){
+											linebus.setCompanyNo(object.getCompanyNo());
 											break;
 										}
 									}
 									break;
 								case 4:
-									linebus.type_name = cell.getStringCellValue().trim();
+									linebus.setTypeName(cell.getStringCellValue().trim());
 									for(BusType object : type_list){
-										if(object.type_name.equals(linebus.type_name)){
-											linebus.type_no = object.type_no;
+										if(object.getTypeName().equals(linebus.getTypeName())){
+											linebus.setTypeNo(object.getTypeNo());
 											break;
 										}
 									}
 									break;
 								case 5:
-									linebus.duration_time = cell.getNumericCellValue();
+									linebus.setDurationTime(cell.getNumericCellValue());
 									break;
 								case 6:
-									linebus.native_price = cell.getNumericCellValue();
+									linebus.setNativePrice(cell.getNumericCellValue());
 									break;
 								case 7:
-									linebus.foreigner_price = cell.getNumericCellValue();
+									linebus.setForeignerPrice(cell.getNumericCellValue());
 									break;
 								case 8:
-									linebus.visa = cell.getNumericCellValue();
+									linebus.setVisa(cell.getNumericCellValue());
 									break;
 								case 9:
-									linebus.dn = cell.getStringCellValue().trim();
+									linebus.setDN(cell.getStringCellValue().trim());
 									break;
 								}
 							}
-							linebus.linebus_no = (int)handler.insertLineBus(linebus);
+							linebus.setLineBusNo((int)handler.insertLineBus(linebus));
 							linebus_list.add(linebus);
 						}
 					}
@@ -389,31 +389,31 @@ public class ExcelHandler {
 								
 								switch(col){
 								case 1:
-									linebustime.dept_name = cell.getStringCellValue().trim();
+									linebustime.setDeptName(cell.getStringCellValue().trim());
 									break;
 								case 2:
-									linebustime.dest_name = cell.getStringCellValue().trim();
+									linebustime.setDestName(cell.getStringCellValue().trim());
 									break;
 								case 3:
-									linebustime.company_name = cell.getStringCellValue().trim();
+									linebustime.setCompanyName(cell.getStringCellValue().trim());
 									break;
 								case 4:
-									linebustime.type_name = cell.getStringCellValue().trim();
+									linebustime.setTypeName(cell.getStringCellValue().trim());
 									for(LineBus object : linebus_list){
-										if(object.dept_name.equals(linebustime.dept_name)
-											&& object.dest_name.equals(linebustime.dest_name)
-											&& object.company_name.equals(linebustime.company_name)
-											&& object.type_name.equals(linebustime.type_name)){
-											linebustime.linebus_no = object.linebus_no;
+										if(object.getDeptName().equals(linebustime.getDeptName())
+											&& object.getDestName().equals(linebustime.getDestName())
+											&& object.getCompanyName().equals(linebustime.getCompanyName())
+											&& object.getTypeName().equals(linebustime.getTypeName())){
+											linebustime.setLineBusNo(object.getLineBusNo());
 											break;
 										}
 									}
 									break;
 								case 5:
-									linebustime.middle_city = cell.getStringCellValue().trim();
+									linebustime.setMiddleCity(cell.getStringCellValue().trim());
 									for(City object : city_list){
-										if(object.city_name.equals(linebustime.middle_city)){
-											linebustime.mid_no = object.city_no;
+										if(object.getCityName().equals(linebustime.getMiddleCity())){
+											linebustime.setMidNo(object.getCityNo());
 											break;
 										}
 									}
@@ -426,7 +426,7 @@ public class ExcelHandler {
 									break;
 								}
 							}
-							linebustime.linebus_no = (int)handler.insertLineBusTime(linebustime);
+							linebustime.setLineBusNo((int)handler.insertLineBusTime(linebustime));
 							linebustime_list.add(linebustime);
 						}
 					}

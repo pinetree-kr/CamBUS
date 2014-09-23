@@ -25,7 +25,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 public class BusListFragment extends BaseFragment {
-	protected TextView textTitle;
+	protected TextView textTitle, textEmpty;
 	protected TextView filterInfo, timeInfo, distanceInfo;
 	protected TextView textBtnTime, textBtnPrice, textBtnNearBy;
 	
@@ -80,6 +80,7 @@ public class BusListFragment extends BaseFragment {
 		timeInfo = (TextView) view.findViewById(R.id.TextTimeInfo);
 		distanceInfo = (TextView) view.findViewById(R.id.TextDistanceInfo);
 		
+		textEmpty = (TextView) view.findViewById(R.id.EmptyListView);
 		textBtnTime = (TextView) view.findViewById(R.id.TextButtonTime);
 		textBtnPrice = (TextView) view.findViewById(R.id.TextButtonPrice);
 		textBtnNearBy = (TextView) view.findViewById(R.id.TextButtonNearBy);
@@ -125,7 +126,7 @@ public class BusListFragment extends BaseFragment {
 		//imageSearch.setImageDrawable(dSearch);
 		
 		listView = (ListView) view.findViewById(R.id.ListView);
-
+		listView.setEmptyView(view.findViewById(R.id.EmptyListView));
 		loadListAdapter("time");
 		
 		return view;
@@ -162,6 +163,12 @@ public class BusListFragment extends BaseFragment {
 		textBtnPrice.setText(R.string.sort_price_asc);
 		textBtnNearBy.setText(R.string.sort_nearby_asc);
 		/**/
+		textEmpty.setText(R.string.no_data);
+		textEmpty.setTypeface(FontLoader.getFontTypeface(
+				getActivity().getAssets(),
+				"HelveticaNeueLTStd-Lt.otf"));
+		textEmpty.setTextSize(FontLoader.getFontSizeFromPt(app.rateDpi, (float)6.5));
+		
 		
 		textBtnTime.setTypeface(FontLoader.getFontTypeface(
 				getActivity().getAssets(),
@@ -251,7 +258,7 @@ public class BusListFragment extends BaseFragment {
 		textTitle.setTextSize(FontLoader.getFontSizeFromPt(app.rateDpi, 8));
 		
 		// Text FilterInfos
-		String dep2des = buslistinfo.getLineInfo().dept_name + " > " + buslistinfo.getLineInfo().dest_name;
+		String dep2des = buslistinfo.getLineInfo().getDeptName() + " > " + buslistinfo.getLineInfo().getDestName();
 		filterInfo.setText(dep2des);
 		filterInfo.setTypeface(FontLoader.getFontTypeface(
 				getActivity().getAssets(),
@@ -264,7 +271,7 @@ public class BusListFragment extends BaseFragment {
 				"HelveticaNeueLTStd-Lt.otf"));
 		timeInfo.setTextSize(FontLoader.getFontSizeFromPt(app.rateDpi, (float)5.5));
 		
-		int distance = buslistinfo.getLineInfo().distance;
+		int distance = buslistinfo.getLineInfo().getDistance();
 		String km = distance > 0 ? String.valueOf(distance):"--";
 		distanceInfo.setText(km+" km");
 		distanceInfo.setTypeface(FontLoader.getFontTypeface(

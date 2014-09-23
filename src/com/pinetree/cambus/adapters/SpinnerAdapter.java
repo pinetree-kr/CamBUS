@@ -56,8 +56,8 @@ public class SpinnerAdapter<T> extends ArrayAdapter<T>{
 		textPreference.setText("");
 		// city이면
 		if(object.getClass().getSuperclass().equals(City.class)){
-			String cityName =((City)object).city_name;
-			if(((City)object).high){
+			String cityName =((City)object).getCityName();
+			if(((City)object).getHigh()){
 				textName.setTextColor(Color.RED);
 				textName.setText("*"+cityName);
 			}else{
@@ -68,10 +68,10 @@ public class SpinnerAdapter<T> extends ArrayAdapter<T>{
 		}
 		// type이면
 		else if(object.getClass().equals(BusType.class)){
-			if((((BusType)object).type_no<1))
+			if((((BusType)object).getTypeNo()<1))
 				textName.setText(R.string.all_type);
 			else	
-				textName.setText(((BusType)object).type_name);
+				textName.setText(((BusType)object).getTypeName());
 			textName.setHint(R.string.select_type);
 		}
 		// time이면

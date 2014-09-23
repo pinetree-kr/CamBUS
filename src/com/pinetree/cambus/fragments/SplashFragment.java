@@ -146,7 +146,6 @@ public class SplashFragment extends BaseFragment {
 			} catch (IOException e){
 				e.printStackTrace();
 			}
-			//model.updateCityList(handler);
 			model.updateBusTypeList(handler);
 		}
 		

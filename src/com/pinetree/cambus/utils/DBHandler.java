@@ -53,8 +53,8 @@ public class DBHandler {
 	public long insertCity(City city) throws SQLiteException{
 		ContentValues values = new ContentValues();
 		long rv = -1;
-		values.put("city_name", city.city_name);
-		values.put("preference",city.high?1:0);
+		values.put("city_name", city.getCityName());
+		values.put("preference",city.getHigh()?1:0);
 		rv = db.insert("Cambus_CityTable", null, values);
 		if(rv<0){
 			throw new SQLException("City Insert Error:"+values);
@@ -65,7 +65,7 @@ public class DBHandler {
 	public long insertCompany(Company company) throws SQLiteException{
 		ContentValues values = new ContentValues();
 		long rv = -1;
-		values.put("company_name", company.company_name);
+		values.put("company_name", company.getCompanyName());
 		rv = db.insert("Cambus_CompanyTable", null, values);
 		if(rv<0){
 			throw new SQLException("Company Insert Error:"+values);
@@ -76,7 +76,7 @@ public class DBHandler {
 	public long insertBusType(BusType type) throws SQLiteException{
 		ContentValues values = new ContentValues();
 		long rv = -1;
-		values.put("type_name", type.type_name);
+		values.put("type_name", type.getTypeName());
 		rv = db.insert("Cambus_TypeTable", null, values);
 		if(rv<0){
 			throw new SQLException("Type Insert Error:"+values);
@@ -87,17 +87,17 @@ public class DBHandler {
 	public long insertOffice(Office office) throws SQLiteException{
 		ContentValues values = new ContentValues();
 		long rv = -1;
-		values.put("office_name", office.office_name);
-		values.put("city_no", office.city_no);
-		values.put("company_no", office.company_no);
-		values.put("phone_no", office.phone_no);
-		values.put("purchase", office.purchase?1:0);
-		values.put("get_in", office.get_in?1:0);
-		values.put("get_off", office.get_off?1:0);
-		values.put("link", office.link);
-		values.put("address", office.address);
-		values.put("misc_en", office.misc_en);
-		values.put("misc_ko", office.misc_ko);
+		values.put("office_name", office.getOfficeName());
+		values.put("city_no", office.getCityNo());
+		values.put("company_no", office.getCompanyNo());
+		values.put("phone_no", office.getPhoneNo());
+		values.put("purchase", office.isPurchase()?1:0);
+		values.put("get_in", office.isGetIn()?1:0);
+		values.put("get_off", office.isGetOff()?1:0);
+		values.put("link", office.getLink());
+		values.put("address", office.getAddress());
+		values.put("misc_en", office.getMiscEn());
+		values.put("misc_ko", office.getMiscKo());
 		rv = db.insert("Cambus_OfficeTable", null, values);
 		if(rv<0){
 			throw new SQLException("Office Insert Error:"+values);
@@ -108,9 +108,9 @@ public class DBHandler {
 	public long insertLine(Line line) throws SQLiteException{
 		ContentValues values = new ContentValues();
 		long rv = -1;
-		values.put("dept_no", line.dept_no);
-		values.put("dest_no", line.dest_no);
-		values.put("distance", line.distance);
+		values.put("dept_no", line.getDeptNo());
+		values.put("dest_no", line.getDestNo());
+		values.put("distance", line.getDistance());
 		rv = db.insert("Cambus_LineTable", null, values);
 		if(rv<0){
 			throw new SQLException("Line Insert Error:"+values);
@@ -121,14 +121,14 @@ public class DBHandler {
 	public long insertLineBus(LineBus linebus) throws SQLiteException{
 		ContentValues values = new ContentValues();
 		long rv = -1;
-		values.put("line_no", linebus.line_no);
-		values.put("company_no", linebus.company_no);
-		values.put("type_no", linebus.type_no);
-		values.put("duration_time", linebus.duration_time);
-		values.put("native_price", linebus.native_price);
-		values.put("foreigner_price", linebus.foreigner_price);
-		values.put("visa", linebus.visa);
-		values.put("dn", linebus.dn);
+		values.put("line_no", linebus.getLineNo());
+		values.put("company_no", linebus.getCompanyNo());
+		values.put("type_no", linebus.getTypeNo());
+		values.put("duration_time", linebus.getDurationTime());
+		values.put("native_price", linebus.getNativePrice());
+		values.put("foreigner_price", linebus.getForeignerPrice());
+		values.put("visa", linebus.getVisa());
+		values.put("dn", linebus.getDN());
 		rv = db.insert("Cambus_LineBusTable", null, values);
 		if(rv<0){
 			throw new SQLException("LineBus Insert Error:"+values);
@@ -139,8 +139,8 @@ public class DBHandler {
 	public long insertLineBusTime(LineBusTime linebustime) throws SQLiteException{
 		ContentValues values = new ContentValues();
 		long rv = -1;
-		values.put("linebus_no", linebustime.linebus_no);
-		values.put("mid_no", linebustime.mid_no);
+		values.put("linebus_no", linebustime.getLineBusNo());
+		values.put("mid_no", linebustime.getMidNo());
 		values.put("departure_time", linebustime.getDeptTime());
 		values.put("arrival_time", linebustime.getDeptTime());
 		rv = db.insert("Cambus_LineBusTimeTable", null, values);
@@ -184,9 +184,9 @@ public class DBHandler {
 				if(!hash.containsKey(String.valueOf(city_no))){
 					hash.put(String.valueOf(city_no), city_name);
 					object = new DepartureCity();
-					object.city_no = city_no;
-					object.city_name = city_name;
-					object.high = isHigh;
+					object.setCityNo(city_no);
+					object.setCityName(city_name);
+					object.setHigh(isHigh);
 					departure_list.add(object);
 				}
 			}while(cursor.moveToNext());
@@ -221,8 +221,8 @@ public class DBHandler {
 			type_list.add(object);
 			do{
 				object = new BusType();
-				object.type_no = cursor.getInt(cursor.getColumnIndex("type_no"));
-				object.type_name = cursor.getString(cursor.getColumnIndex("type_name"));
+				object.setTypeNo(cursor.getInt(cursor.getColumnIndex("type_no")));
+				object.setTypeName(cursor.getString(cursor.getColumnIndex("type_name")));
 				type_list.add(object);
 			}while(cursor.moveToNext());
 		}
@@ -265,9 +265,9 @@ public class DBHandler {
 				if(!hash.containsKey(String.valueOf(city_no))){
 					hash.put(String.valueOf(city_no), city_name);
 					object = new DestinationCity();
-					object.city_no = city_no;
-					object.city_name = city_name;
-					object.high = isHigh;
+					object.setCityNo(city_no);
+					object.setCityName(city_name);
+					object.setHigh(isHigh);
 					destination_list.add(object);
 				}
 			}while(cursor.moveToNext());
@@ -303,24 +303,24 @@ public class DBHandler {
 			LineBusTime object;
 			do{
 				object = new LineBusTime();
-				object.linebustime_no = cursor.getInt(cursor.getColumnIndex("linebustime_no"));
-				object.dept_no = cursor.getInt(cursor.getColumnIndex("dept_no"));
-				object.dept_name = cursor.getString(cursor.getColumnIndex("dept_name"));
-				object.dest_no = cursor.getInt(cursor.getColumnIndex("dest_no"));
-				object.dest_name = cursor.getString(cursor.getColumnIndex("dest_name"));
-				object.company_no = cursor.getInt(cursor.getColumnIndex("company_no"));
-				object.company_name = cursor.getString(cursor.getColumnIndex("company_name"));
-				object.type_no = cursor.getInt(cursor.getColumnIndex("type_no"));
-				object.type_name = cursor.getString(cursor.getColumnIndex("type_name"));
-				object.mid_no = cursor.getInt(cursor.getColumnIndex("mid_no"));
-				object.middle_city = cursor.getString(cursor.getColumnIndex("middle_city"));
+				object.setLineBusTimeNo(cursor.getInt(cursor.getColumnIndex("linebustime_no")));
+				object.setDeptNo(cursor.getInt(cursor.getColumnIndex("dept_no")));
+				object.setDeptName(cursor.getString(cursor.getColumnIndex("dept_name")));
+				object.setDestNo(cursor.getInt(cursor.getColumnIndex("dest_no")));
+				object.setDestName(cursor.getString(cursor.getColumnIndex("dest_name")));
+				object.setCompanyNo(cursor.getInt(cursor.getColumnIndex("company_no")));
+				object.setCompanyName(cursor.getString(cursor.getColumnIndex("company_name")));
+				object.setTypeNo(cursor.getInt(cursor.getColumnIndex("type_no")));
+				object.setTypeName(cursor.getString(cursor.getColumnIndex("type_name")));
+				object.setMidNo(cursor.getInt(cursor.getColumnIndex("mid_no")));
+				object.setMiddleCity(cursor.getString(cursor.getColumnIndex("middle_city")));
 				object.setDeptTime(cursor.getString(cursor.getColumnIndex("departure_time")));
 				object.setArrivalTime(cursor.getString(cursor.getColumnIndex("arrival_time")));
-				object.distance = cursor.getInt(cursor.getColumnIndex("distance"));
-				object.duration_time = cursor.getDouble(cursor.getColumnIndex("duration_time"));
-				object.native_price = cursor.getDouble(cursor.getColumnIndex("native_price"));
-				object.foreigner_price = cursor.getDouble(cursor.getColumnIndex("foreigner_price"));
-				object.visa = cursor.getDouble(cursor.getColumnIndex("visa"));
+				object.setDistance(cursor.getInt(cursor.getColumnIndex("distance")));
+				object.setDurationTime(cursor.getDouble(cursor.getColumnIndex("duration_time")));
+				object.setNativePrice(cursor.getDouble(cursor.getColumnIndex("native_price")));
+				object.setForeignerPrice(cursor.getDouble(cursor.getColumnIndex("foreigner_price")));
+				object.setVisa(cursor.getDouble(cursor.getColumnIndex("visa")));
 				
 				objects.add(object);
 			}while(cursor.moveToNext());
@@ -356,14 +356,14 @@ public class DBHandler {
 			Line object;
 			do{
 				object = new Line();
-				object.line_no = cursor.getInt(cursor.getColumnIndex("line_no"));
-				object.dept_no = cursor.getInt(cursor.getColumnIndex("dept_no"));
-				object.dest_no = cursor.getInt(cursor.getColumnIndex("dest_no"));
-				object.dept_name = cursor.getString(cursor.getColumnIndex("dept_name"));
-				object.dest_name = cursor.getString(cursor.getColumnIndex("dest_name"));
-				object.dept_high = cursor.getInt(cursor.getColumnIndex("dept_pref"))>0?true:false;
-				object.dest_high = cursor.getInt(cursor.getColumnIndex("dest_pref"))>0?true:false;
-				object.distance = cursor.getInt(cursor.getColumnIndex("distance"));
+				object.setLineNo(cursor.getInt(cursor.getColumnIndex("line_no")));
+				object.setDeptNo(cursor.getInt(cursor.getColumnIndex("dept_no")));
+				object.setDestNo(cursor.getInt(cursor.getColumnIndex("dest_no")));
+				object.setDeptName(cursor.getString(cursor.getColumnIndex("dept_name")));
+				object.setDestName(cursor.getString(cursor.getColumnIndex("dest_name")));
+				object.setDeptHigh(cursor.getInt(cursor.getColumnIndex("dept_pref"))>0?true:false);
+				object.setDestHigh(cursor.getInt(cursor.getColumnIndex("dest_pref"))>0?true:false);
+				object.setDistance(cursor.getInt(cursor.getColumnIndex("distance")));
 				objects.add(object);
 			}while(cursor.moveToNext());
 		}
@@ -395,9 +395,9 @@ public class DBHandler {
 			do{
 				object = new City();
 				
-				object.city_no = cursor.getInt(cursor.getColumnIndex("city_no"));
-				object.city_name = cursor.getString(cursor.getColumnIndex("city_name"));
-				object.high = cursor.getInt(cursor.getColumnIndex("preference"))>0?true:false;
+				object.setCityNo(cursor.getInt(cursor.getColumnIndex("city_no")));
+				object.setCityName(cursor.getString(cursor.getColumnIndex("city_name")));
+				object.setHigh(cursor.getInt(cursor.getColumnIndex("preference"))>0?true:false);
 				objects.add(object);
 			}while(cursor.moveToNext());
 		}
@@ -560,8 +560,8 @@ public class DBHandler {
 			do{
 				object = new Company();
 				
-				object.company_no = cursor.getInt(cursor.getColumnIndex("company_no"));
-				object.company_name = cursor.getString(cursor.getColumnIndex("company_name"));
+				object.setCompanyNo(cursor.getInt(cursor.getColumnIndex("company_no")));
+				object.setCompanyName(cursor.getString(cursor.getColumnIndex("company_name")));
 							
 				objects.add(object);
 			}while(cursor.moveToNext());
@@ -592,20 +592,20 @@ public class DBHandler {
 			do{
 				object = new Office();
 				
-				object.office_no = cursor.getInt(cursor.getColumnIndex("office_no"));
-				object.office_name = cursor.getString(cursor.getColumnIndex("office_name"));
-				object.company_no = cursor.getInt(cursor.getColumnIndex("company_no"));
-				object.company_name = cursor.getString(cursor.getColumnIndex("company_name"));
-				object.city_no = cursor.getInt(cursor.getColumnIndex("city_no"));
-				object.city_name = cursor.getString(cursor.getColumnIndex("city_name"));
-				object.phone_no = cursor.getString(cursor.getColumnIndex("phone_no"));
-				object.link = cursor.getString(cursor.getColumnIndex("link"));
-				object.address = cursor.getString(cursor.getColumnIndex("address"));
-				object.purchase = cursor.getInt(cursor.getColumnIndex("purchase"))>0?true:false;
-				object.get_in = cursor.getInt(cursor.getColumnIndex("get_in"))>0?true:false;
-				object.get_off = cursor.getInt(cursor.getColumnIndex("get_off"))>0?true:false;
-				object.misc_en = cursor.getString(cursor.getColumnIndex("misc_en"));
-				object.misc_ko = cursor.getString(cursor.getColumnIndex("misc_ko"));
+				object.setOfficeNo(cursor.getInt(cursor.getColumnIndex("office_no")));
+				object.setOfficeName(cursor.getString(cursor.getColumnIndex("office_name")));
+				object.setCompanyNo(cursor.getInt(cursor.getColumnIndex("company_no")));
+				object.setCompanyName(cursor.getString(cursor.getColumnIndex("company_name")));
+				object.setCityNo(cursor.getInt(cursor.getColumnIndex("city_no")));
+				object.setCityName(cursor.getString(cursor.getColumnIndex("city_name")));
+				object.setPhoneNo(cursor.getString(cursor.getColumnIndex("phone_no")));
+				object.setLink(cursor.getString(cursor.getColumnIndex("link")));
+				object.setAddress(cursor.getString(cursor.getColumnIndex("address")));
+				object.setPurchase(cursor.getInt(cursor.getColumnIndex("purchase"))>0?true:false);
+				object.setGetIn(cursor.getInt(cursor.getColumnIndex("get_in"))>0?true:false);
+				object.setGetOff(cursor.getInt(cursor.getColumnIndex("get_off"))>0?true:false);
+				object.setMiscEn(cursor.getString(cursor.getColumnIndex("misc_en")));
+				object.setMiscKo(cursor.getString(cursor.getColumnIndex("misc_ko")));
 							
 				objects.add(object);
 			}while(cursor.moveToNext());

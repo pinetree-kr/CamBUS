@@ -70,13 +70,13 @@ public class ModelListAdapter<T> extends ArrayAdapter<T>{
 		
 		LineBusTime object = (LineBusTime) getItem(position);
 		
-		textCompany.setText((position+1) + ". "+object.company_name);
+		textCompany.setText((position+1) + ". "+object.getCompanyName());
 		textCompany.setTypeface(FontLoader.getFontTypeface(
 				getContext().getAssets(),
 				"HelveticaNeueLTStd-Lt.otf"));
 		textCompany.setTextSize(FontLoader.getFontSizeFromPt(app.rateDpi, (float)7.2));
 		
-		textType.setText("["+object.type_name+"]");
+		textType.setText("["+object.getTypeName()+"]");
 		textType.setTypeface(FontLoader.getFontTypeface(
 				getContext().getAssets(),
 				"HelveticaNeueLTStd-Lt.otf"));
@@ -87,7 +87,7 @@ public class ModelListAdapter<T> extends ArrayAdapter<T>{
 				getContext().getAssets(),
 				"HelveticaNeueLTStd-Lt.otf"));
 		textFee.setTextSize(FontLoader.getFontSizeFromPt(app.rateDpi, (float)5));
-		FeeInfo.setText(String.valueOf(object.foreigner_price)+"$");
+		FeeInfo.setText(String.valueOf(object.getForeignerPrice())+"$");
 		FeeInfo.setTypeface(FontLoader.getFontTypeface(
 				getContext().getAssets(),
 				"HelveticaNeueLTStd-Lt.otf"));
@@ -104,7 +104,7 @@ public class ModelListAdapter<T> extends ArrayAdapter<T>{
 				"HelveticaNeueLTStd-Lt.otf"));
 		textAverage.setTextSize(FontLoader.getFontSizeFromPt(app.rateDpi, (float)5));
 		
-		if(object.duration_time<=1){
+		if(object.getDurationTime()<=1){
 			textHour.setText(R.string.hour);
 		}else{
 			textHour.setText(R.string.hours);
@@ -114,7 +114,7 @@ public class ModelListAdapter<T> extends ArrayAdapter<T>{
 				"HelveticaNeueLTStd-Lt.otf"));
 		textHour.setTextSize(FontLoader.getFontSizeFromPt(app.rateDpi, (float)5));
 		
-		DurationTimeInfo.setText(String.valueOf(object.duration_time));
+		DurationTimeInfo.setText(String.valueOf(object.getDurationTime()));
 		DurationTimeInfo.setTypeface(FontLoader.getFontTypeface(
 				getContext().getAssets(),
 				"HelveticaNeueLTStd-Lt.otf"));
