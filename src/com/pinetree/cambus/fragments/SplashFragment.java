@@ -22,7 +22,6 @@ import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.SQLException;
-import android.database.sqlite.SQLiteException;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -142,7 +141,9 @@ public class SplashFragment extends BaseFragment {
 					ExcelHandler.Data2SQLite(getActivity(), handler, ExcelFileInfo.ExcelFile);
 					model.updateLineList(handler);
 				}
-			} catch (SQLException | IOException e) {
+			} catch (SQLException e){
+				e.printStackTrace();
+			} catch (IOException e){
 				e.printStackTrace();
 			}
 			//model.updateCityList(handler);

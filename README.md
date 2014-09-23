@@ -3,7 +3,19 @@ CamBUS
 
 Cambodia Bus
 
-2014.09.05
+
+
+
+#2014.09.21
+2st Iteration.
+
+- Redesigned DB Model
+- Repackaged Activity - Fragment Communication
+
+
+
+
+#2014.09.05
 1st Iteration.
 
 -Splash Fragment
@@ -13,5 +25,3 @@ Cambodia Bus
   Select Bus Filters
 -Bus List Fragment
   Display All Bus Info
-  
-  
