@@ -281,7 +281,8 @@ public class FilterFragment extends BaseFragment {
 				Line line_info = filter.getLineInfo(departure.getCityNo(), destination.getCityNo());
 				if(line_info!=null){
 					BusListModel model = new BusListModel(line_info, time, type.getTypeNo());
-					model.updateLineBusTimeList(handler);
+					//model.updateLineBusTimeList(handler);
+					model.updateLineBusList(handler);
 					
 					Intent intent = new Intent(getActivity(), BusListActivity.class);
 					

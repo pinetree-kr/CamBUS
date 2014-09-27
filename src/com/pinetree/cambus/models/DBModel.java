@@ -1,5 +1,6 @@
 package com.pinetree.cambus.models;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 
 import com.pinetree.cambus.utils.NumberUtils;
@@ -96,9 +97,9 @@ public class DBModel{
 		}
 	}
 	
-	public static class Office extends Model{
-		protected int office_no;
-		protected String office_name;
+	public static class Terminal extends Model{
+		protected int terminal_no;
+		protected String terminal_name;
 		protected int city_no;
 		protected String city_name;
 		protected int company_no;
@@ -160,17 +161,17 @@ public class DBModel{
 		public String getMiscKo(){
 			return misc_ko;
 		}
-		public void setOfficeNo(int no){
-			office_no = no;
+		public void setTerminalNo(int no){
+			terminal_no = no;
 		}
-		public int getOfficeNo(){
-			return office_no;
+		public int getTerminalNo(){
+			return terminal_no;
 		}
-		public void setOfficeName(String name){
-			office_name = name;
+		public void setTerminalName(String name){
+			terminal_name = name;
 		}
-		public String getOfficeName(){
-			return office_name;
+		public String getTerminalName(){
+			return terminal_name;
 		}
 		public void setCityNo(int no){
 			city_no = no;
@@ -276,6 +277,24 @@ public class DBModel{
 		protected double visa = 0;
 		protected String dn;
 		
+		protected Terminal terminal;
+		
+		protected ArrayList<LineBusTime> time_list;
+		
+		public void setTimeList(ArrayList<LineBusTime> list){
+			time_list = list;
+		}
+		public ArrayList<LineBusTime> getTimeList(){
+			return time_list;
+		}
+		
+		public void setTerminal(Terminal terminal){
+			this.terminal = terminal;
+		}
+		public Terminal getTerminal(){
+			return terminal;
+		}
+		
 		public void setLineBusNo(int no){
 			linebus_no = no;
 		}
@@ -336,8 +355,161 @@ public class DBModel{
 		public String getDN(){
 			return dn;
 		}
+		
+		// order by departure time asc
+		public static class DepartureTimeAscCompare implements Comparator<LineBus>{
+			@Override
+			public int compare(LineBus lhs, LineBus rhs) {
+				// 시간표가 없으면 0
+				if(lhs.getTimeList().size()!=0 && rhs.getTimeList().size()!=0 ){
+					return lhs.getTimeList().get(0).getDeptTime().compareTo(rhs.getTimeList().get(0).getDeptTime());
+				}else{
+					return 0;
+				}
+			}
+		}
+		// order by departure time desc
+		public static class DepartureTimeDescCompare implements Comparator<LineBus>{
+			@Override
+			public int compare(LineBus lhs, LineBus rhs) {
+				if(rhs.getTimeList().size()!=0 && lhs.getTimeList().size()!=0 ){
+					return rhs.getTimeList().get(0).getDeptTime().compareTo(lhs.getTimeList().get(0).getDeptTime());
+				}else{
+					return 0;
+				}
+			}
+		}
+		public static class ForeignerPriceAscCompare implements Comparator<LineBus>{
+			@Override
+			public int compare(LineBus lhs, LineBus rhs) {
+				return
+						lhs.foreigner_price < rhs.foreigner_price ? -1 :
+							lhs.foreigner_price > rhs.foreigner_price ? 1 :
+								0;
+			}
+		}
+		// order by foreigner price desc
+		public static class ForeignerPriceDescCompare implements Comparator<LineBus>{
+			@Override
+			public int compare(LineBus lhs, LineBus rhs) {
+				return
+						rhs.foreigner_price < lhs.foreigner_price ? -1 :
+							rhs.foreigner_price > lhs.foreigner_price ? 1 :
+								0;
+			}
+		}
+		
+		// order by distance asc
+		public static class DistanceAscCompare implements Comparator<LineBus>{
+			@Override
+			public int compare(LineBus lhs, LineBus rhs) {
+				return
+						lhs.distance < rhs.distance ? -1 :
+							lhs.distance > rhs.distance ? 1 :
+								0;
+			}
+		}
+		// order by distance desc
+		public static class DistanceDescCompare implements Comparator<LineBus>{
+			@Override
+			public int compare(LineBus lhs, LineBus rhs) {
+				return
+						rhs.distance < lhs.distance ? -1 :
+							rhs.distance > lhs.distance ? 1 :
+								0;
+			}
+		}
 	}
 	
+	public static class LineBusTime extends Model{
+		protected int linebustime_no;
+		protected int linebus_no;
+		protected int mid_no;
+		protected String middle_city;
+		
+		protected int dept_hour;
+		protected int dept_min;
+		
+		protected int arrival_hour;
+		protected int arrival_min;
+		
+		public void setLineBusNo(int no){
+			linebus_no = no;
+		}
+		public int getLineBusNo(){
+			return linebus_no;
+		}
+		
+		public int getDeptHour(){
+			return dept_hour;
+		}
+		public void setLineBusTimeNo(int no){
+			linebustime_no = no;
+		}
+		public int getLineBusTimeNo(){
+			return linebustime_no;
+		}
+		public void setMidNo(int no){
+			mid_no = no;
+		}
+		public int getMidNo(){
+			return mid_no;
+		}
+		public void setMiddleCity(String name){
+			middle_city = name;
+		}
+		public String getMiddleCity(){
+			return middle_city;
+		}
+		
+		public void setDeptTime(String dept_time){
+			String[] time = dept_time.split(":");
+			dept_hour = Integer.parseInt(time[0]);
+			dept_min = Integer.parseInt(time[1]);
+			
+			// 04:00 이전은 심야, 이후는 오전
+			if(dept_hour<4)
+				dept_hour += 24;
+		}
+		public void setArrivalTime(String arrival_time){
+			String[] time = arrival_time.split(":");
+			if(NumberUtils.isNumeric(time[0]) && NumberUtils.isNumeric(time[1])){
+				arrival_hour = Integer.parseInt(time[0]);
+				arrival_min = Integer.parseInt(time[1]);
+				
+				// 04:00 이전은 심야, 이후는 오전
+				if(arrival_hour<4)
+					arrival_hour += 24;
+			}			
+		}
+		
+		public String getDeptTime(){
+			return String.format("%02d:%02d", dept_hour, dept_min);
+		}
+		public String getArrivalTime(){
+			if(arrival_hour<=0 && arrival_min<=0)
+				return "--:--";
+			return String.format("%02d:%02d", arrival_hour, arrival_min);
+		}
+		
+		
+		// order by departure time asc
+		public static class DepartureTimeAscCompare implements Comparator<LineBusTime>{
+			@Override
+			public int compare(LineBusTime lhs, LineBusTime rhs) {
+				return lhs.getDeptTime().compareTo(rhs.getDeptTime());
+			}
+		}
+		// order by departure time desc
+		public static class DepartureTimeDescCompare implements Comparator<LineBusTime>{
+			@Override
+			public int compare(LineBusTime lhs, LineBusTime rhs) {
+				return rhs.getDeptTime().compareTo(lhs.getDeptTime());
+			}
+		}
+	}
+	
+	/*
 	public static class LineBusTime extends LineBus{
 		protected int linebustime_no;
 		protected int mid_no;
@@ -348,6 +520,7 @@ public class DBModel{
 		
 		protected int arrival_hour;
 		protected int arrival_min;
+		
 		
 		public int getDeptHour(){
 			return dept_hour;
@@ -415,6 +588,7 @@ public class DBModel{
 			}
 		}
 		
+		
 		// order by foreigner price asc
 		public static class ForeignerPriceAscCompare implements Comparator<LineBusTime>{
 			@Override
@@ -456,5 +630,7 @@ public class DBModel{
 								0;
 			}
 		}
+		
 	}
+	*/
 }

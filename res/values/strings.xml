@@ -33,8 +33,9 @@
     <string name="hours">hours</string>
     <string name="fee">fee</string>
     <string name="average">average</string>
-    <string name="next_time">dep.time</string>
+    <string name="next_time">next bus</string>
     
+    <string name="none_bus">none</string>
     <string name="no_data">No Data</string>
     
 </resources>

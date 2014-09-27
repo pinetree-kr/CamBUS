@@ -2,14 +2,7 @@ package com.pinetree.cambus.utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-/*
-import com.pinetree.cambus.models.CityModel;
-import com.pinetree.cambus.models.CompanyModel;
-import com.pinetree.cambus.models.DepartureModel;
-import com.pinetree.cambus.models.DestinationModel;
-import com.pinetree.cambus.models.OfficeInfoModel;
-import com.pinetree.cambus.models.TypeModel;
-*/
+
 import com.pinetree.cambus.models.DBModel.*;
 
 import android.content.ContentValues;
@@ -84,23 +77,23 @@ public class DBHandler {
 		return rv;
 	}	
 	
-	public long insertOffice(Office office) throws SQLiteException{
+	public long insertTerminal(Terminal terminal) throws SQLiteException{
 		ContentValues values = new ContentValues();
 		long rv = -1;
-		values.put("office_name", office.getOfficeName());
-		values.put("city_no", office.getCityNo());
-		values.put("company_no", office.getCompanyNo());
-		values.put("phone_no", office.getPhoneNo());
-		values.put("purchase", office.isPurchase()?1:0);
-		values.put("get_in", office.isGetIn()?1:0);
-		values.put("get_off", office.isGetOff()?1:0);
-		values.put("link", office.getLink());
-		values.put("address", office.getAddress());
-		values.put("misc_en", office.getMiscEn());
-		values.put("misc_ko", office.getMiscKo());
-		rv = db.insert("Cambus_OfficeTable", null, values);
+		values.put("terminal_name", terminal.getTerminalName());
+		values.put("city_no", terminal.getCityNo());
+		values.put("company_no", terminal.getCompanyNo());
+		values.put("phone_no", terminal.getPhoneNo());
+		values.put("purchase", terminal.isPurchase()?1:0);
+		values.put("get_in", terminal.isGetIn()?1:0);
+		values.put("get_off", terminal.isGetOff()?1:0);
+		values.put("link", terminal.getLink());
+		values.put("address", terminal.getAddress());
+		values.put("misc_en", terminal.getMiscEn());
+		values.put("misc_ko", terminal.getMiscKo());
+		rv = db.insert("Cambus_TerminalTable", null, values);
 		if(rv<0){
-			throw new SQLException("Office Insert Error:"+values);
+			throw new SQLException("Terminal Insert Error:"+values);
 		}
 		return rv;
 	}
@@ -157,7 +150,7 @@ public class DBHandler {
 	public Cursor selectQuery(String sql){
 		Cursor cursor = db.rawQuery(sql, null);
 		
-		if(cursor != null)
+		if(cursor != null && cursor.getCount() != 0)
 			cursor.moveToFirst();
 		return cursor;
 	}
@@ -171,7 +164,7 @@ public class DBHandler {
 		
 		HashMap<String, String> hash = new HashMap<String,String>();
 		
-		if(cursor != null && cursor.moveToFirst()){
+		if(cursor != null && cursor.getCount() != 0 && cursor.moveToFirst()){
 			int city_no;
 			String city_name;
 			boolean isHigh;
@@ -205,7 +198,7 @@ public class DBHandler {
 				"ORDER BY b.preference desc, b.city_name asc" +
 				";";
 		Cursor cursor = db.rawQuery(sql, null);
-		if(cursor != null){
+		if(cursor != null && cursor.getCount() != 0){
 			cursor.moveToFirst();
 		}
 		return cursor;
@@ -216,7 +209,7 @@ public class DBHandler {
 		Cursor cursor = getBusTypeListCursor();
 		ArrayList<BusType> type_list = new ArrayList<BusType>();
 		
-		if(cursor != null && cursor.moveToFirst()){
+		if(cursor != null && cursor.getCount() != 0 && cursor.moveToFirst()){
 			BusType object = new BusType();
 			type_list.add(object);
 			do{
@@ -237,7 +230,7 @@ public class DBHandler {
 				"FROM Cambus_TypeTable " +
 				"ORDER BY type_name ASC;";
 		Cursor cursor = db.rawQuery(sql, null);
-		if(cursor != null){
+		if(cursor != null && cursor.getCount() != 0){
 			cursor.moveToFirst();
 		}
 		return cursor;
@@ -252,7 +245,7 @@ public class DBHandler {
 		
 		destination_list.add(new DestinationCity());
 		
-		if(cursor != null && cursor.moveToFirst()){
+		if(cursor != null && cursor.getCount() != 0 && cursor.moveToFirst()){
 			int city_no;
 			String city_name;
 			boolean isHigh;
@@ -287,19 +280,43 @@ public class DBHandler {
 				"ORDER BY b.preference desc, b.city_name asc " +
 				";";
 		Cursor cursor = db.rawQuery(sql, null);
-		if(cursor != null){
+		if(cursor != null && cursor.getCount() != 0){
 			cursor.moveToFirst();
 		}
 		
 		return cursor;
 	}
 	
-	public ArrayList<LineBusTime> getLineBusTimeList(int dept_no, int dest_no, int time, int type_no){
-		Cursor cursor = getLineBusTimeListCursor(dept_no, dest_no, time, type_no);
-		
+	/**
+	 * TODO
+	 * 버스 목록의 그루핑을 회사로 한다 
+	 */
+	public ArrayList<LineBusTime> getLineBusTimeListFromLineBus(int linebus_no, int time){
+		Cursor cursor = getLineBusTimeListFromLineBusCursor(linebus_no, time);
 		ArrayList<LineBusTime> objects = new ArrayList<LineBusTime>();
 		
-		if(cursor != null && cursor.moveToFirst()){
+		if(cursor != null && cursor.getCount() != 0 && cursor.moveToFirst()){
+			LineBusTime object;
+			do{
+				object = new LineBusTime();
+				object.setLineBusTimeNo(cursor.getInt(cursor.getColumnIndex("linebustime_no")));
+				object.setLineBusNo(cursor.getInt(cursor.getColumnIndex("linebus_no")));
+				object.setMidNo(cursor.getInt(cursor.getColumnIndex("mid_no")));
+				object.setMiddleCity(cursor.getString(cursor.getColumnIndex("middle_city")));
+				object.setDeptTime(cursor.getString(cursor.getColumnIndex("departure_time")));
+				object.setArrivalTime(cursor.getString(cursor.getColumnIndex("arrival_time")));
+				
+				objects.add(object);
+			}while(cursor.moveToNext());
+		}
+		return objects;
+	}
+	/*
+	public ArrayList<LineBusTime> getLineBusTimeListFromLineBus(int dept_no, int dest_no, int company_no, int time, int type_no){
+		Cursor cursor = getLineBusTimeListFromLineBusCursor(dept_no, dest_no, company_no, time, type_no);
+		ArrayList<LineBusTime> objects = new ArrayList<LineBusTime>();
+		
+		if(cursor != null && cursor.getCount() != 0 && cursor.moveToFirst()){
 			LineBusTime object;
 			do{
 				object = new LineBusTime();
@@ -327,6 +344,227 @@ public class DBHandler {
 		}
 		return objects;
 	}
+	*/
+	public Cursor getLineBusTimeListFromLineBusCursor(int linebus_no, int time){
+		String sql = 
+				"SELECT a.*, b.city_name as middle_city " +
+				"FROM Cambus_LineBusTimeTable a " +
+				"INNER JOIN Cambus_CityTable b " +
+				"ON mid_no = city_no " +
+				"WHERE linebus_no = '" + linebus_no + "' " +
+				"AND departure_time>='" + String.format("%02d:00",time) + "';";
+				
+		//Log.i("DebugPrint","sql:"+sql);
+		Cursor cursor = db.rawQuery(sql, null);
+		if(cursor != null && cursor.getCount() != 0){
+			cursor.moveToFirst();
+		}
+		return cursor;
+	}
+	
+	// TODO 이걸로 가자 그루핑한 버스
+	public ArrayList<LineBus> getLineBusList(int dept_no, int dest_no, int type_no, int time){
+		Cursor cursor = getLineBusListCursor(dept_no, dest_no, type_no);
+		Cursor busCursor;
+		ArrayList<LineBus> objects = new ArrayList<LineBus>();
+		
+		if(cursor != null && cursor.getCount() != 0 && cursor.moveToFirst()){
+			LineBus object;
+			Terminal terminal;
+			LineBusTime bus;
+			do{
+				object = new LineBus();
+				object.setLineBusNo(cursor.getInt(cursor.getColumnIndex("linebus_no")));
+				object.setDeptNo(cursor.getInt(cursor.getColumnIndex("dept_no")));
+				object.setDeptName(cursor.getString(cursor.getColumnIndex("dept_name")));
+				object.setDestNo(cursor.getInt(cursor.getColumnIndex("dest_no")));
+				object.setDestName(cursor.getString(cursor.getColumnIndex("dest_name")));
+				object.setCompanyNo(cursor.getInt(cursor.getColumnIndex("company_no")));
+				object.setCompanyName(cursor.getString(cursor.getColumnIndex("company_name")));
+				object.setTypeNo(cursor.getInt(cursor.getColumnIndex("type_no")));
+				object.setTypeName(cursor.getString(cursor.getColumnIndex("type_name")));
+				//object.setDistance(cursor.getInt(cursor.getColumnIndex("distance")));
+				object.setDurationTime(cursor.getDouble(cursor.getColumnIndex("duration_time")));
+				object.setNativePrice(cursor.getDouble(cursor.getColumnIndex("native_price")));
+				object.setForeignerPrice(cursor.getDouble(cursor.getColumnIndex("foreigner_price")));
+				object.setVisa(cursor.getDouble(cursor.getColumnIndex("visa")));
+				
+				if(cursor.getColumnIndex("terminal_no")>=0 && cursor.getInt(cursor.getColumnIndex("terminal_no"))>0){
+					//Log.i("DebugPrint","setTerminal");
+					terminal = new Terminal();
+					terminal.setTerminalNo(cursor.getInt(cursor.getColumnIndex("terminal_no")));
+					terminal.setTerminalName(cursor.getString(cursor.getColumnIndex("terminal_name")));
+					terminal.setCityNo(cursor.getInt(cursor.getColumnIndex("dept_no")));
+					terminal.setCityName(cursor.getString(cursor.getColumnIndex("dept_name")));
+					terminal.setCompanyNo(cursor.getInt(cursor.getColumnIndex("company_no")));
+					terminal.setCompanyName(cursor.getString(cursor.getColumnIndex("company_name")));
+					terminal.setPurchase(cursor.getInt(cursor.getColumnIndex("purchase"))>0?true:false);
+					terminal.setGetIn(cursor.getInt(cursor.getColumnIndex("get_in"))>0?true:false);
+					terminal.setGetOff(cursor.getInt(cursor.getColumnIndex("get_off"))>0?true:false);
+					terminal.setLink(cursor.getString(cursor.getColumnIndex("link")));
+					terminal.setAddress(cursor.getString(cursor.getColumnIndex("address")));
+					terminal.setMiscEn(cursor.getString(cursor.getColumnIndex("misc_en")));
+					terminal.setMiscKo(cursor.getString(cursor.getColumnIndex("misc_ko")));
+					object.setTerminal(terminal);
+				}else{
+					//Log.i("DebugPrint","nullTerminal");
+				}
+				// 버스목록들을 추가한다.
+				object.setTimeList(getLineBusTimeListFromLineBus(object.getLineBusNo(), time));
+				
+				objects.add(object);
+			}while(cursor.moveToNext());
+		}
+		return objects;
+	}
+	public Cursor getLineBusListCursor(int dept_no, int dest_no, int type_no){
+		String sql = 
+				"SELECT * " +
+				"FROM Cambus_LineBusView a " +
+				"LEFT JOIN Cambus_TerminalTable b " + 
+				"ON dept_no = city_no " +
+				"AND a.company_no = b.company_no " +
+				"WHERE dept_no = '" + dept_no + "' " +
+				"AND dest_no = '" + dest_no +"' ";
+		
+		// 0 is All type
+		if(type_no>0){
+			sql += "AND type_no='" + type_no +"' ";
+		}
+		sql += ";";
+		//Log.i("DebugPrint","linebuslist-sql:"+sql);
+		Cursor cursor = db.rawQuery(sql, null);
+		if(cursor != null && cursor.getCount() != 0){
+			cursor.moveToFirst();
+		}
+		return cursor;
+	}
+	
+	/**
+	 * TODO
+	 * 나중에 디자인이 변경되면 이부분을 수정한다.
+	 * 지금은 전부 통합해서 로드
+	 */
+	public ArrayList<LineBusTime> getLineBusTimeWithTerminalList(int dept_no, int dest_no, int time, int type_no){
+		Cursor cursor = getLineBusTimeWithTerminalListCursor(dept_no, dest_no, time, type_no);
+		
+		ArrayList<LineBusTime> objects = new ArrayList<LineBusTime>();
+		
+		if(cursor != null && cursor.getCount() != 0 && cursor.moveToFirst()){
+			LineBusTime object;
+			Terminal terminal;
+			do{
+				object = new LineBusTime();
+				object.setLineBusTimeNo(cursor.getInt(cursor.getColumnIndex("linebustime_no")));
+				/*
+				object.setDeptNo(cursor.getInt(cursor.getColumnIndex("dept_no")));
+				object.setDeptName(cursor.getString(cursor.getColumnIndex("dept_name")));
+				object.setDestNo(cursor.getInt(cursor.getColumnIndex("dest_no")));
+				object.setDestName(cursor.getString(cursor.getColumnIndex("dest_name")));
+				object.setCompanyNo(cursor.getInt(cursor.getColumnIndex("company_no")));
+				object.setCompanyName(cursor.getString(cursor.getColumnIndex("company_name")));
+				object.setTypeNo(cursor.getInt(cursor.getColumnIndex("type_no")));
+				object.setTypeName(cursor.getString(cursor.getColumnIndex("type_name")));
+				*/
+				object.setMidNo(cursor.getInt(cursor.getColumnIndex("mid_no")));
+				object.setMiddleCity(cursor.getString(cursor.getColumnIndex("middle_city")));
+				object.setDeptTime(cursor.getString(cursor.getColumnIndex("departure_time")));
+				object.setArrivalTime(cursor.getString(cursor.getColumnIndex("arrival_time")));
+				/*
+				object.setDistance(cursor.getInt(cursor.getColumnIndex("distance")));
+				object.setDurationTime(cursor.getDouble(cursor.getColumnIndex("duration_time")));
+				object.setNativePrice(cursor.getDouble(cursor.getColumnIndex("native_price")));
+				object.setForeignerPrice(cursor.getDouble(cursor.getColumnIndex("foreigner_price")));
+				object.setVisa(cursor.getDouble(cursor.getColumnIndex("visa")));
+				*/
+				if(cursor.getColumnIndex("terminal_no")>=0 && cursor.getInt(cursor.getColumnIndex("terminal_no"))>0){
+					//Log.i("DebugPrint","setTerminal");
+					terminal = new Terminal();
+					terminal.setTerminalNo(cursor.getInt(cursor.getColumnIndex("terminal_no")));
+					terminal.setTerminalName(cursor.getString(cursor.getColumnIndex("terminal_name")));
+					terminal.setCityNo(cursor.getInt(cursor.getColumnIndex("dept_no")));
+					terminal.setCityName(cursor.getString(cursor.getColumnIndex("dept_name")));
+					terminal.setCompanyNo(cursor.getInt(cursor.getColumnIndex("company_no")));
+					terminal.setCompanyName(cursor.getString(cursor.getColumnIndex("company_name")));
+					terminal.setPurchase(cursor.getInt(cursor.getColumnIndex("purchase"))>0?true:false);
+					terminal.setGetIn(cursor.getInt(cursor.getColumnIndex("get_in"))>0?true:false);
+					terminal.setGetOff(cursor.getInt(cursor.getColumnIndex("get_off"))>0?true:false);
+					terminal.setLink(cursor.getString(cursor.getColumnIndex("link")));
+					terminal.setAddress(cursor.getString(cursor.getColumnIndex("address")));
+					terminal.setMiscEn(cursor.getString(cursor.getColumnIndex("misc_en")));
+					terminal.setMiscKo(cursor.getString(cursor.getColumnIndex("misc_ko")));
+					//object.setTerminal(terminal);
+				}else{
+					//Log.i("DebugPrint","nullTerminal");
+				}
+				objects.add(object);
+			}while(cursor.moveToNext());
+		}
+		return objects;
+	}
+	public Cursor getLineBusTimeWithTerminalListCursor(int dept_no, int dest_no, int time, int type_no){
+		String sql =
+				"SELECT a.*, terminal_no, terminal_name, " +
+				"purchase, get_in, get_off, link, address, misc_en, misc_ko " +
+				"FROM Cambus_LineBusTimeView a " +
+				"LEFT JOIN Cambus_TerminalView b " +
+				"ON a.dept_no = b.city_no AND a.company_no = b.company_no " +
+				"WHERE a.dept_no='" + dept_no + "' " +
+				"AND a.dest_no='" + dest_no +"' " +
+				"AND a.departure_time>='" + String.format("%02d:00",time) + "' ";
+
+		// 0 is All type
+		if(type_no>0){
+			sql += "AND type_no='" + type_no +"' ";
+		}
+		sql += ";";
+		//Log.i("DebugPrint","terminal-sql:"+sql);
+		Cursor cursor = db.rawQuery(sql, null);
+		if(cursor != null && cursor.getCount() != 0){
+			cursor.moveToFirst();
+		}
+		return cursor;
+	}
+	/**
+	 * TODO 여기까지
+	 */
+	
+	public ArrayList<LineBusTime> getLineBusTimeList(int dept_no, int dest_no, int time, int type_no){
+		Cursor cursor = getLineBusTimeListCursor(dept_no, dest_no, time, type_no);
+		
+		ArrayList<LineBusTime> objects = new ArrayList<LineBusTime>();
+		
+		if(cursor != null && cursor.getCount() != 0 && cursor.moveToFirst()){
+			LineBusTime object;
+			do{
+				object = new LineBusTime();
+				object.setLineBusTimeNo(cursor.getInt(cursor.getColumnIndex("linebustime_no")));
+				/*
+				object.setDeptNo(cursor.getInt(cursor.getColumnIndex("dept_no")));
+				object.setDeptName(cursor.getString(cursor.getColumnIndex("dept_name")));
+				object.setDestNo(cursor.getInt(cursor.getColumnIndex("dest_no")));
+				object.setDestName(cursor.getString(cursor.getColumnIndex("dest_name")));
+				object.setCompanyNo(cursor.getInt(cursor.getColumnIndex("company_no")));
+				object.setCompanyName(cursor.getString(cursor.getColumnIndex("company_name")));
+				object.setTypeNo(cursor.getInt(cursor.getColumnIndex("type_no")));
+				object.setTypeName(cursor.getString(cursor.getColumnIndex("type_name")));
+				*/
+				object.setMidNo(cursor.getInt(cursor.getColumnIndex("mid_no")));
+				object.setMiddleCity(cursor.getString(cursor.getColumnIndex("middle_city")));
+				object.setDeptTime(cursor.getString(cursor.getColumnIndex("departure_time")));
+				object.setArrivalTime(cursor.getString(cursor.getColumnIndex("arrival_time")));
+				/*
+				object.setDistance(cursor.getInt(cursor.getColumnIndex("distance")));
+				object.setDurationTime(cursor.getDouble(cursor.getColumnIndex("duration_time")));
+				object.setNativePrice(cursor.getDouble(cursor.getColumnIndex("native_price")));
+				object.setForeignerPrice(cursor.getDouble(cursor.getColumnIndex("foreigner_price")));
+				object.setVisa(cursor.getDouble(cursor.getColumnIndex("visa")));
+				*/
+				objects.add(object);
+			}while(cursor.moveToNext());
+		}
+		return objects;
+	}
 	
 	public Cursor getLineBusTimeListCursor(int dept_no, int dest_no, int time, int type_no){
 		String sql =
@@ -342,7 +580,7 @@ public class DBHandler {
 		}
 		sql += ";";
 		Cursor cursor = db.rawQuery(sql, null);
-		if(cursor != null){
+		if(cursor != null && cursor.getCount() != 0){
 			cursor.moveToFirst();
 		}
 		return cursor;
@@ -381,7 +619,7 @@ public class DBHandler {
 				";";
 		//Log.i("DebugPrint","linesql:"+sql);
 		Cursor cursor = db.rawQuery(sql, null);
-		if(cursor != null){
+		if(cursor != null && cursor.getCount() != 0){
 			cursor.moveToFirst();
 		}
 		return cursor;
@@ -390,7 +628,7 @@ public class DBHandler {
 		ArrayList<City> objects = new ArrayList<City>();
 		
 		Cursor cursor = getCityListCursor();
-		if(cursor != null && cursor.moveToFirst()){
+		if(cursor != null && cursor.getCount() != 0 && cursor.moveToFirst()){
 			City object;
 			do{
 				object = new City();
@@ -414,7 +652,7 @@ public class DBHandler {
 				null,
 				null,
 				null, null, null, null, null, null);
-		if(cursor != null){
+		if(cursor != null && cursor.getCount() != 0){
 			cursor.moveToFirst();
 		}
 		return cursor;
@@ -431,7 +669,7 @@ public class DBHandler {
 				"city_name='"+cityName+"'",
 				null, null, null, null, null, null);
 		
-		if(cursor != null){
+		if(cursor != null && cursor.getCount() != 0){
 			cursor.moveToFirst();
 		}
 		return cursor;
@@ -439,7 +677,7 @@ public class DBHandler {
 	
 	public String getCityName(int cityNo){
 		Cursor cursor = getCityNameCursor(cityNo);
-		if(cursor != null && cursor.moveToFirst()){
+		if(cursor != null && cursor.getCount() != 0 && cursor.moveToFirst()){
 			String name =  cursor.getString(cursor.getColumnIndex("city_name"));
 			cursor.close();
 			return name;
@@ -457,7 +695,7 @@ public class DBHandler {
 				"city_no='" + cityNo + "'",
 				null, null, null, null, null, null);
 		
-		if(cursor != null){
+		if(cursor != null && cursor.getCount() != 0){
 			cursor.moveToFirst();
 		}
 		return cursor;
@@ -465,12 +703,12 @@ public class DBHandler {
 
 	public String getTypeName(int typeNo){
 		Cursor cursor = getTypeNameCursor(typeNo);
-		if(cursor != null && cursor.moveToFirst()){
+		if(cursor != null && cursor.getCount() != 0 && cursor.moveToFirst()){
 			String name = cursor.getString(cursor.getColumnIndex("type_name"));
 			cursor.close();
 			return name;
 		}
-		if(cursor != null)
+		if(cursor != null && cursor.getCount() != 0)
 			cursor.close();
 		return null;
 	}
@@ -486,7 +724,7 @@ public class DBHandler {
 				"type_no='" + typeNo + "'",
 				null, null, null, null, null, null);
 		
-		if(cursor != null){
+		if(cursor != null && cursor.getCount() != 0){
 			cursor.moveToFirst();
 		}
 		return cursor;
@@ -502,20 +740,20 @@ public class DBHandler {
 				"type_name='"+typeName+"'",
 				null, null, null, null, null, null);
 		
-		if(cursor != null){
+		if(cursor != null && cursor.getCount() != 0){
 			cursor.moveToFirst();
 		}
 		return cursor;
 	}
 	public String getCompanyName(int company_no){
 		Cursor cursor = getCompanyNameCursor(company_no);
-		if(cursor != null && cursor.moveToFirst()){
+		if(cursor != null && cursor.getCount() != 0 && cursor.moveToFirst()){
 			String name = cursor.getString(cursor.getColumnIndex("company_name"));
 			cursor.close();
 			return name;
 		}
 		
-		if(cursor != null)
+		if(cursor != null && cursor.getCount() != 0)
 			cursor.close();
 		return null;
 	}
@@ -530,7 +768,7 @@ public class DBHandler {
 				"company_no='" + company_no + "'",
 				null, null, null, null, null, null);
 		
-		if(cursor != null){
+		if(cursor != null && cursor.getCount() != 0){
 			cursor.moveToFirst();
 		}
 		return cursor;
@@ -546,7 +784,7 @@ public class DBHandler {
 				"company_name='"+companyName+"'",
 				null, null, null, null, null, null);
 		
-		if(cursor != null){
+		if(cursor != null && cursor.getCount() != 0){
 			cursor.moveToFirst();
 		}
 		return cursor;
@@ -555,7 +793,7 @@ public class DBHandler {
 		ArrayList<Company> objects = new ArrayList<Company>();
 		
 		Cursor cursor = getCompanyListCursor();
-		if(cursor != null && cursor.moveToFirst()){
+		if(cursor != null && cursor.getCount() != 0 && cursor.moveToFirst()){
 			Company object;
 			do{
 				object = new Company();
@@ -578,22 +816,54 @@ public class DBHandler {
 				null,
 				null,
 				null, null, null, null, null, null);
-		if(cursor != null){
+		if(cursor != null && cursor.getCount() != 0){
 			cursor.moveToFirst();
 		}
 		return cursor;
 	}
-	public ArrayList<Office> getOfficeList(int city_no, int company_no){
-		Cursor cursor = this.getOfficeListCursor(city_no, company_no);
-		ArrayList<Office> objects = new ArrayList<Office>();
+	public ArrayList<Terminal> getTerminalList(){
+		Cursor cursor = this.getTerminalListCursor();
+		ArrayList<Terminal> objects = new ArrayList<Terminal>();
 		
-		if(cursor != null && cursor.moveToFirst()){
-			Office object;
+		if(cursor != null && cursor.getCount() != 0 && cursor.moveToFirst()){
+			Terminal object;
 			do{
-				object = new Office();
+				object = new Terminal();
 				
-				object.setOfficeNo(cursor.getInt(cursor.getColumnIndex("office_no")));
-				object.setOfficeName(cursor.getString(cursor.getColumnIndex("office_name")));
+				object.setTerminalNo(cursor.getInt(cursor.getColumnIndex("terminal_no")));
+				object.setTerminalName(cursor.getString(cursor.getColumnIndex("terminal_name")));
+				object.setCompanyNo(cursor.getInt(cursor.getColumnIndex("company_no")));
+				object.setCompanyName(cursor.getString(cursor.getColumnIndex("company_name")));
+				object.setCityNo(cursor.getInt(cursor.getColumnIndex("city_no")));
+				object.setCityName(cursor.getString(cursor.getColumnIndex("city_name")));
+				object.setPhoneNo(cursor.getString(cursor.getColumnIndex("phone_no")));
+				object.setLink(cursor.getString(cursor.getColumnIndex("link")));
+				object.setAddress(cursor.getString(cursor.getColumnIndex("address")));
+				object.setPurchase(cursor.getInt(cursor.getColumnIndex("purchase"))>0?true:false);
+				object.setGetIn(cursor.getInt(cursor.getColumnIndex("get_in"))>0?true:false);
+				object.setGetOff(cursor.getInt(cursor.getColumnIndex("get_off"))>0?true:false);
+				object.setMiscEn(cursor.getString(cursor.getColumnIndex("misc_en")));
+				object.setMiscKo(cursor.getString(cursor.getColumnIndex("misc_ko")));
+				
+				objects.add(object);
+			}while(cursor.moveToNext());
+		}
+		
+		if(cursor!=null)
+			cursor.close();
+		return objects;
+	}
+	public ArrayList<Terminal> getTerminalList(int city_no, int company_no){
+		Cursor cursor = this.getTerminalListCursor(city_no, company_no);
+		ArrayList<Terminal> objects = new ArrayList<Terminal>();
+		
+		if(cursor != null && cursor.getCount() != 0 && cursor.moveToFirst()){
+			Terminal object;
+			do{
+				object = new Terminal();
+				
+				object.setTerminalNo(cursor.getInt(cursor.getColumnIndex("terminal_no")));
+				object.setTerminalName(cursor.getString(cursor.getColumnIndex("terminal_name")));
 				object.setCompanyNo(cursor.getInt(cursor.getColumnIndex("company_no")));
 				object.setCompanyName(cursor.getString(cursor.getColumnIndex("company_name")));
 				object.setCityNo(cursor.getInt(cursor.getColumnIndex("city_no")));
@@ -615,29 +885,29 @@ public class DBHandler {
 			cursor.close();
 		return objects;
 	}
-	public Cursor getOfficeListCursor(int city_no, int company_no){
+	public Cursor getTerminalListCursor(int city_no, int company_no){
 		if(company_no<0){
 			throw new NullPointerException("NullCompany:"+company_no);
 		}
 		Cursor cursor = db.query(
 				true,
-				"CamBUS_OfficeView",
+				"CamBUS_TerminalView",
 				null,
 				"city_no='" + city_no + "' AND company_no='"+company_no+"'",
 				null, null, null, null, null, null);
-		if(cursor != null){
+		if(cursor != null && cursor.getCount() != 0){
 			cursor.moveToFirst();
 		}
 		return cursor;
 	}
-	public Cursor getOfficeListCursor(){
+	public Cursor getTerminalListCursor(){
 		Cursor cursor = db.query(
 				true,
-				"CamBUS_OfficeListTable",
+				"CamBUS_TerminalView",
 				null,
 				null,
 				null, null, null, null, null, null);
-		if(cursor != null){
+		if(cursor != null && cursor.getCount() != 0){
 			cursor.moveToFirst();
 		}
 		return cursor;

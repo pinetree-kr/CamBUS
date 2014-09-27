@@ -117,7 +117,8 @@ public final class R {
         public static final int hours=0x7f050019;
         public static final int language=0x7f050004;
         public static final int next_time=0x7f05001c;
-        public static final int no_data=0x7f05001d;
+        public static final int no_data=0x7f05001e;
+        public static final int none_bus=0x7f05001d;
         public static final int search=0x7f05000e;
         public static final int select_city=0x7f050009;
         public static final int select_time=0x7f05000a;

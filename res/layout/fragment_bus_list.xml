@@ -177,15 +177,23 @@
         android:layout_weight="1541"
         android:orientation="vertical"
 	    >
-	   <ListView
-	        android:id="@+id/ListView"
+		<!-- ExpandableListView
+		    android:id="@+id/ListView"
+		    android:layout_width="match_parent"
+		    android:layout_height="match_parent"
+		    android:dividerHeight="1dp"
+	        android:divider="#e2e2e2"
+	        android:drawSelectorOnTop="false"
+		    /-->
+		<ListView
+			android:id="@+id/ListView"
 	        android:layout_width="match_parent"
 	        android:layout_height="match_parent"
 	        android:dividerHeight="1dp"
 	        android:divider="#e2e2e2"
 	        android:drawSelectorOnTop="false"
 			/>
-	    <TextView
+		<TextView
 		    android:id="@+id/EmptyListView"
 		    android:layout_width="match_parent"
 		    android:layout_height="match_parent"

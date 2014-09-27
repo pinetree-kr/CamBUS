@@ -48,10 +48,10 @@ public class DBHelper extends SQLiteOpenHelper{
 					"company_name TEXT NOT NULL);";
 
 		// 도시별회사목록 
-		String createCambusOfficeTableSql =
-				"CREATE TABLE Cambus_OfficeTable (" +
-					"office_no INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-					"office_name TEXT NOT NULL, " +
+		String createCambusTerminalTableSql =
+				"CREATE TABLE Cambus_TerminalTable (" +
+					"terminal_no INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+					"terminal_name TEXT NOT NULL, " +
 					"city_no INTEGER NOT NULL, " + // FK - CityTable
 					"company_no INTEGER NOT NULL, " + // FK - CityTable
 					"phone_no TEXT NULL, " +
@@ -147,11 +147,11 @@ public class DBHelper extends SQLiteOpenHelper{
 					"ON b.line_no = d.line_no " +
 					";";
 		
-		String createCambusOfficeView = 
-				"CREATE VIEW Cambus_OfficeView AS " +
-					"SELECT office_no, a.city_no, city_name, a.company_no, company_name, office_name, " +
+		String createCambusTerminalView = 
+				"CREATE VIEW Cambus_TerminalView AS " +
+					"SELECT terminal_no, a.city_no, city_name, a.company_no, company_name, terminal_name, " +
 						"phone_no, purchase, get_in, get_off, link, address, misc_en, misc_ko " +
-					"FROM Cambus_OfficeTable a " +
+					"FROM Cambus_TerminalTable a " +
 					"INNER JOIN Cambus_CityTable b " +
 					"ON a.city_no = b.city_no " +
 					"INNER JOIN Cambus_CompanyTable c " +
@@ -166,7 +166,7 @@ public class DBHelper extends SQLiteOpenHelper{
 
 			db.execSQL(createCambusCityTableSql);
 			db.execSQL(createCambusCompanyTableSql);
-			db.execSQL(createCambusOfficeTableSql);
+			db.execSQL(createCambusTerminalTableSql);
 			db.execSQL(createCambusTypeTableSql);
 			db.execSQL(createCambusLineTableSql);
 			db.execSQL(createCambusLineBusTableSql);
@@ -177,7 +177,7 @@ public class DBHelper extends SQLiteOpenHelper{
 			db.execSQL(createCambusLineView);
 			db.execSQL(createCambusLineBusView);
 			db.execSQL(createCambusLineBusTimeView);
-			db.execSQL(createCambusOfficeView);
+			db.execSQL(createCambusTerminalView);
 			
 			// Set Transaction Successful
 			db.setTransactionSuccessful();
@@ -196,18 +196,19 @@ public class DBHelper extends SQLiteOpenHelper{
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		Log.i("DebugPrint","DB Upgrade");
 		
+		db.execSQL("DROP TABLE IF EXISTS Cambus_VersionTable");
 		db.execSQL("DROP TABLE IF EXISTS Cambus_CityTable");
 		db.execSQL("DROP TABLE IF EXISTS Cambus_CompanyTable");
-		db.execSQL("DROP TABLE IF EXISTS Cambus_OfficeTable");
+		db.execSQL("DROP TABLE IF EXISTS Cambus_TerminalTable");
 		db.execSQL("DROP TABLE IF EXISTS Cambus_TypeTable");
 		db.execSQL("DROP TABLE IF EXISTS Cambus_LineTable");
 		db.execSQL("DROP TABLE IF EXISTS Cambus_LineBusTable");
 		db.execSQL("DROP TABLE IF EXISTS Cambus_LineBusTimeTable");
 		
-		db.execSQL("DROP TABLE IF EXISTS Cambus_LineView");
-		db.execSQL("DROP TABLE IF EXISTS Cambus_LineBusView");
-		db.execSQL("DROP TABLE IF EXISTS Cambus_LineBusTimeView");
-		db.execSQL("DROP TABLE IF EXISTS Cambus_OfficeView");
+		db.execSQL("DROP VIEW IF EXISTS Cambus_LineView");
+		db.execSQL("DROP VIEW IF EXISTS Cambus_LineBusView");
+		db.execSQL("DROP VIEW IF EXISTS Cambus_LineBusTimeView");
+		db.execSQL("DROP VIEW IF EXISTS Cambus_TerminalView");
 		
 		onCreate(db);
 	}
@@ -215,8 +216,7 @@ public class DBHelper extends SQLiteOpenHelper{
 	@Override
 	public void onOpen(SQLiteDatabase db){
 		super.onOpen(db);
-		Log.i("DebugPrint","DB Open");
-		
+		//Log.i("DebugPrint","DB Open");
 		// TODO 버전체크를 업데이트를 여기에다가 
 		
 	}

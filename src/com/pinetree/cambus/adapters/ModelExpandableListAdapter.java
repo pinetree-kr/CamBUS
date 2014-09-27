@@ -15,20 +15,114 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.BaseExpandableListAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
-public class ModelListAdapter<T> extends ArrayAdapter<T>{
+public class ModelExpandableListAdapter extends BaseExpandableListAdapter{
+
+	@Override
+	public int getGroupCount() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getChildrenCount(int groupPosition) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public Object getGroup(int groupPosition) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Object getChild(int groupPosition, int childPosition) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public long getGroupId(int groupPosition) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public long getChildId(int groupPosition, int childPosition) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public boolean hasStableIds() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public View getGroupView(int groupPosition, boolean isExpanded,
+			View convertView, ViewGroup parent) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public View getChildView(int groupPosition, int childPosition,
+			boolean isLastChild, View convertView, ViewGroup parent) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean isChildSelectable(int groupPosition, int childPosition) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	/*
 	protected LayoutInflater inflater;
-	protected ArrayList<T> objects;
+	protected ArrayList<LineBus> groups;
+	protected ArrayList<ArrayList<LineBusTime>> childs;
+	
 	protected DeviceInfo app;
-	public ModelListAdapter(Context context, int resource,
-			ArrayList<T> objects) {		
-		super(context, resource);
-		
-		inflater = LayoutInflater.from(context);
-		this.objects = objects;
+	
+	public ModelExpandableListAdapter(Context context,
+			ArrayList<LineBus> groups, ArrayList<ArrayList<LineBusTime>> childs){
+		super();
+		this.inflater = LayoutInflater.from(context);
+		this.groups = groups;
+		this.childs = childs;
 		app = (DeviceInfo)context;
 	}
+	
+	@Override
+	public Object getChild(int groupPosition, int childPosition) {
+		return childs.get(groupPosition).get(childPosition);
+	}
+
+	@Override
+	public long getChildId(int groupPosition, int childPosition) {
+		return childPosition;
+	}
+
+	@Override
+	public View getChildView(int groupPosition, int childPosition,
+			boolean isLastChild, View convertView, ViewGroup parent) {
+		View view = convertView;
+		//Log.i("DebugPrint","getChild "+groupPosition+","+childPosition + ":" + (Integer)this.getChild(groupPosition, childPosition));
+		
+		if(view == null){
+			view = inflater.inflate(R.layout.layout_interview_childlist, null);
+		}
+		ImageView imageView = (ImageView)view.findViewById(R.id.imageViewForList);
+		imageView.setImageResource((Integer)this.getChild(groupPosition, childPosition));
+		return view;
+	}
+	
+	
 	
 	@Override
 	public int getCount() {
@@ -140,4 +234,48 @@ public class ModelListAdapter<T> extends ArrayAdapter<T>{
 		return view;
 		
 	}
+
+	@Override
+	public int getGroupCount() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getChildrenCount(int groupPosition) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public Object getGroup(int groupPosition) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public long getGroupId(int groupPosition) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public boolean hasStableIds() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public View getGroupView(int groupPosition, boolean isExpanded,
+			View convertView, ViewGroup parent) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean isChildSelectable(int groupPosition, int childPosition) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	*/
 }

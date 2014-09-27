@@ -4,6 +4,7 @@ import com.pinetree.cambus.R;
 import com.pinetree.cambus.adapters.ModelListAdapter;
 import com.pinetree.cambus.models.BusFilterModel;
 import com.pinetree.cambus.models.BusListModel;
+import com.pinetree.cambus.models.DBModel.LineBus;
 import com.pinetree.cambus.models.DBModel.LineBusTime;
 import com.pinetree.cambus.models.Model;
 import com.pinetree.cambus.utils.DBHandler;
@@ -228,11 +229,12 @@ public class BusListFragment extends BaseFragment {
 	
 	public void loadListAdapter(String order){
 		
-		listAdapter = new ModelListAdapter<LineBusTime>(
+		listAdapter = new ModelListAdapter<LineBus>(
 				this.getActivity().getApplicationContext(),
 				R.layout.bus_list_row,
 				//TODO order
-				buslistinfo.getSortedLineBusTimeList(order));
+				//buslistinfo.getSortedLineBusTimeList(order));
+				buslistinfo.getSortedLineBusList(order));
 				//bus_list.getBusList(order));
 		listView.setAdapter(listAdapter);
 		
