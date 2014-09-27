@@ -295,15 +295,12 @@ public class DBHandler {
 	}
 	
 	public ArrayList<LineBusTime> getLineBusTimeList(int dept_no, int dest_no, int time, int type_no){
-		
-		//TODO : 관련된 회사 목록들을 일단 불러오자
-		ArrayList<Terminal> terminals = getTerminalListInCity(dept_no);
-		
 		Cursor cursor = getLineBusTimeListCursor(dept_no, dest_no, time, type_no);
-		
 		ArrayList<LineBusTime> objects = new ArrayList<LineBusTime>();
 		
 		if(cursor != null && cursor.moveToFirst()){
+			// 관련된 회사 목록들
+			ArrayList<Terminal> terminals = getTerminalListInCity(dept_no);
 			LineBusTime object;
 			do{
 				object = new LineBusTime();
@@ -326,7 +323,12 @@ public class DBHandler {
 				object.setForeignerPrice(cursor.getDouble(cursor.getColumnIndex("foreigner_price")));
 				object.setVisa(cursor.getDouble(cursor.getColumnIndex("visa")));
 				
-				// TODO : Terminal 정보가 있으면 집어넣자 
+				for(Terminal terminal : terminals){
+					if(terminal.getCityNo() == object.getDeptNo()){
+						object.setTerminal(terminal);
+						break;
+					}
+				}
 				
 				objects.add(object);
 			}while(cursor.moveToNext());

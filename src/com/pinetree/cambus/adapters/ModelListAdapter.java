@@ -10,6 +10,7 @@ import com.pinetree.cambus.utils.FontLoader;
 import com.pinetree.cambus.viewholders.ViewHolder;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -131,6 +132,11 @@ public class ModelListAdapter<T> extends ArrayAdapter<T>{
 				getContext().getAssets(),
 				"HelveticaNeueLTStd-Lt.otf"));
 		NextTimeInfo.setTextSize(FontLoader.getFontSizeFromPt(app.rateDpi, (float)6));
+		
+		//TODO setTerminal Info
+		if(object.getTerminal()!=null){
+			//Log.i("DebugPrint","has terminal");
+		}
 		
 		return view;
 		
