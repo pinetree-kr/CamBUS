@@ -152,24 +152,24 @@ public class ExcelHandler {
 					}
 					
 					/*
-					 * Office Table
+					 * Terminal Table
 					 */
-					ArrayList<Office> office_list = new ArrayList<Office>();
-					sheet = workbook.getSheet("OfficeData");
+					ArrayList<Terminal> terminal_list = new ArrayList<Terminal>();
+					sheet = workbook.getSheet("TerminalData");
 					if(sheet != null){
 						rowEnd = sheet.getLastRowNum();
-						Log.i("DebugPrint","office-row:"+rowEnd);
+						Log.i("DebugPrint","Terminal-row:"+rowEnd);
 						colEnd = sheet.getRow(1).getLastCellNum();
-						Log.i("DebugPrint","office-end:"+colEnd);
+						Log.i("DebugPrint","Terminal-end:"+colEnd);
 						
-						Office office;
+						Terminal terminal;
 						for(int i = rowStart; i<=rowEnd; i++){
 							row = sheet.getRow(i);
 							
 							if(row == null)
 								continue;
 							
-							office = new Office();
+							terminal = new Terminal();
 							for(int col = colStart; col<=colEnd; col++){
 								cell = row.getCell(col);
 								if(cell == null){
@@ -178,54 +178,54 @@ public class ExcelHandler {
 								
 								switch(col){
 								case 1:
-									office.setCityName(cell.getStringCellValue().trim());
+									terminal.setCityName(cell.getStringCellValue().trim());
 									for(City object : city_list){
-										if(object.getCityName().equals(office.getCityName())){
-											office.setCityNo(object.getCityNo());
+										if(object.getCityName().equals(terminal.getCityName())){
+											terminal.setCityNo(object.getCityNo());
 											break;
 										}
 									}
 									break;
 								case 2:
-									office.setCompanyName(cell.getStringCellValue().trim());
+									terminal.setCompanyName(cell.getStringCellValue().trim());
 									for(Company object : company_list){
-										if(object.getCompanyName().equals(office.getCompanyName())){
-											office.setCompanyNo(object.getCompanyNo());
+										if(object.getCompanyName().equals(terminal.getCompanyName())){
+											terminal.setCompanyNo(object.getCompanyNo());
 											break;
 										}
 									}
 									break;
 								case 3:
-									office.setOfficeName(cell.getStringCellValue().trim());
+									terminal.setTerminalName(cell.getStringCellValue().trim());
 									break;
 								case 4:
-									office.setPhoneNo(cell.getStringCellValue().trim());
+									terminal.setPhoneNo(cell.getStringCellValue().trim());
 									break;
 								case 5:
-									office.setPurchase(cell.getStringCellValue().trim().equals("O")?true:false);
+									terminal.setPurchase(cell.getStringCellValue().trim().equals("O")?true:false);
 									break;
 								case 6:
-									office.setGetIn(cell.getStringCellValue().trim().equals("O")?true:false);
+									terminal.setGetIn(cell.getStringCellValue().trim().equals("O")?true:false);
 									break;
 								case 7:
-									office.setGetOff(cell.getStringCellValue().trim().equals("O")?true:false);
+									terminal.setGetOff(cell.getStringCellValue().trim().equals("O")?true:false);
 									break;
 								case 8:
-									office.setLink(cell.getStringCellValue().trim());
+									terminal.setLink(cell.getStringCellValue().trim());
 									break;
 								case 9:
-									office.setAddress( cell.getStringCellValue().trim());
+									terminal.setAddress( cell.getStringCellValue().trim());
 									break;
 								case 10:
-									office.setMiscEn(cell.getStringCellValue().trim());
+									terminal.setMiscEn(cell.getStringCellValue().trim());
 									break;
 								case 11:
-									office.setMiscKo(cell.getStringCellValue().trim());
+									terminal.setMiscKo(cell.getStringCellValue().trim());
 									break;
 								}
 							}
-							office.setOfficeNo((int)handler.insertOffice(office));
-							office_list.add(office);
+							terminal.setTerminalNo((int)handler.insertTerminal(terminal));
+							terminal_list.add(terminal);
 						}
 					}
 					

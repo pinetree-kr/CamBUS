@@ -96,9 +96,9 @@ public class DBModel{
 		}
 	}
 	
-	public static class Office extends Model{
-		protected int office_no;
-		protected String office_name;
+	public static class Terminal extends Model{
+		protected int terminal_no;
+		protected String terminal_name;
 		protected int city_no;
 		protected String city_name;
 		protected int company_no;
@@ -160,17 +160,17 @@ public class DBModel{
 		public String getMiscKo(){
 			return misc_ko;
 		}
-		public void setOfficeNo(int no){
-			office_no = no;
+		public void setTerminalNo(int no){
+			terminal_no = no;
 		}
-		public int getOfficeNo(){
-			return office_no;
+		public int getTerminalNo(){
+			return terminal_no;
 		}
-		public void setOfficeName(String name){
-			office_name = name;
+		public void setTerminalName(String name){
+			terminal_name = name;
 		}
-		public String getOfficeName(){
-			return office_name;
+		public String getTerminalName(){
+			return terminal_name;
 		}
 		public void setCityNo(int no){
 			city_no = no;
@@ -348,6 +348,15 @@ public class DBModel{
 		
 		protected int arrival_hour;
 		protected int arrival_min;
+		
+		protected Terminal terminal;
+		
+		public void setTerminal(Terminal terminal){
+			this.terminal = terminal;
+		}
+		public Terminal getTerminal(){
+			return terminal;
+		}
 		
 		public int getDeptHour(){
 			return dept_hour;

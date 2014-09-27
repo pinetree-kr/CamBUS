@@ -74,6 +74,8 @@ public class BusListModel extends Model {
 				line_info.dest_no,
 				dept_time,
 				type_no);
+		
+		
 	}
 	
 	public String getOrder(){

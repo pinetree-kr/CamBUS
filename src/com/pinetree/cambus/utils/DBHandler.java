@@ -84,23 +84,23 @@ public class DBHandler {
 		return rv;
 	}	
 	
-	public long insertOffice(Office office) throws SQLiteException{
+	public long insertTerminal(Terminal terminal) throws SQLiteException{
 		ContentValues values = new ContentValues();
 		long rv = -1;
-		values.put("office_name", office.getOfficeName());
-		values.put("city_no", office.getCityNo());
-		values.put("company_no", office.getCompanyNo());
-		values.put("phone_no", office.getPhoneNo());
-		values.put("purchase", office.isPurchase()?1:0);
-		values.put("get_in", office.isGetIn()?1:0);
-		values.put("get_off", office.isGetOff()?1:0);
-		values.put("link", office.getLink());
-		values.put("address", office.getAddress());
-		values.put("misc_en", office.getMiscEn());
-		values.put("misc_ko", office.getMiscKo());
-		rv = db.insert("Cambus_OfficeTable", null, values);
+		values.put("terminal_name", terminal.getTerminalName());
+		values.put("city_no", terminal.getCityNo());
+		values.put("company_no", terminal.getCompanyNo());
+		values.put("phone_no", terminal.getPhoneNo());
+		values.put("purchase", terminal.isPurchase()?1:0);
+		values.put("get_in", terminal.isGetIn()?1:0);
+		values.put("get_off", terminal.isGetOff()?1:0);
+		values.put("link", terminal.getLink());
+		values.put("address", terminal.getAddress());
+		values.put("misc_en", terminal.getMiscEn());
+		values.put("misc_ko", terminal.getMiscKo());
+		rv = db.insert("Cambus_TerminalTable", null, values);
 		if(rv<0){
-			throw new SQLException("Office Insert Error:"+values);
+			throw new SQLException("Terminal Insert Error:"+values);
 		}
 		return rv;
 	}
@@ -295,6 +295,10 @@ public class DBHandler {
 	}
 	
 	public ArrayList<LineBusTime> getLineBusTimeList(int dept_no, int dest_no, int time, int type_no){
+		
+		//TODO : 관련된 회사 목록들을 일단 불러오자
+		ArrayList<Terminal> terminals = getTerminalListInCity(dept_no);
+		
 		Cursor cursor = getLineBusTimeListCursor(dept_no, dest_no, time, type_no);
 		
 		ArrayList<LineBusTime> objects = new ArrayList<LineBusTime>();
@@ -321,6 +325,8 @@ public class DBHandler {
 				object.setNativePrice(cursor.getDouble(cursor.getColumnIndex("native_price")));
 				object.setForeignerPrice(cursor.getDouble(cursor.getColumnIndex("foreigner_price")));
 				object.setVisa(cursor.getDouble(cursor.getColumnIndex("visa")));
+				
+				// TODO : Terminal 정보가 있으면 집어넣자 
 				
 				objects.add(object);
 			}while(cursor.moveToNext());
@@ -583,17 +589,18 @@ public class DBHandler {
 		}
 		return cursor;
 	}
-	public ArrayList<Office> getOfficeList(int city_no, int company_no){
-		Cursor cursor = this.getOfficeListCursor(city_no, company_no);
-		ArrayList<Office> objects = new ArrayList<Office>();
+	
+	public ArrayList<Terminal> getTerminalListInCity(int city_no){
+		Cursor cursor = this.getTerminalListInCityCursor(city_no);
+		ArrayList<Terminal> objects = new ArrayList<Terminal>();
 		
 		if(cursor != null && cursor.moveToFirst()){
-			Office object;
+			Terminal object;
 			do{
-				object = new Office();
+				object = new Terminal();
 				
-				object.setOfficeNo(cursor.getInt(cursor.getColumnIndex("office_no")));
-				object.setOfficeName(cursor.getString(cursor.getColumnIndex("office_name")));
+				object.setTerminalNo(cursor.getInt(cursor.getColumnIndex("terminal_no")));
+				object.setTerminalName(cursor.getString(cursor.getColumnIndex("terminal_name")));
 				object.setCompanyNo(cursor.getInt(cursor.getColumnIndex("company_no")));
 				object.setCompanyName(cursor.getString(cursor.getColumnIndex("company_name")));
 				object.setCityNo(cursor.getInt(cursor.getColumnIndex("city_no")));
@@ -615,13 +622,58 @@ public class DBHandler {
 			cursor.close();
 		return objects;
 	}
-	public Cursor getOfficeListCursor(int city_no, int company_no){
+	
+	public ArrayList<Terminal> getTerminalList(int city_no, int company_no){
+		Cursor cursor = this.getTerminalListCursor(city_no, company_no);
+		ArrayList<Terminal> objects = new ArrayList<Terminal>();
+		
+		if(cursor != null && cursor.moveToFirst()){
+			Terminal object;
+			do{
+				object = new Terminal();
+				
+				object.setTerminalNo(cursor.getInt(cursor.getColumnIndex("terminal_no")));
+				object.setTerminalName(cursor.getString(cursor.getColumnIndex("terminal_name")));
+				object.setCompanyNo(cursor.getInt(cursor.getColumnIndex("company_no")));
+				object.setCompanyName(cursor.getString(cursor.getColumnIndex("company_name")));
+				object.setCityNo(cursor.getInt(cursor.getColumnIndex("city_no")));
+				object.setCityName(cursor.getString(cursor.getColumnIndex("city_name")));
+				object.setPhoneNo(cursor.getString(cursor.getColumnIndex("phone_no")));
+				object.setLink(cursor.getString(cursor.getColumnIndex("link")));
+				object.setAddress(cursor.getString(cursor.getColumnIndex("address")));
+				object.setPurchase(cursor.getInt(cursor.getColumnIndex("purchase"))>0?true:false);
+				object.setGetIn(cursor.getInt(cursor.getColumnIndex("get_in"))>0?true:false);
+				object.setGetOff(cursor.getInt(cursor.getColumnIndex("get_off"))>0?true:false);
+				object.setMiscEn(cursor.getString(cursor.getColumnIndex("misc_en")));
+				object.setMiscKo(cursor.getString(cursor.getColumnIndex("misc_ko")));
+							
+				objects.add(object);
+			}while(cursor.moveToNext());
+		}
+		
+		if(cursor!=null)
+			cursor.close();
+		return objects;
+	}
+	public Cursor getTerminalListInCityCursor(int city_no){
+		Cursor cursor = db.query(
+				true,
+				"CamBUS_TerminalView",
+				null,
+				"city_no='" + city_no + "'",
+				null, null, null, null, null, null);
+		if(cursor != null){
+			cursor.moveToFirst();
+		}
+		return cursor;
+	}
+	public Cursor getTerminalListCursor(int city_no, int company_no){
 		if(company_no<0){
 			throw new NullPointerException("NullCompany:"+company_no);
 		}
 		Cursor cursor = db.query(
 				true,
-				"CamBUS_OfficeView",
+				"CamBUS_TerminalView",
 				null,
 				"city_no='" + city_no + "' AND company_no='"+company_no+"'",
 				null, null, null, null, null, null);
@@ -630,10 +682,10 @@ public class DBHandler {
 		}
 		return cursor;
 	}
-	public Cursor getOfficeListCursor(){
+	public Cursor getTerminalListCursor(){
 		Cursor cursor = db.query(
 				true,
-				"CamBUS_OfficeListTable",
+				"CamBUS_TerminalListTable",
 				null,
 				null,
 				null, null, null, null, null, null);
