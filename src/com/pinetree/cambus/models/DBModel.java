@@ -3,6 +3,7 @@ package com.pinetree.cambus.models;
 import java.util.ArrayList;
 import java.util.Comparator;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.pinetree.cambus.utils.NumberUtils;
 
 public class DBModel{
@@ -128,6 +129,9 @@ public class DBModel{
 		}
 		public String getLatLng(){
 			return latitude+","+longitude;
+		}
+		public LatLng getLocation(){
+			return new LatLng(latitude, longitude);
 		}
 		
 		public void setPhoneNo(String no){
@@ -330,6 +334,7 @@ public class DBModel{
 		public double getDurationTime(){
 			return duration_time;
 		}
+		
 		public void setNativePrice(double price){
 			native_price = price;
 		}

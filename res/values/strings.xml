@@ -15,25 +15,31 @@
     <string name="select_city">Select City</string>
     <string name="select_time">Select Time</string>
     <string name="select_type">Select Type</string>
+    <string name="select_departure">Select Departure</string>
+    <string name="select_destination">Select Destination</string>
     <string name="all_type">All Type</string>
     <string name="departure_time">Departure Time</string>
     <string name="search">Search</string>
 	
     <!-- buslistfragment -->
-    <string name="sort_time">time</string>
-    <string name="sort_price">price</string>
-    <string name="sort_nearby">near by</string>
+    <string name="sort_time">SCHEDULE</string>
+    <string name="sort_price">PRICE</string>
+    <string name="sort_nearest">NEAREST</string>
+    <!-- 
     <string name="sort_time_asc">time △</string>
     <string name="sort_price_asc">price △</string>
     <string name="sort_nearby_asc">near by △</string>
     <string name="sort_time_desc">time ▽</string>
     <string name="sort_price_desc">price ▽</string>
     <string name="sort_nearby_desc">near by ▽</string>
+    -->
     <string name="hour">hour</string>
     <string name="hours">hours</string>
-    <string name="fee">fee</string>
-    <string name="average">average</string>
-    <string name="next_time">dep.time</string>
+    <string name="fee">fee : </string>
+    <string name="average">average : </string>
+    <string name="next_time">time : </string>
+    
+    <string name="not_supported_yet">Not supported yet</string>
     
     <string name="no_data">No Data</string>
     

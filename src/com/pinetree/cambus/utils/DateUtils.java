@@ -1,6 +1,13 @@
 package com.pinetree.cambus.utils;
 
 public class DateUtils {
+	public static String getDurationTime(double time){
+		if((time - (int)time)>0){
+			return (int)time + "~" + ((int)time+1);
+		}else
+			return String.valueOf((int)time);
+	}
+	
 	public static String getTimes(int time){
 		String str = "";
 		String hours = "";

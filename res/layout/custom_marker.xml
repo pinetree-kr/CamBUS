@@ -4,18 +4,21 @@
 	android:layout_height="wrap_content"
 	android:orientation="vertical">
 	<TextView
-	    android:id="@+id/TerminalName"
+	    android:id="@+id/TerminalTitle"
 	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content"
+	    android:textStyle="bold"
 	    android:gravity="center"/>
 	<TextView
 	    android:id="@+id/TerminalPhoneNo"
 	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content"
+	    android:layout_marginTop="4dp"
 	    android:gravity="center"/>
 	<TextView
 	    android:id="@+id/TerminalAddress"
 	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content"
-	    android:gravity="center"/>
+	    android:layout_marginTop="3dp"
+	    android:gravity="left"/>
 </LinearLayout>

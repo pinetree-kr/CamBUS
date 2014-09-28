@@ -7,20 +7,24 @@ import com.pinetree.cambus.models.DBModel.LineBusTime;
 import com.pinetree.cambus.utils.DateUtils;
 import com.pinetree.cambus.utils.DeviceInfo;
 import com.pinetree.cambus.utils.FontLoader;
+import com.pinetree.cambus.utils.ImageLoader;
 import com.pinetree.cambus.viewholders.ViewHolder;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class ModelListAdapter<T> extends ArrayAdapter<T>{
 	protected LayoutInflater inflater;
 	protected ArrayList<T> objects;
 	protected DeviceInfo app;
+	
 	public ModelListAdapter(Context context, int resource,
 			ArrayList<T> objects) {		
 		super(context, resource);
@@ -58,12 +62,13 @@ public class ModelListAdapter<T> extends ArrayAdapter<T>{
 		}
 		
 		TextView textCompany = ViewHolder.get(view, R.id.TextCompany);
-		TextView textType = ViewHolder.get(view, R.id.TextType);
+		//TextView textType = ViewHolder.get(view, R.id.TextType);
+		ImageView imageBusType = ViewHolder.get(view, R.id.ImageBusType);
+		
 		TextView textFee = ViewHolder.get(view, R.id.TextFee);
 		TextView FeeInfo = ViewHolder.get(view, R.id.FeeInfo);
 		TextView textHour = ViewHolder.get(view, R.id.TextHour);
 		
-		TextView textDiv = ViewHolder.get(view, R.id.TextDiv);
 		TextView textAverage = ViewHolder.get(view, R.id.TextAverage);
 		TextView DurationTimeInfo = ViewHolder.get(view, R.id.DurationTimeInfo);
 		TextView textNextTime = ViewHolder.get(view, R.id.TextNextTime);
@@ -71,17 +76,22 @@ public class ModelListAdapter<T> extends ArrayAdapter<T>{
 		
 		LineBusTime object = (LineBusTime) getItem(position);
 		
-		textCompany.setText((position+1) + ". "+object.getCompanyName());
+		textCompany.setText(object.getCompanyName());
 		textCompany.setTypeface(FontLoader.getFontTypeface(
 				getContext().getAssets(),
 				"HelveticaNeueLTStd-Lt.otf"));
 		textCompany.setTextSize(FontLoader.getFontSizeFromPt(app.rateDpi, (float)7.2));
 		
-		textType.setText("["+object.getTypeName()+"]");
-		textType.setTypeface(FontLoader.getFontTypeface(
-				getContext().getAssets(),
-				"HelveticaNeueLTStd-Lt.otf"));
-		textType.setTextSize(FontLoader.getFontSizeFromPt(app.rateDpi, (float)6));
+		//TODO : 버스타입에 따른 다른 이미지 
+		Drawable dBusType = ImageLoader.getResizedDrawableFromRes(
+				this.getContext().getResources(),
+				R.drawable.busicon,
+				app.rateDpi,
+				app.rateWidth,
+				app.rateHeight
+				);
+		
+		imageBusType.setImageDrawable(dBusType);
 		
 		// 
 		textFee.setTypeface(FontLoader.getFontTypeface(
@@ -93,12 +103,6 @@ public class ModelListAdapter<T> extends ArrayAdapter<T>{
 				getContext().getAssets(),
 				"HelveticaNeueLTStd-Lt.otf"));
 		FeeInfo.setTextSize(FontLoader.getFontSizeFromPt(app.rateDpi, (float)6));
-		
-		textDiv.setTypeface(FontLoader.getFontTypeface(
-				getContext().getAssets(),
-				"HelveticaNeueLTStd-Lt.otf"));
-		textDiv.setTextSize(FontLoader.getFontSizeFromPt(app.rateDpi, (float)5));
-		
 		
 		textAverage.setTypeface(FontLoader.getFontTypeface(
 				getContext().getAssets(),
@@ -115,7 +119,7 @@ public class ModelListAdapter<T> extends ArrayAdapter<T>{
 				"HelveticaNeueLTStd-Lt.otf"));
 		textHour.setTextSize(FontLoader.getFontSizeFromPt(app.rateDpi, (float)5));
 		
-		DurationTimeInfo.setText(String.valueOf(object.getDurationTime()));
+		DurationTimeInfo.setText(DateUtils.getDurationTime(object.getDurationTime()));
 		DurationTimeInfo.setTypeface(FontLoader.getFontTypeface(
 				getContext().getAssets(),
 				"HelveticaNeueLTStd-Lt.otf"));

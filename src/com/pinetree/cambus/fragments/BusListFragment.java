@@ -27,13 +27,14 @@ import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class BusListFragment extends BaseFragment {
 	private TextView textTitle, textEmpty;
 	private TextView filterInfo, timeInfo, distanceInfo;
-	private TextView textBtnTime, textBtnPrice, textBtnNearBy;
+	private TextView textBtnTime, textBtnPrice, textBtnNearest;
 	
-	private ImageView imageTime, imagePrice, imageNearby;
+	private ImageView imageTime, imagePrice, imageNearest;
 	private Drawable dSelected, dUnSelected;
 	
 	private ListView listView;
@@ -87,31 +88,21 @@ public class BusListFragment extends BaseFragment {
 		textEmpty = (TextView) view.findViewById(R.id.EmptyListView);
 		textBtnTime = (TextView) view.findViewById(R.id.TextButtonTime);
 		textBtnPrice = (TextView) view.findViewById(R.id.TextButtonPrice);
-		textBtnNearBy = (TextView) view.findViewById(R.id.TextButtonNearBy);
-		/*/
-		btnTime = (Button) view.findViewById(R.id.ButtonTime);
-		btnTime.setTag("time");
-		btnTime.setOnClickListener(new OnSortButtonClickListener());
-		btnPrice = (Button) view.findViewById(R.id.ButtonPrice);
-		btnPrice.setTag("price");
-		btnPrice.setOnClickListener(new OnSortButtonClickListener());
-		btnNearBy = (Button) view.findViewById(R.id.ButtonNearBy);
-		btnNearBy.setTag("nearby");
-		btnNearBy.setOnClickListener(new OnSortButtonClickListener());
-		/**/
+		textBtnNearest = (TextView) view.findViewById(R.id.TextButtonNearest);
+		
 		View btnTime = view.findViewById(R.id.ButtonTime);
 		btnTime.setTag("time");
 		btnTime.setOnClickListener(new OnSortButtonClickListener());
 		View btnPrice = view.findViewById(R.id.ButtonPrice);
 		btnPrice.setTag("price");
 		btnPrice.setOnClickListener(new OnSortButtonClickListener());
-		View btnNearBy = view.findViewById(R.id.ButtonNearBy);
-		btnNearBy.setTag("nearby");
-		btnNearBy.setOnClickListener(new OnSortButtonClickListener());
+		View btnNearest = view.findViewById(R.id.ButtonNearest);
+		btnNearest.setTag("nearest");
+		btnNearest.setOnClickListener(new OnSortButtonClickListener());
 		
 		imageTime = (ImageView)view.findViewById(R.id.ImageButtonTime);
 		imagePrice = (ImageView)view.findViewById(R.id.ImageButtonPrice);
-		imageNearby = (ImageView)view.findViewById(R.id.ImageButtonNearBy);
+		imageNearest = (ImageView)view.findViewById(R.id.ImageButtonNearest);
 		
 		dSelected = ImageLoader.getResizedDrawableFromRes(
 				getResources(),
@@ -158,50 +149,10 @@ public class BusListFragment extends BaseFragment {
 		handler.close();
 	}
 	
-	public void loadBtn(String order){
-		// 기본은 오름차순.
-		textBtnTime.setText(R.string.sort_time);
-		textBtnPrice.setText(R.string.sort_price);
-		textBtnNearBy.setText(R.string.sort_nearby);
-		/*/
-		textBtnTime.setText(R.string.sort_time_asc);
-		textBtnPrice.setText(R.string.sort_price_asc);
-		textBtnNearBy.setText(R.string.sort_nearby_asc);
-		/**/
-		textEmpty.setText(R.string.no_data);
-		textEmpty.setTypeface(FontLoader.getFontTypeface(
-				getActivity().getAssets(),
-				"HelveticaNeueLTStd-Lt.otf"));
-		textEmpty.setTextSize(FontLoader.getFontSizeFromPt(app.rateDpi, (float)6.5));
-		
-		
-		textBtnTime.setTypeface(FontLoader.getFontTypeface(
-				getActivity().getAssets(),
-				"HelveticaNeueLTStd-Lt.otf"));
-		textBtnTime.setTextSize(FontLoader.getFontSizeFromPt(app.rateDpi, (float)7.2));
-		textBtnPrice.setTypeface(FontLoader.getFontTypeface(
-				getActivity().getAssets(),
-				"HelveticaNeueLTStd-Lt.otf"));
-		textBtnPrice.setTextSize(FontLoader.getFontSizeFromPt(app.rateDpi, (float)7.2));
-		textBtnNearBy.setTypeface(FontLoader.getFontTypeface(
-				getActivity().getAssets(),
-				"HelveticaNeueLTStd-Lt.otf"));
-		textBtnNearBy.setTextSize(FontLoader.getFontSizeFromPt(app.rateDpi, (float)7.2));
-		
-		// 기본은 흐릿하게.
-		/*/
-		textBtnTime.setAlpha((float) 0.50);
-		textBtnPrice.setAlpha((float) 0.50);
-		textBtnNearBy.setAlpha((float) 0.50);
-		/**/
-		
-		// 기본은 선택 x
-		imageTime.setImageDrawable(dUnSelected);
-		imagePrice.setImageDrawable(dUnSelected);
-		imageNearby.setImageDrawable(dUnSelected);
-		
+	public void onClickedOrderButton(String order){
 		// 선택된 것에 맞게 변경 
 		if(order.equals("time")){
+			initImageButton();
 			imageTime.setImageDrawable(dSelected);
 			/*/
 			textBtnTime.setAlpha((float) 1);
@@ -211,6 +162,7 @@ public class BusListFragment extends BaseFragment {
 				textBtnTime.setText(R.string.sort_time_desc);
 			/**/
 		}else if(order.equals("price")){
+			initImageButton();
 			imagePrice.setImageDrawable(dSelected);
 			/*/
 			textBtnPrice.setAlpha((float) 1);
@@ -219,28 +171,36 @@ public class BusListFragment extends BaseFragment {
 			else
 				textBtnPrice.setText(R.string.sort_price_desc);
 			/**/
-		}else if(order.equals("nearby")){
-			imageNearby.setImageDrawable(dSelected);
+		}else if(order.equals("nearest")){
 			/*/
-			textBtnNearBy.setAlpha((float) 1);
+			initImageButton();
+			imageNearest.setImageDrawable(dSelected);
+			/**/
+			/*/
+			textBtnNearest.setAlpha((float) 1);
 			if(bus_list.isAsc())
-				textBtnNearBy.setText(R.string.sort_nearby_asc);
+				textBtnNearest.setText(R.string.sort_Nearest_asc);
 			else
-				textBtnNearBy.setText(R.string.sort_nearby_desc);
+				textBtnNearest.setText(R.string.sort_Nearest_desc);
 			/**/
 		}
+	}
+	
+	public void initImageButton(){
+		// 기본은 선택 x
+		imageTime.setImageDrawable(dUnSelected);
+		imagePrice.setImageDrawable(dUnSelected);
+		imageNearest.setImageDrawable(dUnSelected);
 	}
 	
 	public void loadListAdapter(String order){
 		listAdapter = new ModelListAdapter<LineBusTime>(
 				this.getActivity().getApplicationContext(),
 				R.layout.bus_list_row,
-				//TODO order
 				buslistinfo.getSortedLineBusTimeList(order));
-				//bus_list.getBusList(order));
 		listView.setAdapter(listAdapter);
 		
-		loadBtn(order);
+		onClickedOrderButton(order);
 	}
 	
 	private class OnSortButtonClickListener implements OnClickListener{
@@ -251,7 +211,13 @@ public class BusListFragment extends BaseFragment {
 			
 			if(order==null || order.equals(buslistinfo.getOrder()))
 				return ;
-			loadListAdapter(order);
+			
+			//TODO : 아직 미지원 
+			if(order.equals("nearest")){
+				Toast.makeText(getActivity().getApplicationContext(), R.string.not_supported_yet, 1000).show();
+			}else{
+				loadListAdapter(order);
+			}
 		}
 	}
 
@@ -283,17 +249,38 @@ public class BusListFragment extends BaseFragment {
 				"HelveticaNeueLTStd-Lt.otf"));
 		distanceInfo.setTextSize(FontLoader.getFontSizeFromPt(app.rateDpi, (float)5.5));
 		
+		textBtnTime.setText(R.string.sort_time);
+		textBtnPrice.setText(R.string.sort_price);
+		textBtnNearest.setText(R.string.sort_nearest);
+		
+		textEmpty.setText(R.string.no_data);
+		
+		textEmpty.setTypeface(FontLoader.getFontTypeface(
+				getActivity().getAssets(),
+				"HelveticaNeueLTStd-Lt.otf"));
+		textEmpty.setTextSize(FontLoader.getFontSizeFromPt(app.rateDpi, (float)6.5));
+		
+		textBtnTime.setTypeface(FontLoader.getFontTypeface(
+				getActivity().getAssets(),
+				"HelveticaNeueLTStd-Lt.otf"));
+		textBtnTime.setTextSize(FontLoader.getFontSizeFromPt(app.rateDpi, (float)7.2));
+		textBtnPrice.setTypeface(FontLoader.getFontTypeface(
+				getActivity().getAssets(),
+				"HelveticaNeueLTStd-Lt.otf"));
+		textBtnPrice.setTextSize(FontLoader.getFontSizeFromPt(app.rateDpi, (float)7.2));
+		textBtnNearest.setTypeface(FontLoader.getFontTypeface(
+				getActivity().getAssets(),
+				"HelveticaNeueLTStd-Lt.otf"));
+		textBtnNearest.setTextSize(FontLoader.getFontSizeFromPt(app.rateDpi, (float)7.2));
 	}
 	
 	private class ListViewClickListener implements AdapterView.OnItemClickListener{
 		@Override
 		public void onItemClick(AdapterView<?> parent, View view, int position,
 				long id) {
-			//Log.i("DebugPrint","pos:"+position);
 			LineBusTime object = (LineBusTime)parent.getItemAtPosition(position);
 		    
 			if(object.getTerminalList().size()>0){
-				//Log.i("DebugPrint","terminal:"+terminal);
 				TerminalDialogFragment dialog = TerminalDialogFragment.getInstances(object.getTerminalList());
 				dialog.show(getFragmentManager(), "googlemap");
 			}

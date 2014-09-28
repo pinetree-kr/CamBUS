@@ -24,6 +24,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class TerminalDialogFragment extends DialogFragment {
@@ -60,6 +62,7 @@ public class TerminalDialogFragment extends DialogFragment {
 		return builder.create();
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
@@ -71,31 +74,26 @@ public class TerminalDialogFragment extends DialogFragment {
 	
 	@Override
 	public void onStop(){
-		Log.i("DebugPrint","dialogStop");
 		super.onStop();
 	}
 	@Override
 	public void onDestroy(){
-		Log.i("DebugPrint","dialogDestroy");
 		super.onDestroy();
 	}
 	@Override
 	public void onDestroyView(){
-		Log.i("DebugPrint","dialogDestroyView");
 		super.onDestroyView();
 		KilledView();
 		
 	}
 	@Override
 	public void onDismiss(DialogInterface dialog){
-		Log.i("DebugPrint","dialogDismiss");
 		super.onDismiss(dialog);
 		KilledView();
 	}
 	
 	@Override
 	public void onDetach(){
-		Log.i("DebugPrint","dialogDetach");
 		super.onDetach();
 		KilledView();
 		
@@ -112,13 +110,6 @@ public class TerminalDialogFragment extends DialogFragment {
 			setupUI(view);
 			return view;
 		}
-		/*/
-		if(view!=null)
-			return super.onCreateView(inflater, container, savedInstanceState);
-		view = inflater.inflate(R.layout.fragment_dialog_terminal, container, false);
-		setupUI(view);
-		return view;
-		*/
 	}
 	
 	public void setupUI(View view){
@@ -142,35 +133,23 @@ public class TerminalDialogFragment extends DialogFragment {
 	public void onStart(){
 		super.onStart();
 
-		int height = (int)(((DeviceInfo)getActivity().getApplicationContext()).maxHeight*3/5);
-		int width = (int)(((DeviceInfo)getActivity().getApplicationContext()).maxWidth*4/5);
+		int height = (int)(((DeviceInfo)getActivity().getApplicationContext()).maxHeight*7/10);
+		int width = (int)(((DeviceInfo)getActivity().getApplicationContext()).maxWidth*9/10);
 		getDialog().getWindow().setLayout(width, height);
-		
-		LatLng latlng = new LatLng(terminal_list.get(0).getLat(),terminal_list.get(0).getLng());
-		map.moveCamera(CameraUpdateFactory.newLatLngZoom(latlng, 13));
 		
 		for(Terminal terminal : terminal_list){
 			drawMarker(map, terminal);
-			/*
-			MarkerOptions marker;
-			marker = new MarkerOptions();
-			marker.position(latlng);
-			
-			String title = terminal.getTerminalName()+"\n" + 
-					terminal.getPhoneNo()+"\n" +
-					terminal.getAddress();
-			//Log.i("DebugPrint",title);
-			marker.title(title);
-			map.addMarker(marker);
-			*/
 		}
 	}
 	public void drawMarker(GoogleMap map, Terminal terminal){
 		MarkerOptions marker = new MarkerOptions();
-		marker.position(new LatLng(terminal.getLat(), terminal.getLng()));
-		//marker.title(terminal.getTerminalName());
 		
-		map.addMarker(marker);
+		marker.position(terminal.getLocation());
+		marker.title(terminal.getTerminalName());
+		marker.snippet(terminal.getPhoneNo() +"\n" + terminal.getAddress());
+		
+		map.addMarker(marker).showInfoWindow();
+		map.moveCamera(CameraUpdateFactory.newLatLngZoom(terminal.getLocation(), 13));
 	}
 	
 	@Override
@@ -179,17 +158,40 @@ public class TerminalDialogFragment extends DialogFragment {
 	}
 	
 	protected class MarkerInfoWindowAdapter implements InfoWindowAdapter{
-
+		int width = (int)(((DeviceInfo)getActivity().getApplicationContext()).maxWidth*7/10);
+		
 		@Override
 		public View getInfoContents(Marker marker) {
-
+			
 			View view = getActivity().getLayoutInflater().inflate(R.layout.custom_marker, null);
-			TextView terminalName = (TextView)view.findViewById(R.id.TerminalName);
+			
+			LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+					width,
+					LinearLayout.LayoutParams.WRAP_CONTENT
+					);
+			view.setLayoutParams(lp);
+			
+			TextView terminalTitle = (TextView)view.findViewById(R.id.TerminalTitle);
 			TextView terminalPhoneNo = (TextView)view.findViewById(R.id.TerminalPhoneNo);
 			TextView terminalAddress = (TextView)view.findViewById(R.id.TerminalAddress);
 			
-			//terminalName.setText();
-			return null;
+			terminalTitle.setText(marker.getTitle());
+			
+			String[] terminalInfo = marker.getSnippet().split("\n");
+			
+			terminalPhoneNo.setText(terminalInfo[0]);
+			terminalAddress.setText(terminalInfo[1]);
+			
+			
+			//view.getLayoutParams();
+			//Log.i("DebugPrint","param:"+view.getLayoutParams());
+			
+			/*
+			LayoutParams lp = view.getLayoutParams();
+			//lp.width = (int)(lp.width*9.0/10);
+			Log.i("DebugPrint","width:"+lp.width);
+			*/
+			return view;
 		}
 
 		@Override
@@ -199,5 +201,4 @@ public class TerminalDialogFragment extends DialogFragment {
 		}
 		
 	}
-
 }

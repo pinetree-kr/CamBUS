@@ -272,11 +272,11 @@ public class FilterFragment extends BaseFragment {
 			BusType type = (BusType) spinnerType.getSelectedItem();
 			
 			if(departure.getCityNo() < 1){
-				Toast.makeText(getActivity().getApplicationContext(), "Select Departure", 1000).show();
+				Toast.makeText(getActivity().getApplicationContext(), R.string.select_departure, 1000).show();
 			}else if(destination.getCityNo() < 1){
-				Toast.makeText(getActivity().getApplicationContext(), "Select Destination", 1000).show();
+				Toast.makeText(getActivity().getApplicationContext(), R.string.select_destination, 1000).show();
 			}else if(time<0){
-				Toast.makeText(getActivity().getApplicationContext(), "Select Time", 1000).show();
+				Toast.makeText(getActivity().getApplicationContext(), R.string.select_time, 1000).show();
 			}else{
 				Line line_info = filter.getLineInfo(departure.getCityNo(), destination.getCityNo());
 				if(line_info!=null){

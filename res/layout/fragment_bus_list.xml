@@ -137,17 +137,17 @@
         	android:gravity="center"
 		    >
 			 <FrameLayout
-			    android:id="@+id/ButtonNearBy"
+			    android:id="@+id/ButtonNearest"
 			    android:layout_width="wrap_content"
 			    android:layout_height="wrap_content"
 			    android:layout_gravity="center">
 		        <ImageView
-		            android:id="@+id/ImageButtonNearBy"
+		            android:id="@+id/ImageButtonNearest"
 			        android:layout_width="wrap_content"
 			        android:layout_height="wrap_content"
 			        android:layout_gravity="center"/>
 			    <TextView
-			        android:id="@+id/TextButtonNearBy"
+			        android:id="@+id/TextButtonNearest"
 			        android:layout_width="wrap_content"
 			        android:layout_height="wrap_content"
 			        android:layout_gravity="center"
