@@ -7,16 +7,18 @@ import android.util.Log;
 import android.view.WindowManager;
 
 public class DeviceInfo extends Application{
-	protected final String PACKAGE_NAME = "CamBUS";
+	private final String PACKAGE_NAME = "CamBUS";
 	
 	public DisplayMetrics displayMetrics;
 	
 	public float rateDpi;
 	public float rateWidth;
 	public float rateHeight;
+	public float maxWidth;
+	public float maxHeight;
 	
-	protected final int oWidth = 640;
-	protected final int oHeight = 1136;
+	private final int oWidth = 640;
+	private final int oHeight = 1136;
 	
 	
 	@Override
@@ -30,7 +32,7 @@ public class DeviceInfo extends Application{
 		super.onConfigurationChanged(newConfig);
 	}
 	
-	protected void getScreenInfo(){
+	private void getScreenInfo(){
 		WindowManager wm = (WindowManager)getSystemService(WINDOW_SERVICE);
 		displayMetrics = new DisplayMetrics();
 		wm.getDefaultDisplay().getMetrics(displayMetrics);
@@ -43,7 +45,9 @@ public class DeviceInfo extends Application{
 		rateDpi = displayMetrics.scaledDensity;
 		rateWidth = (float)displayMetrics.widthPixels/oWidth;
 		rateHeight = (float)displayMetrics.heightPixels/oHeight;
-
+		maxWidth = displayMetrics.widthPixels;
+		maxHeight = displayMetrics.heightPixels;
+		
 		Log.i("DebugPrint","width:"+rateWidth);
 		Log.i("DebugPrint","height:"+rateHeight);
 	}

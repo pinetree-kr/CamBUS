@@ -4,7 +4,7 @@ import com.pinetree.cambus.R;
 import com.pinetree.cambus.adapters.ModelListAdapter;
 import com.pinetree.cambus.models.BusFilterModel;
 import com.pinetree.cambus.models.BusListModel;
-import com.pinetree.cambus.models.DBModel.LineBusTime;
+import com.pinetree.cambus.models.DBModel.*;
 import com.pinetree.cambus.models.Model;
 import com.pinetree.cambus.utils.DBHandler;
 import com.pinetree.cambus.utils.DateUtils;
@@ -12,6 +12,7 @@ import com.pinetree.cambus.utils.FontLoader;
 import com.pinetree.cambus.utils.ImageLoader;
 
 import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,26 +20,29 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.WindowManager;
+import android.widget.Adapter;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
 public class BusListFragment extends BaseFragment {
-	protected TextView textTitle, textEmpty;
-	protected TextView filterInfo, timeInfo, distanceInfo;
-	protected TextView textBtnTime, textBtnPrice, textBtnNearBy;
+	private TextView textTitle, textEmpty;
+	private TextView filterInfo, timeInfo, distanceInfo;
+	private TextView textBtnTime, textBtnPrice, textBtnNearBy;
 	
-	protected ImageView imageTime, imagePrice, imageNearby;
-	protected Drawable dSelected, dUnSelected;
+	private ImageView imageTime, imagePrice, imageNearby;
+	private Drawable dSelected, dUnSelected;
 	
-	protected ListView listView;
-	protected ListAdapter listAdapter;
-	//protected LineBusTime linebustime_list;
-	protected BusListModel buslistinfo;
+	private ListView listView;
+	private ListAdapter listAdapter;
+	//private LineBusTime linebustime_list;
+	private BusListModel buslistinfo;
 	
-	protected int list_type;
-	protected DBHandler handler;
+	private int list_type;
+	private DBHandler handler;
 	
 	public static Fragment getInstances(Model model){
 		Bundle args = new Bundle();
@@ -127,6 +131,7 @@ public class BusListFragment extends BaseFragment {
 		
 		listView = (ListView) view.findViewById(R.id.ListView);
 		listView.setEmptyView(view.findViewById(R.id.EmptyListView));
+		listView.setOnItemClickListener(new ListViewClickListener());
 		loadListAdapter("time");
 		
 		return view;
@@ -227,7 +232,6 @@ public class BusListFragment extends BaseFragment {
 	}
 	
 	public void loadListAdapter(String order){
-		
 		listAdapter = new ModelListAdapter<LineBusTime>(
 				this.getActivity().getApplicationContext(),
 				R.layout.bus_list_row,
@@ -239,7 +243,7 @@ public class BusListFragment extends BaseFragment {
 		loadBtn(order);
 	}
 	
-	protected class OnSortButtonClickListener implements OnClickListener{
+	private class OnSortButtonClickListener implements OnClickListener{
 		@Override
 		public void onClick(View v) {
 			
@@ -251,7 +255,7 @@ public class BusListFragment extends BaseFragment {
 		}
 	}
 
-	protected void loadTextView() {
+	private void loadTextView() {
 		textTitle.setTypeface(FontLoader.getFontTypeface(
 				getActivity().getAssets(),
 				"HelveticaNeueLTStd-Lt.otf"));
@@ -278,6 +282,22 @@ public class BusListFragment extends BaseFragment {
 				getActivity().getAssets(),
 				"HelveticaNeueLTStd-Lt.otf"));
 		distanceInfo.setTextSize(FontLoader.getFontSizeFromPt(app.rateDpi, (float)5.5));
+		
+	}
+	
+	private class ListViewClickListener implements AdapterView.OnItemClickListener{
+		@Override
+		public void onItemClick(AdapterView<?> parent, View view, int position,
+				long id) {
+			//Log.i("DebugPrint","pos:"+position);
+			LineBusTime object = (LineBusTime)parent.getItemAtPosition(position);
+		    
+			if(object.getTerminalList().size()>0){
+				//Log.i("DebugPrint","terminal:"+terminal);
+				TerminalDialogFragment dialog = TerminalDialogFragment.getInstances(object.getTerminalList());
+				dialog.show(getFragmentManager(), "googlemap");
+			}
+		}
 		
 	}
 }

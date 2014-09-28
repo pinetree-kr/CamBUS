@@ -61,7 +61,8 @@ public class DBHelper extends SQLiteOpenHelper{
 					"link TEXT NULL, " +
 					"address TEXT NULL, " +
 					"misc_en TEXT NULL, " +
-					"misc_ko TEXT NULL " +
+					"misc_ko TEXT NULL, " +
+					"latlng TEXT NULL " +
 					");";
 		
 		// 타입목록 
@@ -150,7 +151,7 @@ public class DBHelper extends SQLiteOpenHelper{
 		String createCambusTerminalView = 
 				"CREATE VIEW Cambus_TerminalView AS " +
 					"SELECT terminal_no, a.city_no, city_name, a.company_no, company_name, terminal_name, " +
-						"phone_no, purchase, get_in, get_off, link, address, misc_en, misc_ko " +
+						"phone_no, purchase, get_in, get_off, link, address, misc_en, misc_ko, latlng " +
 					"FROM Cambus_TerminalTable a " +
 					"INNER JOIN Cambus_CityTable b " +
 					"ON a.city_no = b.city_no " +

@@ -10,13 +10,13 @@ import android.content.Context;
 import android.util.Log;
 
 public class BusListModel extends Model {
-	protected ArrayList<LineBusTime> linebustime_list;
-	protected Line line_info;
-	protected int dept_time;
-	protected int type_no;
+	private ArrayList<LineBusTime> linebustime_list;
+	private Line line_info;
+	private int dept_time;
+	private int type_no;
 	
-	protected String order;
-	protected boolean asc;
+	private String order;
+	private boolean asc;
 	
 	public BusListModel(Line line_info, int dept_time, int type_no){
 		linebustime_list = new ArrayList<LineBusTime>();
@@ -70,8 +70,8 @@ public class BusListModel extends Model {
 	
 	public void updateLineBusTimeList(DBHandler handler){
 		linebustime_list = handler.getLineBusTimeList(
-				line_info.dept_no,
-				line_info.dest_no,
+				line_info.getDeptNo(),
+				line_info.getDestNo(),
 				dept_time,
 				type_no);
 	}

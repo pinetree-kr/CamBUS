@@ -222,6 +222,9 @@ public class ExcelHandler {
 								case 11:
 									terminal.setMiscKo(cell.getStringCellValue().trim());
 									break;
+								case 12:
+									terminal.setLatLng(cell.getStringCellValue().trim());
+									break;
 								}
 							}
 							terminal.setTerminalNo((int)handler.insertTerminal(terminal));

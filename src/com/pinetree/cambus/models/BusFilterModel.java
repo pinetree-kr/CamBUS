@@ -64,12 +64,12 @@ public class BusFilterModel extends Model implements ModelCallbackInterface, Mod
 		for(Line object : line_list){
 			
 			city = new DepartureCity();
-			city.city_no = object.dept_no;
-			city.city_name = object.dept_name;
-			city.high = object.dept_high;
+			city.setCityNo(object.getDeptNo());
+			city.setCityName(object.getDeptName());
+			city.setHigh(object.getDeptHigh());
 			
-			if(!hash.containsKey(String.valueOf(city.city_no))){
-				hash.put(String.valueOf(city.city_no), city.city_name);
+			if(!hash.containsKey(String.valueOf(city.getCityNo()))){
+				hash.put(String.valueOf(city.getCityNo()), city.getCityName());
 				objects.add(city);
 			}
 		}
@@ -87,14 +87,14 @@ public class BusFilterModel extends Model implements ModelCallbackInterface, Mod
 		
 		for(Line object : line_list){
 			// dept_no 가 같은 라인만
-			if(object.dept_no == dept_no){
+			if(object.getDeptNo() == dept_no){
 				city = new DestinationCity();
-				city.city_no = object.dest_no;
-				city.city_name = object.dest_name;
-				city.high = object.dest_high;
+				city.setCityNo(object.getDestNo());
+				city.setCityName(object.getDestName());
+				city.setHigh(object.getDestHigh());
 				
-				if(!hash.containsKey(String.valueOf(city.city_no))){
-					hash.put(String.valueOf(city.city_no), city.city_name);
+				if(!hash.containsKey(String.valueOf(city.getCityNo()))){
+					hash.put(String.valueOf(city.getCityNo()), city.getCityName());
 					objects.add(city);
 				}
 			}
@@ -106,7 +106,7 @@ public class BusFilterModel extends Model implements ModelCallbackInterface, Mod
 	}
 	public Line getLineInfo(int dept_no, int dest_no){
 		for(Line object : line_list){
-			if(object.dept_no == dept_no && object.dest_no == dest_no){
+			if(object.getDeptNo() == dept_no && object.getDestNo() == dest_no){
 				return object;
 			}
 		}

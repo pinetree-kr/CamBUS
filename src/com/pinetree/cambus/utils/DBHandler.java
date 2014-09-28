@@ -98,6 +98,7 @@ public class DBHandler {
 		values.put("address", terminal.getAddress());
 		values.put("misc_en", terminal.getMiscEn());
 		values.put("misc_ko", terminal.getMiscKo());
+		values.put("latlng", terminal.getLatLng());
 		rv = db.insert("Cambus_TerminalTable", null, values);
 		if(rv<0){
 			throw new SQLException("Terminal Insert Error:"+values);
@@ -324,9 +325,8 @@ public class DBHandler {
 				object.setVisa(cursor.getDouble(cursor.getColumnIndex("visa")));
 				
 				for(Terminal terminal : terminals){
-					if(terminal.getCityNo() == object.getDeptNo()){
-						object.setTerminal(terminal);
-						break;
+					if(terminal.getCityNo() == object.getDeptNo() && terminal.getCompanyNo() == object.getCompanyNo()){
+						object.addTerminal(terminal);
 					}
 				}
 				
@@ -615,7 +615,8 @@ public class DBHandler {
 				object.setGetOff(cursor.getInt(cursor.getColumnIndex("get_off"))>0?true:false);
 				object.setMiscEn(cursor.getString(cursor.getColumnIndex("misc_en")));
 				object.setMiscKo(cursor.getString(cursor.getColumnIndex("misc_ko")));
-							
+				object.setLatLng(cursor.getString(cursor.getColumnIndex("latlng")));
+				
 				objects.add(object);
 			}while(cursor.moveToNext());
 		}
@@ -648,6 +649,7 @@ public class DBHandler {
 				object.setGetOff(cursor.getInt(cursor.getColumnIndex("get_off"))>0?true:false);
 				object.setMiscEn(cursor.getString(cursor.getColumnIndex("misc_en")));
 				object.setMiscKo(cursor.getString(cursor.getColumnIndex("misc_ko")));
+				object.setLatLng(cursor.getString(cursor.getColumnIndex("latlng")));
 							
 				objects.add(object);
 			}while(cursor.moveToNext());

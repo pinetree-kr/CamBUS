@@ -134,8 +134,9 @@ public class ModelListAdapter<T> extends ArrayAdapter<T>{
 		NextTimeInfo.setTextSize(FontLoader.getFontSizeFromPt(app.rateDpi, (float)6));
 		
 		//TODO setTerminal Info
-		if(object.getTerminal()!=null){
-			//Log.i("DebugPrint","has terminal");
+		if(object.getTerminalList().size()>0){
+			//Log.i("DebugPrint","Terminal:"+object.getTerminalList().size());
+			//NextTimeInfo.setText(""+object.getTerminalList().size());
 		}
 		
 		return view;

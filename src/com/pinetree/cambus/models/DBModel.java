@@ -1,14 +1,15 @@
 package com.pinetree.cambus.models;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 
 import com.pinetree.cambus.utils.NumberUtils;
 
 public class DBModel{
 	public static class City extends Model{
-		protected int city_no;
-		protected String city_name;
-		protected boolean high;
+		private int city_no;
+		private String city_name;
+		private boolean high;
 		
 		public void setCityNo(int no){
 			city_no = no;
@@ -62,8 +63,8 @@ public class DBModel{
 	public static class DestinationCity extends City{}
 	
 	public static class Company extends Model{
-		protected int company_no;
-		protected String company_name;
+		private int company_no;
+		private String company_name;
 		
 		public void setCompanyNo(int no){
 			company_no = no;
@@ -79,8 +80,8 @@ public class DBModel{
 		}
 	}
 	public static class BusType extends Model{
-		protected int type_no;
-		protected String type_name;
+		private int type_no;
+		private String type_name;
 		
 		public void setTypeNo(int no){
 			type_no = no;
@@ -97,20 +98,37 @@ public class DBModel{
 	}
 	
 	public static class Terminal extends Model{
-		protected int terminal_no;
-		protected String terminal_name;
-		protected int city_no;
-		protected String city_name;
-		protected int company_no;
-		protected String company_name;
-		protected String phone_no;
-		protected boolean purchase;
-		protected boolean get_in;
-		protected boolean get_off;
-		protected String link;
-		protected String address;
-		protected String misc_en;
-		protected String misc_ko;
+		private int terminal_no;
+		private String terminal_name;
+		private int city_no;
+		private String city_name;
+		private int company_no;
+		private String company_name;
+		private String phone_no;
+		private boolean purchase;
+		private boolean get_in;
+		private boolean get_off;
+		private String link;
+		private String address;
+		private String misc_en;
+		private String misc_ko;
+		private double latitude;
+		private double longitude;
+		
+		public void setLatLng(String value){
+			String[] var = value.split(",");
+			latitude = Double.parseDouble(var[0]);
+			longitude = Double.parseDouble(var[1]);
+		}
+		public double getLat(){
+			return latitude;
+		}
+		public double getLng(){
+			return longitude;
+		}
+		public String getLatLng(){
+			return latitude+","+longitude;
+		}
 		
 		public void setPhoneNo(String no){
 			phone_no = no;
@@ -205,14 +223,14 @@ public class DBModel{
 		}
 	}
 	public static class Line extends Model{
-		protected int line_no;
-		protected int dept_no;
-		protected String dept_name;
-		protected boolean dept_high;
-		protected int dest_no;
-		protected String dest_name;
-		protected boolean dest_high;
-		protected int distance;
+		private int line_no;
+		private int dept_no;
+		private String dept_name;
+		private boolean dept_high;
+		private int dest_no;
+		private String dest_name;
+		private boolean dest_high;
+		private int distance;
 		
 		public void setLineNo(int no){
 			line_no = no;
@@ -265,16 +283,16 @@ public class DBModel{
 	}
 	
 	public static class LineBus extends Line{
-		protected int linebus_no;
-		protected int company_no;
-		protected String company_name;
-		protected int type_no;
-		protected String type_name;
-		protected double duration_time = 0;
-		protected double native_price = 0;
-		protected double foreigner_price = 0;
-		protected double visa = 0;
-		protected String dn;
+		private int linebus_no;
+		private int company_no;
+		private String company_name;
+		private int type_no;
+		private String type_name;
+		private double duration_time = 0;
+		private double native_price = 0;
+		private double foreigner_price = 0;
+		private double visa = 0;
+		private String dn;
 		
 		public void setLineBusNo(int no){
 			linebus_no = no;
@@ -339,23 +357,24 @@ public class DBModel{
 	}
 	
 	public static class LineBusTime extends LineBus{
-		protected int linebustime_no;
-		protected int mid_no;
-		protected String middle_city;
+		private int linebustime_no;
+		private int mid_no;
+		private String middle_city;
 		
-		protected int dept_hour;
-		protected int dept_min;
+		private int dept_hour;
+		private int dept_min;
 		
-		protected int arrival_hour;
-		protected int arrival_min;
+		private int arrival_hour;
+		private int arrival_min;
 		
-		protected Terminal terminal;
+		private ArrayList<Terminal> terminal_list = new ArrayList<Terminal>();
 		
-		public void setTerminal(Terminal terminal){
-			this.terminal = terminal;
+		public void addTerminal(Terminal terminal){
+			if(!terminal_list.contains(terminal))
+				terminal_list.add(terminal);
 		}
-		public Terminal getTerminal(){
-			return terminal;
+		public ArrayList<Terminal> getTerminalList(){
+			return terminal_list;
 		}
 		
 		public int getDeptHour(){
@@ -429,8 +448,8 @@ public class DBModel{
 			@Override
 			public int compare(LineBusTime lhs, LineBusTime rhs) {
 				return
-						lhs.foreigner_price < rhs.foreigner_price ? -1 :
-							lhs.foreigner_price > rhs.foreigner_price ? 1 :
+						lhs.getForeignerPrice() < rhs.getForeignerPrice() ? -1 :
+							lhs.getForeignerPrice() > rhs.getForeignerPrice() ? 1 :
 								0;
 			}
 		}
@@ -439,8 +458,8 @@ public class DBModel{
 			@Override
 			public int compare(LineBusTime lhs, LineBusTime rhs) {
 				return
-						rhs.foreigner_price < lhs.foreigner_price ? -1 :
-							rhs.foreigner_price > lhs.foreigner_price ? 1 :
+						rhs.getForeignerPrice() < lhs.getForeignerPrice() ? -1 :
+							rhs.getForeignerPrice() > lhs.getForeignerPrice() ? 1 :
 								0;
 			}
 		}
@@ -450,8 +469,8 @@ public class DBModel{
 			@Override
 			public int compare(LineBusTime lhs, LineBusTime rhs) {
 				return
-						lhs.distance < rhs.distance ? -1 :
-							lhs.distance > rhs.distance ? 1 :
+						lhs.getDistance() < rhs.getDistance() ? -1 :
+							lhs.getDistance() > rhs.getDistance() ? 1 :
 								0;
 			}
 		}
@@ -460,8 +479,8 @@ public class DBModel{
 			@Override
 			public int compare(LineBusTime lhs, LineBusTime rhs) {
 				return
-						rhs.distance < lhs.distance ? -1 :
-							rhs.distance > lhs.distance ? 1 :
+						rhs.getDistance() < lhs.getDistance() ? -1 :
+							rhs.getDistance() > lhs.getDistance() ? 1 :
 								0;
 			}
 		}
