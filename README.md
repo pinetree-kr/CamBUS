@@ -2,6 +2,7 @@ CamBUS(Cambodia Bus)
 ======
 
 
+
 ##2014.09.28
 1. Redesigned Layout(ICON, TEXT ...)
 2. Google Map ported on DialogFragment
@@ -13,7 +14,10 @@ CamBUS(Cambodia Bus)
 
 
 ##2014.09.05
-1. Converting XLS to SQLite
-2. Loading Data Models
-3. Select Bus Filters
-4. Display All Bus Info
+1. Splash Fragment
+  - Converting XLS to SQLite
+  - Loading Data Models
+2. Filter Fragment
+  - Select Bus Filters
+3. BusList Fragment
+  - Display All Bus Info
