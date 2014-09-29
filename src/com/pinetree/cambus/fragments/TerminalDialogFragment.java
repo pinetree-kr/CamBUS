@@ -2,16 +2,16 @@ package com.pinetree.cambus.fragments;
 
 import java.util.ArrayList;
 
+import org.json.JSONException;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
 import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.pinetree.cambus.R;
 import com.pinetree.cambus.models.DBModel.Terminal;
-import com.pinetree.cambus.models.Model;
 import com.pinetree.cambus.utils.DeviceInfo;
 
 import android.app.AlertDialog;
@@ -24,7 +24,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -34,7 +33,6 @@ public class TerminalDialogFragment extends DialogFragment {
 	//private MapView mapView;
 	private MapFragment mapView;
 	private GoogleMap map;
-	
 	
 	public static TerminalDialogFragment getInstances(ArrayList<Terminal> model){
 		Bundle args = new Bundle();
@@ -115,8 +113,10 @@ public class TerminalDialogFragment extends DialogFragment {
 	public void setupUI(View view){
 		mapView = (MapFragment)getFragmentManager().findFragmentById(R.id.map);
 		map = mapView.getMap();
+		
 		map.setInfoWindowAdapter(new MarkerInfoWindowAdapter());
 	}
+	
 	
 	private void KilledView(){
 		if(mapView != null){
@@ -144,12 +144,12 @@ public class TerminalDialogFragment extends DialogFragment {
 	public void drawMarker(GoogleMap map, Terminal terminal){
 		MarkerOptions marker = new MarkerOptions();
 		
-		marker.position(terminal.getLocation());
+		marker.position(terminal.getPosition());
 		marker.title(terminal.getTerminalName());
 		marker.snippet(terminal.getPhoneNo() +"\n" + terminal.getAddress());
 		
 		map.addMarker(marker).showInfoWindow();
-		map.moveCamera(CameraUpdateFactory.newLatLngZoom(terminal.getLocation(), 13));
+		map.moveCamera(CameraUpdateFactory.newLatLngZoom(terminal.getPosition(), 10));
 	}
 	
 	@Override

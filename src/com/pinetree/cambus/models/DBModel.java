@@ -97,7 +97,25 @@ public class DBModel{
 			return type_name;
 		}
 	}
-	
+	/*/
+	public static class TerminalMarker implements ClusterItem{
+		private Terminal terminal;
+		
+		public void setTerminal(Terminal terminal){
+			this.terminal = terminal;
+		}
+		public Terminal getTerminal(){
+			return terminal;
+		}
+		@Override
+		public LatLng getPosition() {
+			if(terminal!=null)
+				return terminal.getPosition();
+			return null;
+		}
+		
+	}
+	/**/
 	public static class Terminal extends Model{
 		private int terminal_no;
 		private String terminal_name;
@@ -121,6 +139,12 @@ public class DBModel{
 			latitude = Double.parseDouble(var[0]);
 			longitude = Double.parseDouble(var[1]);
 		}
+		public void setLat(double lat){
+			latitude = lat;
+		}
+		public void setLng(double lng){
+			longitude = lng;
+		}
 		public double getLat(){
 			return latitude;
 		}
@@ -130,7 +154,8 @@ public class DBModel{
 		public String getLatLng(){
 			return latitude+","+longitude;
 		}
-		public LatLng getLocation(){
+		//@Override
+		public LatLng getPosition(){
 			return new LatLng(latitude, longitude);
 		}
 		
@@ -225,6 +250,7 @@ public class DBModel{
 			}
 			return list;
 		}
+		
 	}
 	public static class Line extends Model{
 		private int line_no;

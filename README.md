@@ -4,10 +4,13 @@ CamBUS
 Cambodia Bus
 
 
-
+#2014.09.28
+3rd Iteration
+- Redesigned Layout(ICON, TEXT ...)
+- Google Map ported on DialogFragment
 
 #2014.09.21
-2st Iteration.
+2nd Iteration.
 
 - Redesigned DB Model
 - Repackaged Activity - Fragment Communication

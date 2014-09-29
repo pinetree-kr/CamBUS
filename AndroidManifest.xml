@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.pinetree.cambus"
     android:versionCode="1"
-    android:versionName="1.14.9.23" >
+    android:versionName="1.14.9.29" >
 
     <uses-sdk
         android:minSdkVersion="16"
