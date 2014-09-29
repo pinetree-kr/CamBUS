@@ -21,10 +21,10 @@ Cambodia Bus
 #2014.09.05
 1st Iteration.
 
-1. Splash Fragment
-	Converting XLS to SQLite
-	Loading Data Models
-2. Bus Filter Fragment
-	Select Bus Filters
-3. Bus List Fragment
-	Display All Bus Info
+- Splash Fragment
+1. Converting XLS to SQLite
+2. Loading Data Models
+- Bus Filter Fragment
+1. Select Bus Filters
+- Bus List Fragment
+1. Display All Bus Info
