@@ -1,6 +1,10 @@
 CamBUS(Cambodia Bus)
 ======
 
+##2014.11.28
+1. Redesigned Layout
+2. Add Dial-up connection
+3. Update BusTimeTable(2014.11.28)
 
 
 ##2014.09.28
