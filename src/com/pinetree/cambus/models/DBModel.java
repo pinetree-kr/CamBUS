@@ -11,6 +11,7 @@ public class DBModel{
 		private int city_no;
 		private String city_name;
 		private boolean high;
+		private int order;
 		
 		public void setCityNo(int no){
 			city_no = no;
@@ -30,7 +31,67 @@ public class DBModel{
 		public boolean getHigh(){
 			return high;
 		}
+		public void setOrder(int order){
+			this.order = order;
+		}
+		public int getOrder(){
+			return order;		
+		}
 		
+		// order by preference asc
+		public static class PrefOrderAscCompare implements Comparator<City>{
+			@Override
+			public int compare(City lhs, City rhs) {
+				// not changed;
+				if(lhs.city_no<1 || rhs.city_no <1)
+					return 0;
+				else{
+					// high pref is in advance of low pref
+					if(!lhs.high && rhs.high){
+						return -1;
+					}else if(lhs.high && !rhs.high){
+						return 1;
+					}
+					// same pref
+					else{
+						if(lhs.getOrder() < rhs.getOrder()){
+							return -1;
+						}else if(lhs.getOrder() > rhs.getOrder()){
+							return 1;
+						}else{
+							return 0;
+						}
+					}
+				}
+			}
+		}
+		// order by preference desc
+		public static class PrefOrderDescCompare implements Comparator<City>{
+			@Override
+			public int compare(City lhs, City rhs) {
+				// not changed;
+				if(lhs.city_no<1 || rhs.city_no <1)
+					return 0;
+				else{
+					// high pref is in advance of low pref
+					if(!rhs.high && lhs.high){
+						return -1;
+					}else if(rhs.high && !lhs.high){
+						return 1;
+					}
+					// same pref
+					else{
+						if(lhs.getOrder() < rhs.getOrder()){
+							return -1;
+						}else if(lhs.getOrder() > rhs.getOrder()){
+							return 1;
+						}else{
+							return 0;
+						}
+					}
+				}
+			}
+		}
 		// order by preference asc
 		public static class PreferenceAscCompare implements Comparator<City>{
 			@Override
@@ -97,25 +158,6 @@ public class DBModel{
 			return type_name;
 		}
 	}
-	/*/
-	public static class TerminalMarker implements ClusterItem{
-		private Terminal terminal;
-		
-		public void setTerminal(Terminal terminal){
-			this.terminal = terminal;
-		}
-		public Terminal getTerminal(){
-			return terminal;
-		}
-		@Override
-		public LatLng getPosition() {
-			if(terminal!=null)
-				return terminal.getPosition();
-			return null;
-		}
-		
-	}
-	/**/
 	public static class Terminal extends Model{
 		private int terminal_no;
 		private String terminal_name;
@@ -133,30 +175,35 @@ public class DBModel{
 		private String misc_ko;
 		private double latitude;
 		private double longitude;
+		private boolean hasPosition;
 		
 		public void setLatLng(String value){
-			String[] var = value.split(",");
-			latitude = Double.parseDouble(var[0]);
-			longitude = Double.parseDouble(var[1]);
-		}
-		public void setLat(double lat){
-			latitude = lat;
-		}
-		public void setLng(double lng){
-			longitude = lng;
-		}
-		public double getLat(){
-			return latitude;
-		}
-		public double getLng(){
-			return longitude;
+			try{
+				hasPosition = false;
+				if(value!=null){
+					String[] var = value.split(",");
+					latitude = Double.parseDouble(var[0]);
+					longitude = Double.parseDouble(var[1]);
+					hasPosition = true;
+				}
+			}catch(NumberFormatException e){
+			}
 		}
 		public String getLatLng(){
-			return latitude+","+longitude;
+			if(hasPosition)
+				return latitude+","+longitude;
+			else
+				return null;
+		}
+		public boolean hasPosition(){
+			return hasPosition;
 		}
 		//@Override
 		public LatLng getPosition(){
-			return new LatLng(latitude, longitude);
+			if(hasPosition)
+				return new LatLng(latitude, longitude);
+			else
+				return null;
 		}
 		
 		public void setPhoneNo(String no){
@@ -257,9 +304,11 @@ public class DBModel{
 		private int dept_no;
 		private String dept_name;
 		private boolean dept_high;
+		private int dept_order;
 		private int dest_no;
 		private String dest_name;
 		private boolean dest_high;
+		private int dest_order;
 		private int distance;
 		
 		public void setLineNo(int no){
@@ -295,14 +344,26 @@ public class DBModel{
 		public void setDeptHigh(boolean high){
 			dept_high = high;
 		}
+		public void setDeptOrder(int order){
+			dept_order = order;
+		}
 		public boolean getDeptHigh(){
 			return dept_high;
+		}
+		public int getDeptOrder(){
+			return dept_order;
 		}
 		public void setDestHigh(boolean high){
 			dest_high = high;
 		}
+		public void setDestOrder(int order){
+			dest_order = order;
+		}
 		public boolean getDestHigh(){
 			return dest_high;
+		}
+		public int getDestOrder(){
+			return dest_order;
 		}
 		public void setDistance(int distance){
 			this.distance = distance;

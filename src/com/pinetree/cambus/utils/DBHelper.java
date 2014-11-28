@@ -16,6 +16,9 @@ public class DBHelper extends SQLiteOpenHelper{
 	public DBHelper(Context context){
 		this(context, DB_NAME, null, DB_VERSION);
 	}
+	public DBHelper(Context context, String dbName, int db_version){
+		this(context, dbName, null, db_version);
+	}
 	public DBHelper(Context context, int db_version){
 		this(context, DB_NAME, null, db_version);
 	}
@@ -39,7 +42,8 @@ public class DBHelper extends SQLiteOpenHelper{
 				"CREATE TABLE Cambus_CityTable (" +
 					"city_no INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
 					"city_name TEXT NOT NULL, " +
-					"preference INTEGER NOT NULL);";
+					"preference INTEGER NOT NULL, " +
+					"pref_order INTEGER NULL );";
 		
 		// 회사목록 
 		String createCambusCompanyTableSql =
@@ -55,9 +59,9 @@ public class DBHelper extends SQLiteOpenHelper{
 					"city_no INTEGER NOT NULL, " + // FK - CityTable
 					"company_no INTEGER NOT NULL, " + // FK - CityTable
 					"phone_no TEXT NULL, " +
-					"purchase INTEGER NOT NULL, " +
-					"get_in INTEGER NOT NULL, " +
-					"get_off INTEGER NOT NULL, " +
+					"purchase INTEGER NULL, " +
+					"get_in INTEGER NULL, " +
+					"get_off INTEGER NULL, " +
 					"link TEXT NULL, " +
 					"address TEXT NULL, " +
 					"misc_en TEXT NULL, " +
@@ -207,10 +211,10 @@ public class DBHelper extends SQLiteOpenHelper{
 		db.execSQL("DROP TABLE IF EXISTS Cambus_LineBusTable");
 		db.execSQL("DROP TABLE IF EXISTS Cambus_LineBusTimeTable");
 		
-		db.execSQL("DROP TABLE IF EXISTS Cambus_LineView");
-		db.execSQL("DROP TABLE IF EXISTS Cambus_LineBusView");
-		db.execSQL("DROP TABLE IF EXISTS Cambus_LineBusTimeView");
-		db.execSQL("DROP TABLE IF EXISTS Cambus_TerminalView");
+		db.execSQL("DROP VIEW IF EXISTS Cambus_LineView");
+		db.execSQL("DROP VIEW IF EXISTS Cambus_LineBusView");
+		db.execSQL("DROP VIEW IF EXISTS Cambus_LineBusTimeView");
+		db.execSQL("DROP VIEW IF EXISTS Cambus_TerminalView");
 		
 		onCreate(db);
 	}

@@ -55,6 +55,8 @@ public class DBHandler {
 		long rv = -1;
 		values.put("city_name", city.getCityName());
 		values.put("preference",city.getHigh()?1:0);
+		values.put("pref_order",city.getOrder());
+		
 		rv = db.insert("Cambus_CityTable", null, values);
 		if(rv<0){
 			throw new SQLException("City Insert Error:"+values);
@@ -176,12 +178,14 @@ public class DBHandler {
 			int city_no;
 			String city_name;
 			boolean isHigh;
+			int order;
 			DepartureCity object;
 			do{
 				city_no = cursor.getInt(cursor.getColumnIndex("city_no"));
 				city_name = cursor.getString(cursor.getColumnIndex("city_name"));
 				isHigh = cursor.getInt(cursor.getColumnIndex("preference"))>0?true:false;
-				
+				order = cursor.getInt(cursor.getColumnIndex("pref_order"));
+				//Log.i("DebugPrint",city_name+":"+order);
 				if(!hash.containsKey(String.valueOf(city_no))){
 					hash.put(String.valueOf(city_no), city_name);
 					object = new DepartureCity();
@@ -203,7 +207,7 @@ public class DBHandler {
 				"FROM Cambus_LineView a " +
 				"INNER JOIN Cambus_CityTable b " +
 				"ON a.dept_no = b.city_no " +
-				"ORDER BY b.preference desc, b.city_name asc" +
+				"ORDER BY b.preference desc, b.pref_order asc, b.city_name asc" +
 				";";
 		Cursor cursor = db.rawQuery(sql, null);
 		if(cursor != null){
@@ -370,7 +374,9 @@ public class DBHandler {
 				object.setDeptName(cursor.getString(cursor.getColumnIndex("dept_name")));
 				object.setDestName(cursor.getString(cursor.getColumnIndex("dest_name")));
 				object.setDeptHigh(cursor.getInt(cursor.getColumnIndex("dept_pref"))>0?true:false);
+				object.setDeptOrder(cursor.getInt(cursor.getColumnIndex("dept_order")));
 				object.setDestHigh(cursor.getInt(cursor.getColumnIndex("dest_pref"))>0?true:false);
+				object.setDestOrder(cursor.getInt(cursor.getColumnIndex("dest_order")));
 				object.setDistance(cursor.getInt(cursor.getColumnIndex("distance")));
 				objects.add(object);
 			}while(cursor.moveToNext());
@@ -380,7 +386,7 @@ public class DBHandler {
 	
 	public Cursor getLineListCursor(){
 		String sql =
-				"SELECT a.*, b.preference as dept_pref, c.preference as dest_pref " +
+				"SELECT a.*, b.preference as dept_pref, b.pref_order as dept_order, c.preference as dest_pref, c.pref_order as dest_order " +
 				"FROM Cambus_LineView a " +
 				"INNER JOIN Cambus_CityTable b " +
 				"ON a.dept_no = b.city_no " +
@@ -416,12 +422,11 @@ public class DBHandler {
 	}
 	
 	public Cursor getCityListCursor(){
-		Cursor cursor = db.query(
-				true,
-				"CamBUS_CityTable",
-				null,
-				null,
-				null, null, null, null, null, null);
+		String sql =
+				"SELECT * " +
+				"FROM CamBUS_CityTable " +
+				";";
+		Cursor cursor = db.rawQuery(sql, null);
 		if(cursor != null){
 			cursor.moveToFirst();
 		}
@@ -430,15 +435,23 @@ public class DBHandler {
 	
 	public Cursor getCityNumberCursor(String cityName){
 		if(cityName.equals("")){
-			throw new NullPointerException("NullCity:"+cityName);
+			throw new NullPointerException("Null City:"+cityName);
 		}
+		String sql =
+				"SELECT * " +
+				"FROM CamBUS_CityTable " +
+				"WHERE city_name=? " +
+				";";
+		
+		Cursor cursor = db.rawQuery(sql, new String[]{cityName});
+		/*
 		Cursor cursor = db.query(
 				true,
 				"CamBUS_CityTable",
 				null,
 				"city_name='"+cityName+"'",
 				null, null, null, null, null, null);
-		
+		*/
 		if(cursor != null){
 			cursor.moveToFirst();
 		}
@@ -456,15 +469,24 @@ public class DBHandler {
 	}
 	public Cursor getCityNameCursor(int cityNo){
 		if(cityNo<0){
-			throw new NullPointerException("NullCity:"+cityNo);
+			throw new NullPointerException("Null City:"+cityNo);
 		}
+		
+		String sql =
+				"SELECT * " +
+				"FROM CamBUS_CityTable " +
+				"WHERE city_no=? " +
+				";";
+		
+		Cursor cursor = db.rawQuery(sql, new String[]{String.valueOf(cityNo)});
+		/*
 		Cursor cursor = db.query(
 				true,
 				"CamBUS_CityTable",
 				null,
 				"city_no='" + cityNo + "'",
 				null, null, null, null, null, null);
-		
+		*/
 		if(cursor != null){
 			cursor.moveToFirst();
 		}
@@ -487,13 +509,21 @@ public class DBHandler {
 		if(typeNo<0){
 			throw new NullPointerException("NullType:"+typeNo);
 		}
+		String sql =
+				"SELECT * " +
+				"FROM CamBUS_TypeTable " +
+				"WHERE type_no=? " +
+				";";
+		
+		Cursor cursor = db.rawQuery(sql, new String[]{String.valueOf(typeNo)});
+		/*
 		Cursor cursor = db.query(
 				true,
 				"CamBUS_TypeTable",
 				null,
 				"type_no='" + typeNo + "'",
 				null, null, null, null, null, null);
-		
+		*/
 		if(cursor != null){
 			cursor.moveToFirst();
 		}
@@ -503,13 +533,21 @@ public class DBHandler {
 		if(typeName.equals("")){
 			throw new NullPointerException("NullType:"+typeName);
 		}
+		String sql =
+				"SELECT * " +
+				"FROM CamBUS_TypeTable " +
+				"WHERE type_name=? " +
+				";";
+		
+		Cursor cursor = db.rawQuery(sql, new String[]{typeName});
+		/*
 		Cursor cursor = db.query(
 				true,
 				"CamBUS_TypeTable",
 				null,
 				"type_name='"+typeName+"'",
 				null, null, null, null, null, null);
-		
+		*/
 		if(cursor != null){
 			cursor.moveToFirst();
 		}
@@ -531,13 +569,21 @@ public class DBHandler {
 		if(company_no<0){
 			throw new NullPointerException("NullCompany:"+company_no);
 		}
+		String sql =
+				"SELECT * " +
+				"FROM CamBUS_CompanyTable " +
+				"WHERE company_no=? " +
+				";";
+		
+		Cursor cursor = db.rawQuery(sql, new String[]{String.valueOf(company_no)});
+		/*
 		Cursor cursor = db.query(
 				true,
 				"CamBUS_CompanyTable",
 				null,
 				"company_no='" + company_no + "'",
 				null, null, null, null, null, null);
-		
+		*/
 		if(cursor != null){
 			cursor.moveToFirst();
 		}
@@ -547,13 +593,22 @@ public class DBHandler {
 		if(companyName.equals("")){
 			throw new NullPointerException("NullCompany:"+companyName);
 		}
+		
+		String sql =
+				"SELECT * " +
+				"FROM CamBUS_CompanyTable " +
+				"WHERE company_name=? " +
+				";";
+		
+		Cursor cursor = db.rawQuery(sql, new String[]{companyName});
+		/*
 		Cursor cursor = db.query(
 				true,
 				"CamBUS_CompanyTable",
 				null,
 				"company_name='"+companyName+"'",
 				null, null, null, null, null, null);
-		
+		*/
 		if(cursor != null){
 			cursor.moveToFirst();
 		}
@@ -580,12 +635,21 @@ public class DBHandler {
 		return objects;
 	}
 	public Cursor getCompanyListCursor(){
+		
+		String sql =
+				"SELECT * " +
+				"FROM CamBUS_CompanyTable " +
+				";";
+		
+		Cursor cursor = db.rawQuery(sql, null);
+		/*
 		Cursor cursor = db.query(
 				true,
 				"CamBUS_CompanyTable",
 				null,
 				null,
 				null, null, null, null, null, null);
+		*/
 		if(cursor != null){
 			cursor.moveToFirst();
 		}
@@ -660,12 +724,21 @@ public class DBHandler {
 		return objects;
 	}
 	public Cursor getTerminalListInCityCursor(int city_no){
+		String sql =
+				"SELECT * " +
+				"FROM CamBUS_TerminalView " +
+				"WHERE city_no=? " +
+				";";
+		
+		Cursor cursor = db.rawQuery(sql, new String[]{String.valueOf(city_no)});
+		/*
 		Cursor cursor = db.query(
 				true,
 				"CamBUS_TerminalView",
 				null,
 				"city_no='" + city_no + "'",
 				null, null, null, null, null, null);
+		*/
 		if(cursor != null){
 			cursor.moveToFirst();
 		}
@@ -673,26 +746,44 @@ public class DBHandler {
 	}
 	public Cursor getTerminalListCursor(int city_no, int company_no){
 		if(company_no<0){
-			throw new NullPointerException("NullCompany:"+company_no);
+			throw new NullPointerException("Null Company:"+company_no);
 		}
+		
+		String sql =
+				"SELECT * " +
+				"FROM CamBUS_TerminalView " +
+				"WHERE city_no=? AND company_no=? " +
+				";";
+		
+		Cursor cursor = db.rawQuery(sql, new String[]{String.valueOf(city_no), String.valueOf(company_no)});
+		/*
 		Cursor cursor = db.query(
 				true,
 				"CamBUS_TerminalView",
 				null,
 				"city_no='" + city_no + "' AND company_no='"+company_no+"'",
 				null, null, null, null, null, null);
+		*/
 		if(cursor != null){
 			cursor.moveToFirst();
 		}
 		return cursor;
 	}
 	public Cursor getTerminalListCursor(){
+		String sql =
+				"SELECT * " +
+				"FROM CamBUS_TerminalTable " +
+				";";
+		
+		Cursor cursor = db.rawQuery(sql, null);
+		/*
 		Cursor cursor = db.query(
 				true,
 				"CamBUS_TerminalListTable",
 				null,
 				null,
 				null, null, null, null, null, null);
+		*/
 		if(cursor != null){
 			cursor.moveToFirst();
 		}

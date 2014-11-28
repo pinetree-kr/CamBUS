@@ -19,6 +19,7 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -86,7 +87,7 @@ public class FilterFragment extends BaseFragment {
 		textTitle.setTypeface(FontLoader.getFontTypeface(
 				getActivity().getAssets(),
 				"HelveticaNeueLTStd-Lt.otf"));
-		textTitle.setTextSize(FontLoader.getFontSizeFromPt(app.rateDpi, 8));
+		textTitle.setTextSize(TypedValue.COMPLEX_UNIT_PT, (float)8);
 		
 		View titleBg = view.findViewById(R.id.TitleBackGround);
 		titleBg.setBackgroundResource(R.drawable.top);
@@ -110,35 +111,27 @@ public class FilterFragment extends BaseFragment {
 		Drawable dBg = ImageLoader.getResizedDrawableFromRes(
 				getResources(),
 				R.drawable.background,
-				app.rateDpi,
+				app.density,
 				app.rateWidth,
 				app.rateHeight
 				);
 		imageBackground.setImageDrawable(dBg);
 		/**/
-		Drawable dSearch = ImageLoader.getResizedDrawableFromRes(
+		Drawable dSearch = ImageLoader.getResizedDrawable(
 				getResources(),
-				R.drawable.searchbtn,
-				app.rateDpi,
-				app.rateWidth,
-				app.rateHeight
+				R.drawable.searchbtn
 				);
+		
 		imageSearch.setImageDrawable(dSearch);
 		
-		Drawable dBus = ImageLoader.getResizedDrawableFromRes(
+		Drawable dBus = ImageLoader.getResizedDrawable(
 				getResources(),
-				R.drawable.bus,
-				app.rateDpi,
-				app.rateWidth,
-				app.rateHeight
+				R.drawable.bus
 				);
 		imageBus.setImageDrawable(dBus);
-		Drawable dTri = ImageLoader.getResizedDrawableFromRes(
+		Drawable dTri = ImageLoader.getResizedDrawable(
 				getResources(),
-				R.drawable.arrow,
-				app.rateDpi,
-				app.rateWidth,
-				app.rateHeight
+				R.drawable.arrow
 				);
 		imageTri.setImageDrawable(dTri);
 		
@@ -204,23 +197,24 @@ public class FilterFragment extends BaseFragment {
 		textDeparture.setTypeface(FontLoader.getFontTypeface(
 				getActivity().getAssets(),
 				"HelveticaNeueLTStd-Lt.otf"));
-		textDeparture.setTextSize(FontLoader.getFontSizeFromPt(app.rateDpi, (float)7.2));
+		textDeparture.setTextSize(TypedValue.COMPLEX_UNIT_PT, (float)7.2);
+		//textDeparture.setTextSize(FontLoader.getFontSizeFromPt(app, (float)7.2));
 		textDestination.setTypeface(FontLoader.getFontTypeface(
 				getActivity().getAssets(),
 				"HelveticaNeueLTStd-Lt.otf"));
-		textDestination.setTextSize(FontLoader.getFontSizeFromPt(app.rateDpi, (float)7.2));
+		textDestination.setTextSize(TypedValue.COMPLEX_UNIT_PT, (float)7.2);
 		textTime.setTypeface(FontLoader.getFontTypeface(
 				getActivity().getAssets(),
 				"HelveticaNeueLTStd-Lt.otf"));
-		textTime.setTextSize(FontLoader.getFontSizeFromPt(app.rateDpi, (float)7.2));
+		textTime.setTextSize(TypedValue.COMPLEX_UNIT_PT, (float)7.2);
 		textType.setTypeface(FontLoader.getFontTypeface(
 				getActivity().getAssets(),
 				"HelveticaNeueLTStd-Lt.otf"));
-		textType.setTextSize(FontLoader.getFontSizeFromPt(app.rateDpi, (float)7.2));
+		textType.setTextSize(TypedValue.COMPLEX_UNIT_PT, (float)7.2);
 		textSearch.setTypeface(FontLoader.getFontTypeface(
 				getActivity().getAssets(),
 				"HelveticaNeueLTStd-Lt.otf"));
-		textSearch.setTextSize(FontLoader.getFontSizeFromPt(app.rateDpi, 7));
+		textSearch.setTextSize(TypedValue.COMPLEX_UNIT_PT, (float)7.0);
 	}
 	
 	protected void loadDepartureAdapter(){

@@ -8,17 +8,20 @@
 	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content"
 	    android:textStyle="bold"
+	    android:layout_marginBottom="2dp"
 	    android:gravity="center"/>
+	<!-- 
 	<TextView
 	    android:id="@+id/TerminalPhoneNo"
 	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content"
 	    android:layout_marginTop="4dp"
 	    android:gravity="center"/>
+	 -->
 	<TextView
 	    android:id="@+id/TerminalAddress"
 	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content"
-	    android:layout_marginTop="3dp"
+	    android:layout_marginTop="2dp"
 	    android:gravity="left"/>
 </LinearLayout>

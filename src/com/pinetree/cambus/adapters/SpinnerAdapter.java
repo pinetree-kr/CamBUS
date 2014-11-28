@@ -12,6 +12,7 @@ import android.R.color;
 import android.content.Context;
 import android.graphics.Color;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -89,7 +90,8 @@ public class SpinnerAdapter<T> extends ArrayAdapter<T>{
 		textName.setTypeface(FontLoader.getFontTypeface(
 				getContext().getAssets(),
 				"HelveticaNeueLTStd-Lt.otf"));
-		textName.setTextSize(FontLoader.getFontSizeFromPt(app.rateDpi, (float)7.2));
+		//textName.setTextSize(FontLoader.getFontSizeFromPt(app, (float)7.2));
+		textName.setTextSize(TypedValue.COMPLEX_UNIT_PT, (float)7.2);
 		return view;
 	}
 }

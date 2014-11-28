@@ -72,6 +72,9 @@ public class ExcelHandler {
 								case 2:
 									city.setHigh(cell.getStringCellValue().trim().equals("High")?true:false);
 									break;
+								case 3:
+									city.setOrder((int)cell.getNumericCellValue());
+									break;
 								}
 							}
 							city.setCityNo((int)handler.insertCity(city));

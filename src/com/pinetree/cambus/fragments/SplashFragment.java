@@ -28,6 +28,7 @@ import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,12 +57,9 @@ public class SplashFragment extends BaseFragment {
 		
 		// title image
 		ImageView imageTitle = (ImageView)view.findViewById(R.id.imageTitle);
-		Drawable dTitle = ImageLoader.getResizedDrawableFromRes(
+		Drawable dTitle = ImageLoader.getResizedDrawable(
 				getResources(),
-				R.drawable.logo,
-				app.rateDpi,
-				app.rateWidth,
-				app.rateHeight
+				R.drawable.logo
 				);
 		imageTitle.setImageDrawable(dTitle);
 		
@@ -70,7 +68,8 @@ public class SplashFragment extends BaseFragment {
 		textTitle.setTypeface(FontLoader.getFontTypeface(
 				getActivity().getAssets(),
 				"HelveticaNeueLTStd-UltLt.otf"));
-		textTitle.setTextSize(FontLoader.getFontSizeFromPt(app.rateDpi, 19));
+		//textTitle.setTextSize(FontLoader.getFontSizeFromPt(app, 19));
+		textTitle.setTextSize(TypedValue.COMPLEX_UNIT_PT, (float)19);
 		
 		return view;
 	}

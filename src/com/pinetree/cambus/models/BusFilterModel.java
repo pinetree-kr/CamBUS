@@ -67,6 +67,7 @@ public class BusFilterModel extends Model implements ModelCallbackInterface, Mod
 			city.setCityNo(object.getDeptNo());
 			city.setCityName(object.getDeptName());
 			city.setHigh(object.getDeptHigh());
+			city.setOrder(object.getDeptOrder());
 			
 			if(!hash.containsKey(String.valueOf(city.getCityNo()))){
 				hash.put(String.valueOf(city.getCityNo()), city.getCityName());
@@ -75,7 +76,8 @@ public class BusFilterModel extends Model implements ModelCallbackInterface, Mod
 		}
 		hash.clear();
 		// 추천수가 높은 순으로 정렬
-		Collections.sort(objects, new City.PreferenceDescCompare());
+		//Collections.sort(objects, new City.PreferenceDescCompare());
+		Collections.sort(objects, new City.PrefOrderDescCompare());
 		return objects;
 	}
 	public ArrayList<DestinationCity> getDestinationList(int dept_no){
@@ -92,7 +94,7 @@ public class BusFilterModel extends Model implements ModelCallbackInterface, Mod
 				city.setCityNo(object.getDestNo());
 				city.setCityName(object.getDestName());
 				city.setHigh(object.getDestHigh());
-				
+				city.setOrder(object.getDestOrder());
 				if(!hash.containsKey(String.valueOf(city.getCityNo()))){
 					hash.put(String.valueOf(city.getCityNo()), city.getCityName());
 					objects.add(city);
@@ -101,7 +103,8 @@ public class BusFilterModel extends Model implements ModelCallbackInterface, Mod
 		}
 		hash.clear();
 		// 추천수가 높은 순으로 정렬
-		Collections.sort(objects, new City.PreferenceDescCompare());
+		//Collections.sort(objects, new City.PreferenceDescCompare());
+		Collections.sort(objects, new City.PrefOrderDescCompare());
 		return objects;
 	}
 	public Line getLineInfo(int dept_no, int dest_no){

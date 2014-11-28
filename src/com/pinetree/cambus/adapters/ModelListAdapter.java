@@ -13,6 +13,7 @@ import com.pinetree.cambus.viewholders.ViewHolder;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -80,15 +81,13 @@ public class ModelListAdapter<T> extends ArrayAdapter<T>{
 		textCompany.setTypeface(FontLoader.getFontTypeface(
 				getContext().getAssets(),
 				"HelveticaNeueLTStd-Lt.otf"));
-		textCompany.setTextSize(FontLoader.getFontSizeFromPt(app.rateDpi, (float)7.2));
+		//textCompany.setTextSize(FontLoader.getFontSizeFromPt(app, (float)7.2));
+		textCompany.setTextSize(TypedValue.COMPLEX_UNIT_PT, (float)7.2);
 		
 		//TODO : 버스타입에 따른 다른 이미지 
-		Drawable dBusType = ImageLoader.getResizedDrawableFromRes(
+		Drawable dBusType = ImageLoader.getResizedDrawable(
 				this.getContext().getResources(),
-				R.drawable.busicon,
-				app.rateDpi,
-				app.rateWidth,
-				app.rateHeight
+				R.drawable.busicon
 				);
 		
 		imageBusType.setImageDrawable(dBusType);
@@ -97,17 +96,20 @@ public class ModelListAdapter<T> extends ArrayAdapter<T>{
 		textFee.setTypeface(FontLoader.getFontTypeface(
 				getContext().getAssets(),
 				"HelveticaNeueLTStd-Lt.otf"));
-		textFee.setTextSize(FontLoader.getFontSizeFromPt(app.rateDpi, (float)5));
+		//textFee.setTextSize(FontLoader.getFontSizeFromPt(app, (float)5));
+		textFee.setTextSize(TypedValue.COMPLEX_UNIT_PT, (float)5.0);
 		FeeInfo.setText(String.valueOf(object.getForeignerPrice())+"$");
 		FeeInfo.setTypeface(FontLoader.getFontTypeface(
 				getContext().getAssets(),
 				"HelveticaNeueLTStd-Lt.otf"));
-		FeeInfo.setTextSize(FontLoader.getFontSizeFromPt(app.rateDpi, (float)6));
+		//FeeInfo.setTextSize(FontLoader.getFontSizeFromPt(app, (float)6));
+		FeeInfo.setTextSize(TypedValue.COMPLEX_UNIT_PT, (float)6.0);
 		
 		textAverage.setTypeface(FontLoader.getFontTypeface(
 				getContext().getAssets(),
 				"HelveticaNeueLTStd-Lt.otf"));
-		textAverage.setTextSize(FontLoader.getFontSizeFromPt(app.rateDpi, (float)5));
+		//textAverage.setTextSize(FontLoader.getFontSizeFromPt(app, (float)5));
+		textAverage.setTextSize(TypedValue.COMPLEX_UNIT_PT, (float)5.0);
 		
 		if(object.getDurationTime()<=1){
 			textHour.setText(R.string.hour);
@@ -117,25 +119,29 @@ public class ModelListAdapter<T> extends ArrayAdapter<T>{
 		textHour.setTypeface(FontLoader.getFontTypeface(
 				getContext().getAssets(),
 				"HelveticaNeueLTStd-Lt.otf"));
-		textHour.setTextSize(FontLoader.getFontSizeFromPt(app.rateDpi, (float)5));
+		//textHour.setTextSize(FontLoader.getFontSizeFromPt(app, (float)5));
+		textHour.setTextSize(TypedValue.COMPLEX_UNIT_PT, (float)5.0);
 		
 		DurationTimeInfo.setText(DateUtils.getDurationTime(object.getDurationTime()));
 		DurationTimeInfo.setTypeface(FontLoader.getFontTypeface(
 				getContext().getAssets(),
 				"HelveticaNeueLTStd-Lt.otf"));
-		DurationTimeInfo.setTextSize(FontLoader.getFontSizeFromPt(app.rateDpi, (float)6));
+		//DurationTimeInfo.setTextSize(FontLoader.getFontSizeFromPt(app, (float)6));
+		DurationTimeInfo.setTextSize(TypedValue.COMPLEX_UNIT_PT, (float)6.0);
 		
 		textNextTime.setTypeface(FontLoader.getFontTypeface(
 				getContext().getAssets(),
 				"HelveticaNeueLTStd-Lt.otf"));
-		textNextTime.setTextSize(FontLoader.getFontSizeFromPt(app.rateDpi, (float)5));
+		//textNextTime.setTextSize(FontLoader.getFontSizeFromPt(app, (float)5));
+		textNextTime.setTextSize(TypedValue.COMPLEX_UNIT_PT, (float)5.0);
 		
 		NextTimeInfo.setText(
 				DateUtils.getTimes(object.getDeptTime()));
 		NextTimeInfo.setTypeface(FontLoader.getFontTypeface(
 				getContext().getAssets(),
 				"HelveticaNeueLTStd-Lt.otf"));
-		NextTimeInfo.setTextSize(FontLoader.getFontSizeFromPt(app.rateDpi, (float)6));
+		//NextTimeInfo.setTextSize(FontLoader.getFontSizeFromPt(app, (float)6));
+		NextTimeInfo.setTextSize(TypedValue.COMPLEX_UNIT_PT, (float)6.0);
 		
 		//TODO setTerminal Info
 		if(object.getTerminalList().size()>0){

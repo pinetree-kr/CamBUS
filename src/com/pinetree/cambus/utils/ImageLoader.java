@@ -8,7 +8,75 @@ import android.graphics.drawable.Drawable;
 import android.util.Log;
 
 public class ImageLoader {
+	public static Drawable getDrawableFromBitmap(Resources res, Bitmap bitmap){
+		Drawable d = new BitmapDrawable(res, bitmap);
+		return d;
+	}
 	
+	// resizing
+	public static Bitmap getResizedBitmap(Bitmap bitmap, int reqWidth, int reqHeight){
+		Bitmap resized = Bitmap.createScaledBitmap(bitmap, reqWidth, reqHeight, true);
+		
+		//Log.i("DebugPrint","Resize(w,h)-"+resized.getWidth()+","+resized.getHeight());
+		return resized;
+	}
+	
+	public static Bitmap getResizedBitmap(Bitmap bitmap, int reqSize, boolean isWidth){
+		int source = isWidth?bitmap.getWidth():bitmap.getHeight();
+		int target = isWidth?bitmap.getHeight():bitmap.getWidth();
+		
+		Bitmap resized = null;
+		//while(source>reqSize){
+		resized = Bitmap.createScaledBitmap(
+			bitmap,
+			isWidth?reqSize:(int)(target*((float)reqSize/source)),
+			isWidth?(int)(target*((float)reqSize/source)):reqSize,
+			true);
+		source = isWidth?resized.getWidth():resized.getHeight();
+		target = isWidth?resized.getHeight():resized.getWidth();
+		//}
+		//Log.i("DebugPrint","Resize()-"+resized.getWidth()+","+resized.getHeight());
+		return resized;
+	}
+
+	public static Bitmap getResizedBitmap(Bitmap bitmap){
+		int width = bitmap.getWidth();
+		int height = bitmap.getHeight();
+		
+		Bitmap resized = null;
+		resized = Bitmap.createScaledBitmap(
+				bitmap,width,height,true);
+		//Log.i("DebugPrint","Resize(null)-"+resized.getWidth()+","+resized.getHeight());
+		return resized;
+	}
+	
+	public static Drawable getResizedDrawable(
+			Resources res, int resId, int reqWidth, int reqHeight){
+		Bitmap bitmap = BitmapFactory.decodeResource(res, resId);
+		return getDrawableFromBitmap(
+				res,
+				getResizedBitmap(bitmap, reqWidth, reqHeight)
+				);
+	}
+	
+	public static Drawable getResizedDrawable(
+			Resources res, int resId){
+		Bitmap bitmap = BitmapFactory.decodeResource(res, resId);
+		return getDrawableFromBitmap(
+				res,
+				getResizedBitmap(bitmap)
+				);
+	}
+	
+	public static Drawable getResizedDrawable(
+			Resources res, int resId, int reqSize, boolean isWidth){
+		Bitmap bitmap = BitmapFactory.decodeResource(res, resId);
+		return getDrawableFromBitmap(
+				res,
+				getResizedBitmap(bitmap, reqSize, isWidth)
+				);
+	}
+	/*/
 	public static int calculateInSampleSize(
 			BitmapFactory.Options options, int reqWidth, int reqHeight){
 		final int height = options.outHeight;
@@ -57,16 +125,18 @@ public class ImageLoader {
 	}
 	
 	public static Bitmap getResizedBitmap(
-			Bitmap bitmap, float rateDpi, float rateWidth, float rateHeight){
+			Bitmap bitmap, double density, double rateWidth, double rateHeight){
 		int height = bitmap.getHeight();
 		int width = bitmap.getWidth();
 		
-		int reqWidth = (int)(width * rateWidth / rateDpi);
-		int reqHeight = (int)(height * rateHeight / rateDpi);
+		int reqWidth = (int)(width * rateWidth / density);
+		int reqHeight = (int)(height * rateHeight / density);
 		
 		Bitmap resized = null;
 		resized = Bitmap.createScaledBitmap(
 				bitmap, reqWidth, reqHeight, true);
+		
+		
 		
 		return resized;
 	}
@@ -98,15 +168,14 @@ public class ImageLoader {
 				);
 	}
 	
-	public static Drawable getResizedDrawableFromRes(
-			Resources res, int resId, float rateDpi, float rateWidth, float rateHeight){
-		
+	public static Drawable getResizedDrawableFromRes(Resources res,
+			int resId, double density, double rateWidth, double rateHeight) {
 		Bitmap bitmap = BitmapFactory.decodeResource(res, resId);
 		
 		return getDrawableFromBitmap(
 				res,
-				getResizedBitmap(bitmap, rateDpi, rateWidth, rateHeight)
+				getResizedBitmap(bitmap, density, rateWidth, rateHeight)
 				);
 	}
-
+	/**/
 }

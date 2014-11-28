@@ -1,0 +1,25 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	>
+	<FrameLayout
+	    android:id="@+id/leftInfo"
+	    android:layout_toLeftOf="@+id/rightInfo"
+	    android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+		>
+		<FrameLayout
+			android:id="@+id/base_fragment"
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent"/>
+	</FrameLayout>
+	<TextView
+	    android:id="@+id/rightInfo"
+	    android:layout_alignParentRight="true"
+	    android:layout_width="wrap_content"
+	    android:layout_height="match_parent"
+	    android:text="test"
+	    />
+</RelativeLayout>

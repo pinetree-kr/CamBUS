@@ -1,0 +1,27 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="wrap_content"
+	android:layout_height="wrap_content"
+	>
+	<FrameLayout
+	    android:id="@+id/terminal_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <fragment
+		    android:id="@+id/map"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:clickable="true"
+            class="com.google.android.gms.maps.MapFragment"
+            android:enabled="true"/>
+        <LinearLayout
+            android:id="@+id/terminal_info"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/white"
+            android:orientation="vertical"
+            >
+        </LinearLayout>
+    </FrameLayout>
+</FrameLayout>

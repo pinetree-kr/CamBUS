@@ -7,6 +7,7 @@ import com.pinetree.cambus.models.Model;
 import android.R.drawable;
 import android.app.Fragment;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -20,11 +21,21 @@ public class FilterActivity extends BaseActivity {
 		if(savedInstanceState == null){
 			Intent intent = getIntent();
 			Model model = (Model)intent.getSerializableExtra("model");
-			
+			Fragment fragment;
+			switch(getResources().getConfiguration().orientation){
+			// 세로형 
+			case Configuration.ORIENTATION_PORTRAIT:
+				fragment = FilterFragment.getInstances(model);
+				switchFragment(fragment, true);
+				break;
+			// 가로형 
+			case Configuration.ORIENTATION_LANDSCAPE:
+				fragment = FilterFragment.getInstances(model);
+				switchFragment(fragment, true);
+				break;
+			}
 			// fragment에 activity로부터 전달받은 값을 전달
-			Fragment fragment = FilterFragment.getInstances(model);
 			
-			switchFragment(fragment, true);
 		}
 	}
 }

@@ -1,5 +1,7 @@
 package com.pinetree.cambus.fragments;
 
+import java.util.ArrayList;
+
 import com.pinetree.cambus.R;
 import com.pinetree.cambus.adapters.ModelListAdapter;
 import com.pinetree.cambus.models.BusFilterModel;
@@ -16,6 +18,7 @@ import android.app.FragmentTransaction;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -104,20 +107,15 @@ public class BusListFragment extends BaseFragment {
 		imagePrice = (ImageView)view.findViewById(R.id.ImageButtonPrice);
 		imageNearest = (ImageView)view.findViewById(R.id.ImageButtonNearest);
 		
-		dSelected = ImageLoader.getResizedDrawableFromRes(
+		dSelected = ImageLoader.getResizedDrawable(
 				getResources(),
-				R.drawable.btnselected,
-				app.rateDpi,
-				app.rateWidth,
-				app.rateHeight
+				R.drawable.btnselected
 				);
-		dUnSelected = ImageLoader.getResizedDrawableFromRes(
+		dUnSelected = ImageLoader.getResizedDrawable(
 				getResources(),
-				R.drawable.unselected,
-				app.rateDpi,
-				app.rateWidth,
-				app.rateHeight
+				R.drawable.unselected
 				);
+		
 		//imageSearch.setImageDrawable(dSearch);
 		
 		listView = (ListView) view.findViewById(R.id.ListView);
@@ -225,7 +223,8 @@ public class BusListFragment extends BaseFragment {
 		textTitle.setTypeface(FontLoader.getFontTypeface(
 				getActivity().getAssets(),
 				"HelveticaNeueLTStd-Lt.otf"));
-		textTitle.setTextSize(FontLoader.getFontSizeFromPt(app.rateDpi, 8));
+		//textTitle.setTextSize(FontLoader.getFontSizeFromPt(app, 8));
+		textTitle.setTextSize(TypedValue.COMPLEX_UNIT_PT, (float)8.0);
 		
 		// Text FilterInfos
 		String dep2des = buslistinfo.getLineInfo().getDeptName() + " > " + buslistinfo.getLineInfo().getDestName();
@@ -233,13 +232,15 @@ public class BusListFragment extends BaseFragment {
 		filterInfo.setTypeface(FontLoader.getFontTypeface(
 				getActivity().getAssets(),
 				"HelveticaNeueLTStd-Lt.otf"));
-		filterInfo.setTextSize(FontLoader.getFontSizeFromPt(app.rateDpi, (float)5.5));
+		//filterInfo.setTextSize(FontLoader.getFontSizeFromPt(app, (float)5.5));
+		filterInfo.setTextSize(TypedValue.COMPLEX_UNIT_PT, (float)5.5);
 		
 		timeInfo.setText(DateUtils.getTimes(buslistinfo.getDeptTime()));
 		timeInfo.setTypeface(FontLoader.getFontTypeface(
 				getActivity().getAssets(),
 				"HelveticaNeueLTStd-Lt.otf"));
-		timeInfo.setTextSize(FontLoader.getFontSizeFromPt(app.rateDpi, (float)5.5));
+		//timeInfo.setTextSize(FontLoader.getFontSizeFromPt(app, (float)5.5));
+		timeInfo.setTextSize(TypedValue.COMPLEX_UNIT_PT, (float)5.5);
 		
 		int distance = buslistinfo.getLineInfo().getDistance();
 		String km = distance > 0 ? String.valueOf(distance):"--";
@@ -247,7 +248,8 @@ public class BusListFragment extends BaseFragment {
 		distanceInfo.setTypeface(FontLoader.getFontTypeface(
 				getActivity().getAssets(),
 				"HelveticaNeueLTStd-Lt.otf"));
-		distanceInfo.setTextSize(FontLoader.getFontSizeFromPt(app.rateDpi, (float)5.5));
+		//distanceInfo.setTextSize(FontLoader.getFontSizeFromPt(app, (float)5.5));
+		distanceInfo.setTextSize(TypedValue.COMPLEX_UNIT_PT, (float)5.5);
 		
 		textBtnTime.setText(R.string.sort_time);
 		textBtnPrice.setText(R.string.sort_price);
@@ -258,20 +260,24 @@ public class BusListFragment extends BaseFragment {
 		textEmpty.setTypeface(FontLoader.getFontTypeface(
 				getActivity().getAssets(),
 				"HelveticaNeueLTStd-Lt.otf"));
-		textEmpty.setTextSize(FontLoader.getFontSizeFromPt(app.rateDpi, (float)6.5));
+		//textEmpty.setTextSize(FontLoader.getFontSizeFromPt(app, (float)6.5));
+		textEmpty.setTextSize(TypedValue.COMPLEX_UNIT_PT, (float)6.5);
 		
 		textBtnTime.setTypeface(FontLoader.getFontTypeface(
 				getActivity().getAssets(),
 				"HelveticaNeueLTStd-Lt.otf"));
-		textBtnTime.setTextSize(FontLoader.getFontSizeFromPt(app.rateDpi, (float)7.2));
+		//textBtnTime.setTextSize(FontLoader.getFontSizeFromPt(app, (float)7.2));
+		textBtnTime.setTextSize(TypedValue.COMPLEX_UNIT_PT, (float)7.2);
 		textBtnPrice.setTypeface(FontLoader.getFontTypeface(
 				getActivity().getAssets(),
 				"HelveticaNeueLTStd-Lt.otf"));
-		textBtnPrice.setTextSize(FontLoader.getFontSizeFromPt(app.rateDpi, (float)7.2));
+		//textBtnPrice.setTextSize(FontLoader.getFontSizeFromPt(app, (float)7.2));
+		textBtnPrice.setTextSize(TypedValue.COMPLEX_UNIT_PT, (float)7.2);
 		textBtnNearest.setTypeface(FontLoader.getFontTypeface(
 				getActivity().getAssets(),
 				"HelveticaNeueLTStd-Lt.otf"));
-		textBtnNearest.setTextSize(FontLoader.getFontSizeFromPt(app.rateDpi, (float)7.2));
+		//textBtnNearest.setTextSize(FontLoader.getFontSizeFromPt(app, (float)7.2));
+		textBtnNearest.setTextSize(TypedValue.COMPLEX_UNIT_PT, (float)7.2);
 	}
 	
 	private class ListViewClickListener implements AdapterView.OnItemClickListener{
@@ -279,11 +285,27 @@ public class BusListFragment extends BaseFragment {
 		public void onItemClick(AdapterView<?> parent, View view, int position,
 				long id) {
 			LineBusTime object = (LineBusTime)parent.getItemAtPosition(position);
-		    
-			if(object.getTerminalList().size()>0){
-				TerminalDialogFragment dialog = TerminalDialogFragment.getInstances(object.getTerminalList());
-				dialog.show(getFragmentManager(), "googlemap");
-			}
+		    ArrayList<Terminal> terminals = object.getTerminalList();
+
+		    if(terminals.size()!=0){
+		    	int i;
+		    	for(i=0;i<terminals.size();i++){
+		    		if(terminals.get(i).hasPosition())
+		    			break;
+		    	}
+		    	//터미널좌표가 있는 정보 GOTO 맵다이얼로그 
+		    	if(i!=terminals.size()){
+		    		TerminalMapDialogFragment dialog = TerminalMapDialogFragment.getInstances(object.getTerminalList());
+		    		dialog.show(getFragmentManager(), "googlemap");		    		
+		    	}
+		    	/*/
+		    	//좌표가 없는 정보 GOTO 연락처다이얼로그
+		    	else{
+		    		TerminalMapDialogFragment dialog = TerminalMapDialogFragment.getInstances(object.getTerminalList());
+		    		dialog.show(getFragmentManager(), "googlemap");
+		    	}
+		    	/**/
+		    }
 		}
 		
 	}
