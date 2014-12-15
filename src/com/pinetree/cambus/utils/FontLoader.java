@@ -1,22 +1,31 @@
 package com.pinetree.cambus.utils;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import android.content.Context;
-import android.content.res.AssetManager;
 import android.graphics.Typeface;
-import android.util.Log;
 import android.util.TypedValue;
 import android.widget.TextView;
 
 public class FontLoader {
+	private static Map<String, Typeface> fontMap = new HashMap<String, Typeface>();
 	public static Typeface getFontTypeface(Context context, int font){
 		String fontType = context.getResources().getText(font).toString();
-		return Typeface.createFromAsset(context.getAssets(), fontType);
+		if(fontMap.containsKey(fontType)){
+			return fontMap.get(fontType);
+		}else{
+			Typeface tf = Typeface.createFromAsset(context.getAssets(), fontType);
+			fontMap.put(fontType, tf);
+			return tf;
+		}
 	}
 	
 	public static void setTextViewTypeFace(Context context, TextView view, int font, float size){
+		/**/
 		view.setTypeface(FontLoader.getFontTypeface(
 				context,
-				font));
+				font));/**/
 		view.setTextSize(TypedValue.COMPLEX_UNIT_PT, size);
 	}
 	public static void setTextViewTypeFace(Context context, TextView view, int text, int font, float size){
