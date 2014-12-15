@@ -1,6 +1,11 @@
 CamBUS(Cambodia Bus)
 ======
 
+##2014.12.16
+1. Add CityRoute(only Phnom Penh)
+2. Redesigned DB Model
+3. Redesigned Layout(font-face, font-size, etc..)
+
 ##2014.11.28
 1. Redesigned Layout
 2. Add Dial-up connection
