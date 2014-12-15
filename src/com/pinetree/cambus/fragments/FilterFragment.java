@@ -1,21 +1,23 @@
 package com.pinetree.cambus.fragments;
 
+import java.util.ArrayList;
+
 import com.pinetree.cambus.BusListActivity;
+import com.pinetree.cambus.CityRoutesActivity;
 import com.pinetree.cambus.FilterActivity;
 import com.pinetree.cambus.R;
 import com.pinetree.cambus.adapters.SpinnerAdapter;
 import com.pinetree.cambus.interfaces.ModelCallbackInterface;
-import com.pinetree.cambus.models.BusFilterModel;
-import com.pinetree.cambus.models.BusListModel;
 import com.pinetree.cambus.models.Model;
 import com.pinetree.cambus.models.DBModel.*;
 import com.pinetree.cambus.utils.DBHandler;
-import com.pinetree.cambus.utils.ExcelFileInfo;
 import com.pinetree.cambus.utils.FontLoader;
 import com.pinetree.cambus.utils.ImageLoader;
 
 import android.app.Fragment;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
@@ -33,35 +35,32 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class FilterFragment extends BaseFragment {
-	protected Spinner
+	private Spinner
 		spinnerDeparture,
 		spinnerDestination,
 		spinnerTime,
+		spinnerCompany,
 		spinnerType; 
-	protected SpinnerAdapter
+	private SpinnerAdapter
 		adapterDeparture,
 		adapterDestination,
 		adapterTime,
+		adapterCompany,
 		adapterType;
-	protected TextView
+	private TextView
+		textTitle,
 		textDeparture,
 		textDestination,
 		textTime,
 		textType,
+		textCompany,
 		textSearch;
 	
-	protected BusFilterModel filter;
+	private View search;
+	private DBHandler handler;
 	
-	protected View search;
-	protected DBHandler handler;
-	
-
 	public static Fragment getInstances(Model model){
-		Bundle args = new Bundle();
-		args.putSerializable("model", model);
-		
 		Fragment fragment = new FilterFragment();
-		fragment.setArguments(args);
 		return fragment;
 	}
 	
@@ -70,9 +69,6 @@ public class FilterFragment extends BaseFragment {
 		super.onCreate(savedInstanceState);
 		
 		Bundle args = this.getArguments();
-		if(args != null){
-			filter = (BusFilterModel)args.getSerializable("model");
-		}
 	}
 	
 	@Override
@@ -80,60 +76,59 @@ public class FilterFragment extends BaseFragment {
 			Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_filter, container, false);
 		
-		//view.setBackgroundResource(R.drawable.background);
+		textTitle = (TextView)view.findViewById(R.id.TextTitle);
 		
-		// title
-		TextView textTitle = (TextView)view.findViewById(R.id.TextTitle);
-		textTitle.setTypeface(FontLoader.getFontTypeface(
-				getActivity().getAssets(),
-				"HelveticaNeueLTStd-Lt.otf"));
-		textTitle.setTextSize(TypedValue.COMPLEX_UNIT_PT, (float)8);
-		
-		View titleBg = view.findViewById(R.id.TitleBackGround);
-		titleBg.setBackgroundResource(R.drawable.top);
+		ImageView titleBg = (ImageView)view.findViewById(R.id.titleBg);
+		Drawable dBg = ImageLoader.getResizedDrawable(
+				getResources(),
+				R.drawable.top,
+				app.getScaledRate());
+		titleBg.setImageDrawable(dBg);
 		
 		// text
 		textDeparture = (TextView)view.findViewById(R.id.filter_departure);
 		textDestination = (TextView)view.findViewById(R.id.filter_destination);
 		textTime = (TextView)view.findViewById(R.id.filter_time);
 		textType = (TextView)view.findViewById(R.id.filter_type);
+		textCompany = (TextView)view.findViewById(R.id.filter_company);
 		
 		textSearch = (TextView)view.findViewById(R.id.TextSearch);
 		
 		// image
 		
-		ImageView imageSearch = (ImageView)view.findViewById(R.id.ImageSearch);
-		ImageView imageBus = (ImageView)view.findViewById(R.id.ImageBus);
-		ImageView imageTri = (ImageView)view.findViewById(R.id.ImageTri);
-		/*/
-		ImageView imageBackground = (ImageView)view.findViewById(R.id.ImageFilterBackGround);
-		
-		Drawable dBg = ImageLoader.getResizedDrawableFromRes(
+		ImageView imageTypeInfo = (ImageView)view.findViewById(R.id.imageTypeInfo);
+		Drawable dTypeInfo = ImageLoader.getResizedDrawable(
 				getResources(),
-				R.drawable.background,
-				app.density,
-				app.rateWidth,
-				app.rateHeight
+				R.drawable.info_icon,
+				app.getScaledRate()
 				);
-		imageBackground.setImageDrawable(dBg);
-		/**/
+		imageTypeInfo.setImageDrawable(dTypeInfo);
+		
+		ImageView imageSearch = (ImageView)view.findViewById(R.id.ImageSearch);
 		Drawable dSearch = ImageLoader.getResizedDrawable(
 				getResources(),
-				R.drawable.searchbtn
+				R.drawable.search_btn,
+				app.getScaledRate()
 				);
-		
 		imageSearch.setImageDrawable(dSearch);
 		
-		Drawable dBus = ImageLoader.getResizedDrawable(
+		ImageView imageIntercityBg = (ImageView)view.findViewById(R.id.intercityBg);
+		Drawable dInterBg = ImageLoader.getResizedDrawable(
 				getResources(),
-				R.drawable.bus
+				R.drawable.citybus_flip,
+				app.getScaledRate()
 				);
-		imageBus.setImageDrawable(dBus);
-		Drawable dTri = ImageLoader.getResizedDrawable(
+		imageIntercityBg.setImageDrawable(dInterBg);
+		
+		ImageView imageIntercityBtn = (ImageView)view.findViewById(R.id.intercityButton);
+		Drawable dInterBtn = ImageLoader.getResizedDrawable(
 				getResources(),
-				R.drawable.arrow
+				R.drawable.citybus_icon,
+				app.getScaledRate()
 				);
-		imageTri.setImageDrawable(dTri);
+		imageIntercityBtn.setImageDrawable(dInterBtn);
+		imageIntercityBtn.setTag("routes");
+		imageIntercityBtn.setOnClickListener(new OnButtonClickListener());
 		
 		spinnerDeparture = (Spinner)view.findViewById(R.id.SpinnerDeparture);
 		spinnerDeparture.setOnItemSelectedListener(new OnSpinnerItemSelectedListener());
@@ -141,14 +136,15 @@ public class FilterFragment extends BaseFragment {
 		spinnerDestination = (Spinner)view.findViewById(R.id.SpinnerDestination);
 		spinnerTime = (Spinner)view.findViewById(R.id.SpinnerTime);
 		spinnerType = (Spinner)view.findViewById(R.id.SpinnerType);
+		spinnerCompany = (Spinner)view.findViewById(R.id.SpinnerCompany);
 		
 		search = view.findViewById(R.id.ButtonSearch);
+		search.setTag("search");
 		search.setOnClickListener(new OnButtonClickListener());
-
-		loadDepartureAdapter();
-		loadTimeAdapter();
-		loadTypeAdapter();
 		
+		imageTypeInfo.setTag("typeInfo");
+		imageTypeInfo.setOnClickListener(new OnButtonClickListener());
+
 		return view;
 	}
 
@@ -159,7 +155,8 @@ public class FilterFragment extends BaseFragment {
 	@Override
 	public void onDestroyView(){
 		super.onDestroyView();
-		handler.close();
+		//Log.i("DebugPrint","destroy??in filter");
+		//handler.close();
 	}
 
 	@Override
@@ -175,7 +172,10 @@ public class FilterFragment extends BaseFragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState){
 		super.onActivityCreated(savedInstanceState);
-		handler = DBHandler.open(getActivity().getApplicationContext());
+		handler = DBHandler.getInstance(getActivity().getApplicationContext(), true);
+		
+		loadDepartureAdapter();
+		loadTimeAdapter();
 	}
 	@Override
 	public void onStart(){
@@ -188,50 +188,33 @@ public class FilterFragment extends BaseFragment {
 	}
 	
 	protected void loadTextView(){
-		textDeparture.setText(R.string.departure);
-		textDestination.setText(R.string.destination);
-		textTime.setText(R.string.time);
-		textType.setText(R.string.bus_type);
-		textSearch.setText(R.string.search);
+		FontLoader.setTextViewTypeFace(getActivity().getApplicationContext(), textTitle, "CamBUS", R.string.lato_medium, (float)9.17);
 		
-		textDeparture.setTypeface(FontLoader.getFontTypeface(
-				getActivity().getAssets(),
-				"HelveticaNeueLTStd-Lt.otf"));
-		textDeparture.setTextSize(TypedValue.COMPLEX_UNIT_PT, (float)7.2);
-		//textDeparture.setTextSize(FontLoader.getFontSizeFromPt(app, (float)7.2));
-		textDestination.setTypeface(FontLoader.getFontTypeface(
-				getActivity().getAssets(),
-				"HelveticaNeueLTStd-Lt.otf"));
-		textDestination.setTextSize(TypedValue.COMPLEX_UNIT_PT, (float)7.2);
-		textTime.setTypeface(FontLoader.getFontTypeface(
-				getActivity().getAssets(),
-				"HelveticaNeueLTStd-Lt.otf"));
-		textTime.setTextSize(TypedValue.COMPLEX_UNIT_PT, (float)7.2);
-		textType.setTypeface(FontLoader.getFontTypeface(
-				getActivity().getAssets(),
-				"HelveticaNeueLTStd-Lt.otf"));
-		textType.setTextSize(TypedValue.COMPLEX_UNIT_PT, (float)7.2);
-		textSearch.setTypeface(FontLoader.getFontTypeface(
-				getActivity().getAssets(),
-				"HelveticaNeueLTStd-Lt.otf"));
-		textSearch.setTextSize(TypedValue.COMPLEX_UNIT_PT, (float)7.0);
+		FontLoader.setTextViewTypeFace(getActivity().getApplicationContext(), textDeparture, R.string.departure, R.string.lato_regular, (float)7);
+		FontLoader.setTextViewTypeFace(getActivity().getApplicationContext(), textDestination, R.string.destination, R.string.lato_regular, (float)7);
+		FontLoader.setTextViewTypeFace(getActivity().getApplicationContext(), textTime, R.string.time, R.string.lato_regular, (float)7);
+		FontLoader.setTextViewTypeFace(getActivity().getApplicationContext(), textType, R.string.bus_type, R.string.lato_regular, (float)7);
+		FontLoader.setTextViewTypeFace(getActivity().getApplicationContext(), textCompany, R.string.bus_company, R.string.lato_regular, (float)7);
+		FontLoader.setTextViewTypeFace(getActivity().getApplicationContext(), textSearch, R.string.search, R.string.lato_regular, (float)8);
 	}
 	
 	protected void loadDepartureAdapter(){
-		adapterDeparture = new SpinnerAdapter<DepartureCity>(
+		adapterDeparture = new SpinnerAdapter<Departure>(
 			this.getActivity().getApplicationContext(),
 			R.layout.custom_spinner,
-			filter.getDepartureList());
+			handler.getDepartureList()
+			);
 		
 		this.spinnerDeparture.setAdapter(adapterDeparture);
 		this.spinnerDeparture.setSelection(0);		
 	}
 	
 	protected void loadDestinationAdapter(int dept_no){
-		adapterDestination = new SpinnerAdapter<DestinationCity>(
+		adapterDestination = new SpinnerAdapter<Destination>(
 			this.getActivity().getApplicationContext(),
 			R.layout.custom_spinner,
-			filter.getDestinationList(dept_no));
+			handler.getDestinationList(dept_no)
+			);
 		
 		this.spinnerDestination.setAdapter(adapterDestination);
 		this.spinnerDestination.setSelection(0);
@@ -241,48 +224,77 @@ public class FilterFragment extends BaseFragment {
 		adapterTime = new SpinnerAdapter<Integer>(
 			this.getActivity().getApplicationContext(),
 			R.layout.custom_spinner,
-			filter.getTimeList());
+			handler.getTimeList()
+			);
 		
 		this.spinnerTime.setAdapter(adapterTime);
 		this.spinnerTime.setSelection(0);
 	}
-	protected void loadTypeAdapter(){
-		adapterType = new SpinnerAdapter<BusType>(
+	protected void loadTypeAdapter(int dept_id, int dest_id){
+		adapterType = new SpinnerAdapter<Type>(
 				this.getActivity().getApplicationContext(),
 				R.layout.custom_spinner,
-				filter.getTypeList());
+				handler.getTypeList(dept_id, dest_id)
+				);
 		
 		this.spinnerType.setAdapter(adapterType);
 		this.spinnerType.setSelection(0);
 	}
-	
+	protected void loadCompanyAdapter(int dept_id, int dest_id){
+		adapterCompany = new SpinnerAdapter<Company>(
+				this.getActivity().getApplicationContext(),
+				R.layout.custom_spinner,
+				handler.getCompanyList(dept_id, dest_id)
+				);
+					
+		this.spinnerCompany.setAdapter(adapterCompany);
+		this.spinnerCompany.setSelection(0);
+	}
 	
 	protected class OnButtonClickListener implements OnClickListener{
 		@Override
 		public void onClick(View v) {
-			DepartureCity departure = (DepartureCity) spinnerDeparture.getSelectedItem();
-			DestinationCity destination = (DestinationCity) spinnerDestination.getSelectedItem();
-			int time = (Integer) spinnerTime.getSelectedItem();
-			BusType type = (BusType) spinnerType.getSelectedItem();
+			String tag = (String)v.getTag();
 			
-			if(departure.getCityNo() < 1){
-				Toast.makeText(getActivity().getApplicationContext(), R.string.select_departure, 1000).show();
-			}else if(destination.getCityNo() < 1){
-				Toast.makeText(getActivity().getApplicationContext(), R.string.select_destination, 1000).show();
-			}else if(time<0){
-				Toast.makeText(getActivity().getApplicationContext(), R.string.select_time, 1000).show();
-			}else{
-				Line line_info = filter.getLineInfo(departure.getCityNo(), destination.getCityNo());
-				if(line_info!=null){
-					BusListModel model = new BusListModel(line_info, time, type.getTypeNo());
-					model.updateLineBusTimeList(handler);
-					
+			if(tag.equals("search")){
+				Departure departure = (Departure) spinnerDeparture.getSelectedItem();
+				Destination destination = (Destination) spinnerDestination.getSelectedItem();
+				Type type = (Type) spinnerType.getSelectedItem();
+				Company company = (Company) spinnerCompany.getSelectedItem();
+	
+				int time = (Integer) spinnerTime.getSelectedItem();
+				
+				if(departure.getId() < 1){
+					Toast.makeText(getActivity().getApplicationContext(), R.string.select_departure, 1000).show();
+				}else if(destination.getId() < 1){
+					Toast.makeText(getActivity().getApplicationContext(), R.string.select_destination, 1000).show();
+				}else if(time<0){
+					Toast.makeText(getActivity().getApplicationContext(), R.string.select_time, 1000).show();
+				}else{
 					Intent intent = new Intent(getActivity(), BusListActivity.class);
 					
-					intent.putExtra("model", model);
+					Bus bus = new Bus();
+					bus.setDeptId(departure.getId());
+					bus.setDestId(destination.getId());
+					bus.setTypeId(type.getId());
+					bus.setCompanyId(company.getId());
+					
+					intent.putExtra("bus", bus);
+					intent.putExtra("time", time);
 					
 					saInterface.switchActivity(intent, false);
 				}
+			}else if(tag.equals("typeInfo")){
+				//Log.i("DebugPrint","choose type");
+				TypeInfoDialogFragment dialog = TypeInfoDialogFragment.getInstances(
+						handler.getTypeList(0, 0)
+						);
+	    		dialog.show(getFragmentManager(), "typeinfo");
+			}else if(tag.equals("routes")){
+				//Log.i("DebugPrint","city routes");
+				
+				Intent intent = new Intent(getActivity(), CityRoutesActivity.class);
+				saInterface.switchActivity(intent, false);
 			}
 		}
 		
@@ -293,14 +305,23 @@ public class FilterFragment extends BaseFragment {
 		public void onItemSelected(AdapterView<?> parent, View view,
 				int position, long id) {
 			if(view!=null){
-				Object object = view.getTag();
-				
-				if(object.getClass().equals(DepartureCity.class)){
-					DepartureCity model = (DepartureCity)object;
-					loadDestinationAdapter(model.getCityNo());
-				}else if(object.getClass().equals(DestinationCity.class)){
-					//DestinationModel model = (DestinationModel)object;
+				Object object = parent.getItemAtPosition(position);
+				//Object object = view.getTag();
+				int dept_id = 0;
+				int dest_id = 0;
+				if(object.getClass().equals(Departure.class)){
+					Departure model = (Departure)object;
+					dept_id = model.getId();
+					loadDestinationAdapter(dept_id);
 				}
+				else if(object.getClass().equals(Destination.class)){
+					Destination model = (Destination)object;
+					dest_id = model.getId();
+				}
+				
+				loadTypeAdapter(dept_id, dest_id);
+				loadCompanyAdapter(dept_id, dest_id);
+				
 			}
 		}
 

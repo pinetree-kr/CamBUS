@@ -32,157 +32,178 @@ public class DBHelper extends SQLiteOpenHelper{
 	public void onCreate(SQLiteDatabase db) {
 		Log.i("DebugPrint","DB Create");
 		// 동기화를 위한 테이블
-		String createCambusInfoTableSql =
-				"CREATE TABLE Cambus_VersionTable (" +
-					"app_ver TEXT NOT NULL, " +
-					"last_updated TEXT NOT NULL);";
-		
+		String createVersionTableSql =
+				"CREATE TABLE Version (" +
+					"ver_no INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+					"db_lastupdate REAL NOT NULL);";
+		String initVersionTableSql =
+				"INSERT INTO Version " +
+					"(db_lastupdate) " +
+					"VALUES (0) ;";
 		// 도시목록 
-		String createCambusCityTableSql =
-				"CREATE TABLE Cambus_CityTable (" +
-					"city_no INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-					"city_name TEXT NOT NULL, " +
-					"preference INTEGER NOT NULL, " +
+		String createCityTableSql =
+				"CREATE TABLE City (" +
+					"_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+					"name TEXT NOT NULL, " +
+					"pref INTEGER NOT NULL, " +
 					"pref_order INTEGER NULL );";
 		
 		// 회사목록 
-		String createCambusCompanyTableSql =
-				"CREATE TABLE Cambus_CompanyTable (" +
-					"company_no INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-					"company_name TEXT NOT NULL);";
+		String createCompanyTableSql =
+				"CREATE TABLE Company (" +
+					"_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+					"name TEXT NOT NULL);";
 
 		// 도시별회사목록 
-		String createCambusTerminalTableSql =
-				"CREATE TABLE Cambus_TerminalTable (" +
-					"terminal_no INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-					"terminal_name TEXT NOT NULL, " +
-					"city_no INTEGER NOT NULL, " + // FK - CityTable
-					"company_no INTEGER NOT NULL, " + // FK - CityTable
-					"phone_no TEXT NULL, " +
+		String createTerminalTableSql =
+				"CREATE TABLE Terminal (" +
+					"_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+					"name TEXT NOT NULL, " +
+					"city_id INTEGER NOT NULL, " + // FK - CityTable
+					"company_id INTEGER NOT NULL, " + // FK - CityTable
+					"phone TEXT NULL, " +
 					"purchase INTEGER NULL, " +
-					"get_in INTEGER NULL, " +
-					"get_off INTEGER NULL, " +
-					"link TEXT NULL, " +
+					"getin INTEGER NULL, " +
+					"getoff INTEGER NULL, " +
+					//"link TEXT NULL, " +
 					"address TEXT NULL, " +
-					"misc_en TEXT NULL, " +
-					"misc_ko TEXT NULL, " +
+					"misc TEXT NULL, " +
+					//"misc_en TEXT NULL, " +
+					//"misc_ko TEXT NULL, " +
 					"latlng TEXT NULL " +
 					");";
 		
 		// 타입목록 
-		String createCambusTypeTableSql =
-				"CREATE TABLE Cambus_TypeTable (" +
-					"type_no INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-					"type_name TEXT NOT NULL);";
+		String createTypeTableSql =
+				"CREATE TABLE Type (" +
+					"_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+					"name TEXT NOT NULL);";
 		
 		// 노선목록 
-		String createCambusLineTableSql = 
-				"CREATE TABLE Cambus_LineTable (" +
-					"line_no INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-					"dept_no INTEGER NOT NULL, " + // FK - CityTable
-					"dest_no INTEGER NOT NULL, " + // FK - CityTable
+		String createLineTableSql = 
+				"CREATE TABLE Line (" +
+					"_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+					"dept INTEGER NOT NULL, " + // FK - CityTable
+					"dest INTEGER NOT NULL, " + // FK - CityTable
 					"distance INTEGER NULL, " + 
-					"UNIQUE(dept_no, dest_no) ON CONFLICT IGNORE );";
+					"UNIQUE(dept, dest) ON CONFLICT IGNORE );";
 		
 		// 노선별버스목록 
-		String createCambusLineBusTableSql = 
-				"CREATE TABLE Cambus_LineBusTable (" +
-					"linebus_no INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-					"line_no INTEGER NOT NULL, " + // FK - LineTable
-					"company_no INTEGER NOT NULL, " + // FK - CompanyTable
-					"type_no INTEGER NOT NULL, " + // FK - TypeTable
-					"duration_time REAL NULL, " +
-					"native_price REAL NOT NULL, " +
-					"foreigner_price REAL NOT NULL, " +
+		String createBusTableSql = 
+				"CREATE TABLE Bus (" +
+					"_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+					"line_id INTEGER NOT NULL, " + // FK - LineTable
+					"company_id INTEGER NOT NULL, " + // FK - CompanyTable
+					"type_id INTEGER NOT NULL, " + // FK - TypeTable
+					"mid_id INTEGER NULL, " + // FK - CityTable
+					"duration REAL NULL, " +
+					"native REAL NOT NULL, " +
+					"foreigner REAL NOT NULL, " +
 					"visa REAL NULL, " +
-					"dn TEXT NULL, " +
+					"abroad INTEGER NULL, " +
+					"seat INTEGER NULL, " +					
 					//"last_update TEXT NULL, " +
-					"UNIQUE(line_no, company_no, type_no) ON CONFLICT IGNORE );";
+					"UNIQUE(line_id, company_id, type_id, mid_id) ON CONFLICT IGNORE );";
 
 		// 노선별버스시간목록 
-		String createCambusLineBusTimeTableSql = 
-				"CREATE TABLE Cambus_LineBusTimeTable (" +
-					"linebustime_no INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-					"linebus_no INTEGER NOT NULL, " + // FK - LineBusTable
-					"mid_no INTEGER NULL, " + // FK - CityTable 
-					"departure_time TEXT NOT NULL, " +
-					"arrival_time TEXT NULL);";
+		String createTimeTableSql = 
+				"CREATE TABLE Time (" +
+					"_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+					"bus_id INTEGER NOT NULL, " + // FK - BusTable
+					//"mid_no INTEGER NULL, " + // FK - CityTable 
+					"dept_t TEXT NOT NULL, " +
+					"dest_t TEXT NULL);";
+
+		// 노선별버스시간목록 
+		String createCityRouteTableSql = 
+				"CREATE TABLE CityRoute (" +
+						//"_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+						"city_id INTEGER NOT NULL, " + //FK
+						"line_no INTEGER NOT NULL, " + 
+						"line_order INTEGER NOT NULL, " + // 
+						"name TEXT NOT NULL, " +
+						"PRIMARY KEY(city_id, line_no, line_order) ON CONFLICT IGNORE ); ";
+						//"dest_t TEXT NULL);";
 		
 		// 노선뷰 
-		String createCambusLineView =
-				"CREATE VIEW Cambus_LineView AS " +
-					"SELECT line_no, dept_no, b.city_name as dept_name, dest_no, c.city_name as dest_name, distance " +
-					"FROM Cambus_LineTable a " +
-					"INNER JOIN Cambus_CityTable b " +
-					"ON a.dept_no = b.city_no " +
-					"INNER JOIN Cambus_CityTable c " +
-					"ON a.dest_no = c.city_no "+
+		String createLineView =
+				"CREATE VIEW LineView AS " +
+					"SELECT a._id as line_id, dept, b.name as dept_name, dest, c.name as dest_name, distance " +
+					"FROM Line a " +
+					"INNER JOIN City b " +
+					"ON a.dept = b._id " +
+					"INNER JOIN City c " +
+					"ON a.dest = c._id "+
 					";";
-		
+		String createDepartureListView =
+				"CREATE VIEW DepartureListView AS " +
+					"SELECT distinct b.* " +
+					"FROM LineView a " +
+					"INNER JOIN City b " +
+					"ON a.dept = b._id " +
+					";";
+					
 		// 노선별버스뷰 
-		String createCambusLineBusView =
-				"CREATE VIEW Cambus_LineBusView AS " +
-					"SELECT linebus_no, dept_no, dept_name, " +
-						"a.line_no, dest_no, dest_name, a.company_no, company_name, " +
-						"a.type_no, type_name, duration_time, native_price, " +
-						"foreigner_price, visa " +
-					"FROM Cambus_LineBusTable a " +
-					"INNER JOIN Cambus_LineView b " +
-					"ON a.line_no = b.line_no " +
-					"INNER JOIN Cambus_CompanyTable c " +
-					"ON a.company_no = c.company_no " +
-					"INNER JOIN Cambus_TypeTable d " +
-					"ON a.type_no = d.type_no " +
+		String createBusView =
+				"CREATE VIEW BusView AS " +
+					"SELECT a._id as bus_id, company_id, c.name as company_name, type_id, d.name as type_name, " + //dept_no, dept_name, " +
+						"mid_id, e.name as mid_name, duration, native, foreigner, visa, abroad, seat, b.* " +
+					"FROM Bus a " +
+					"INNER JOIN LineView b " +
+					"ON a.line_id = b.line_id " +
+					"INNER JOIN Company c " +
+					"ON a.company_id = c._id " +
+					"INNER JOIN Type d " +
+					"ON a.type_id = d._id " +
+					"LEFT JOIN City e " +
+					"ON a.mid_id = e._id " +
 					";";
 		
 		// 노선별버스시간뷰 
-		String createCambusLineBusTimeView =
-				"CREATE VIEW Cambus_LineBusTimeView AS " +
-					"SELECT linebustime_no, b.dept_no, dept_name, " +
-						"b.dest_no, dest_name, company_no, company_name, " +
-						"type_no, type_name, a.mid_no, c.city_name as middle_city, " +
-						"departure_time, arrival_time, distance, duration_time, native_price, " +
-						"foreigner_price, visa " +
-					"FROM Cambus_LineBusTimeTable a " +
-					"INNER JOIN Cambus_LineBusView b " +
-					"ON a.linebus_no = b.linebus_no " +
-					"LEFT JOIN Cambus_CityTable c " +
-					"ON a.mid_no = c.city_no " +
-					"INNER JOIN Cambus_LineTable d " +
-					"ON b.line_no = d.line_no " +
+		String createTimeView =
+				"CREATE VIEW TimeView AS " +
+					"SELECT a._id as time_id, b.*,dept_t, dest_t " +
+					"FROM Time a " +
+					"INNER JOIN BusView b " +
+					"ON a.bus_id = b.bus_id " +
 					";";
 		
-		String createCambusTerminalView = 
-				"CREATE VIEW Cambus_TerminalView AS " +
-					"SELECT terminal_no, a.city_no, city_name, a.company_no, company_name, terminal_name, " +
-						"phone_no, purchase, get_in, get_off, link, address, misc_en, misc_ko, latlng " +
-					"FROM Cambus_TerminalTable a " +
-					"INNER JOIN Cambus_CityTable b " +
-					"ON a.city_no = b.city_no " +
-					"INNER JOIN Cambus_CompanyTable c " +
-					"ON a.company_no = c.company_no " +
+		String createTerminalView = 
+				"CREATE VIEW TerminalView AS " +
+					"SELECT a._id as terminal_id, a.name, city_id, b.name as city_name, company_id, c.name as company_name, " +
+						"phone, purchase, getin, getoff, address, misc, latlng " +
+					"FROM Terminal a " +
+					"INNER JOIN City b " +
+					"ON a.city_id = b._id " +
+					"INNER JOIN Company c " +
+					"ON a.company_id = c._id " +
 					";";
 		
 		try{
 			db.beginTransaction();
 			
 			// Create Table
-			db.execSQL(createCambusInfoTableSql);
-
-			db.execSQL(createCambusCityTableSql);
-			db.execSQL(createCambusCompanyTableSql);
-			db.execSQL(createCambusTerminalTableSql);
-			db.execSQL(createCambusTypeTableSql);
-			db.execSQL(createCambusLineTableSql);
-			db.execSQL(createCambusLineBusTableSql);
-			db.execSQL(createCambusLineBusTimeTableSql);
+			db.execSQL(createVersionTableSql);
+			db.execSQL(initVersionTableSql);
+			
+			db.execSQL(createCityTableSql);
+			db.execSQL(createCompanyTableSql);
+			db.execSQL(createTerminalTableSql);
+			db.execSQL(createTypeTableSql);
+			db.execSQL(createLineTableSql);
+			db.execSQL(createBusTableSql);
+			db.execSQL(createTimeTableSql);
+			
+			db.execSQL(createCityRouteTableSql);
 			
 			// Create View
 			
-			db.execSQL(createCambusLineView);
-			db.execSQL(createCambusLineBusView);
-			db.execSQL(createCambusLineBusTimeView);
-			db.execSQL(createCambusTerminalView);
+			db.execSQL(createLineView);
+			db.execSQL(createDepartureListView);
+			
+			db.execSQL(createBusView);
+			db.execSQL(createTimeView);
+			db.execSQL(createTerminalView);
 			
 			// Set Transaction Successful
 			db.setTransactionSuccessful();
@@ -201,20 +222,23 @@ public class DBHelper extends SQLiteOpenHelper{
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		Log.i("DebugPrint","DB Upgrade");
 		
-		db.execSQL("DROP TABLE IF EXISTS Cambus_VersionTable");
+		db.execSQL("DROP TABLE IF EXISTS Version");
 		
-		db.execSQL("DROP TABLE IF EXISTS Cambus_CityTable");
-		db.execSQL("DROP TABLE IF EXISTS Cambus_CompanyTable");
-		db.execSQL("DROP TABLE IF EXISTS Cambus_TerminalTable");
-		db.execSQL("DROP TABLE IF EXISTS Cambus_TypeTable");
-		db.execSQL("DROP TABLE IF EXISTS Cambus_LineTable");
-		db.execSQL("DROP TABLE IF EXISTS Cambus_LineBusTable");
-		db.execSQL("DROP TABLE IF EXISTS Cambus_LineBusTimeTable");
+		db.execSQL("DROP TABLE IF EXISTS City");
+		db.execSQL("DROP TABLE IF EXISTS Company");
+		db.execSQL("DROP TABLE IF EXISTS Terminal");
+		db.execSQL("DROP TABLE IF EXISTS Type");
+		db.execSQL("DROP TABLE IF EXISTS Line");
+		db.execSQL("DROP TABLE IF EXISTS Bus");
+		db.execSQL("DROP TABLE IF EXISTS Time");
 		
-		db.execSQL("DROP VIEW IF EXISTS Cambus_LineView");
-		db.execSQL("DROP VIEW IF EXISTS Cambus_LineBusView");
-		db.execSQL("DROP VIEW IF EXISTS Cambus_LineBusTimeView");
-		db.execSQL("DROP VIEW IF EXISTS Cambus_TerminalView");
+		db.execSQL("DROP TABLE IF EXISTS CityRoute");
+		
+		db.execSQL("DROP VIEW IF EXISTS LineView");
+		db.execSQL("DROP VIEW IF EXISTS DepartureListView");
+		db.execSQL("DROP VIEW IF EXISTS BusView");
+		db.execSQL("DROP VIEW IF EXISTS TimeView");
+		db.execSQL("DROP VIEW IF EXISTS TerminalView");
 		
 		onCreate(db);
 	}
@@ -222,8 +246,7 @@ public class DBHelper extends SQLiteOpenHelper{
 	@Override
 	public void onOpen(SQLiteDatabase db){
 		super.onOpen(db);
-		Log.i("DebugPrint","DB Open");
-		
+		//Log.i("DebugPrint","DB Open");
 		// TODO 버전체크를 업데이트를 여기에다가 
 		
 	}

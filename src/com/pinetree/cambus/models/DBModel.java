@@ -2,40 +2,121 @@ package com.pinetree.cambus.models;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map.Entry;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.pinetree.cambus.utils.NumberUtils;
 
 public class DBModel{
-	public static class City extends Model{
-		private int city_no;
+	public static class CityRoute extends Model{
 		private String city_name;
-		private boolean high;
-		private int order;
-		
-		public void setCityNo(int no){
-			city_no = no;
-		}
-		public int getCityNo(){
-			return city_no;
-		}
+		private int city_id;
+		private int line_no;
+		private int line_order;
+		private HashMap<String, String> name;
 		public void setCityName(String name){
 			city_name = name;
 		}
 		public String getCityName(){
 			return city_name;
 		}
-		public void setHigh(boolean high){
-			this.high = high;
+		public void setCityId(int id){
+			city_id = id;
 		}
-		public boolean getHigh(){
-			return high;
+		public int getCityId(){
+			return city_id;
 		}
-		public void setOrder(int order){
-			this.order = order;
+		public void setLineNo(int no){
+			line_no = no;
 		}
-		public int getOrder(){
-			return order;		
+		public int getLineNo(){
+			return line_no;
+		}
+		public void setLineOrder(int order){
+			line_order = order;
+		}
+		public int getLineOrder(){
+			return line_order;
+		}
+		public void setName(String json){
+			if(this.name==null){
+				this.name = new HashMap<String, String>();
+			}
+			try {
+				JSONArray jsonArray = new JSONArray(json);
+				for(int i=0; i<jsonArray.length(); i++){
+					JSONObject obj = jsonArray.getJSONObject(i);
+					name.put(obj.getString("lang"),obj.getString("name"));
+				}
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		}
+		public void setName(String language, String name){
+			if(this.name==null){
+				this.name = new HashMap<String, String>();
+			}
+			this.name.put(language, name);
+		}
+		/*/
+		public HashMap<String, String> getName(){
+			return name;
+		}
+		/**/
+		public String getName(){
+			String val = "";
+			if(name!=null){
+				for(Entry<String, String> entry: name.entrySet()){
+					val += "{\"lang\":\""+entry.getKey()+"\",\"name\":\""+entry.getValue()+"\"},";
+				}
+				if(val.length()>0){
+					val = val.substring(0, val.length()-1);
+				}
+			}
+			return "["+val+"]";
+		}
+		public String getName(String language){
+			if(name!=null)
+				return name.get(language);
+			else
+				return null;
+		}
+	}
+	
+	public static class City extends Model{
+		private int _id;
+		private String name;
+		private boolean pref;
+		private int index;
+		
+		public void setId(int id){
+			_id = id;
+		}
+		public int getId(){
+			return _id;
+		}
+		public void setName(String name){
+			this.name = name;
+		}
+		public String getName(){
+			return name;
+		}
+		public void setPref(boolean pref){
+			this.pref = pref;
+		}
+		public boolean getPref(){
+			return pref;
+		}
+		public void setIndex(int index){
+			this.index = index;
+		}
+		public int getIndex(){
+			return index;		
 		}
 		
 		// order by preference asc
@@ -43,20 +124,20 @@ public class DBModel{
 			@Override
 			public int compare(City lhs, City rhs) {
 				// not changed;
-				if(lhs.city_no<1 || rhs.city_no <1)
+				if(lhs._id<1 || rhs._id <1)
 					return 0;
 				else{
 					// high pref is in advance of low pref
-					if(!lhs.high && rhs.high){
+					if(!lhs.pref && rhs.pref){
 						return -1;
-					}else if(lhs.high && !rhs.high){
+					}else if(lhs.pref && !rhs.pref){
 						return 1;
 					}
 					// same pref
 					else{
-						if(lhs.getOrder() < rhs.getOrder()){
+						if(lhs.index < rhs.index){
 							return -1;
-						}else if(lhs.getOrder() > rhs.getOrder()){
+						}else if(lhs.index > rhs.index){
 							return 1;
 						}else{
 							return 0;
@@ -70,20 +151,20 @@ public class DBModel{
 			@Override
 			public int compare(City lhs, City rhs) {
 				// not changed;
-				if(lhs.city_no<1 || rhs.city_no <1)
+				if(lhs._id<1 || rhs._id <1)
 					return 0;
 				else{
 					// high pref is in advance of low pref
-					if(!rhs.high && lhs.high){
+					if(!rhs.pref && lhs.pref){
 						return -1;
-					}else if(rhs.high && !lhs.high){
+					}else if(rhs.pref && !lhs.pref){
 						return 1;
 					}
 					// same pref
 					else{
-						if(lhs.getOrder() < rhs.getOrder()){
+						if(lhs.index < rhs.index){
 							return -1;
-						}else if(lhs.getOrder() > rhs.getOrder()){
+						}else if(lhs.index > rhs.index){
 							return 1;
 						}else{
 							return 0;
@@ -97,12 +178,12 @@ public class DBModel{
 			@Override
 			public int compare(City lhs, City rhs) {
 				// if it is dummy, do not sorting
-				if(lhs.city_no<1 || rhs.city_no <1)
+				if(lhs._id<1 || rhs._id <1)
 					return 0;
 				else
 					return
-						!lhs.high && rhs.high ? -1 :
-							lhs.high && !rhs.high ? 1 :
+						!lhs.pref && rhs.pref ? -1 :
+							lhs.pref && !rhs.pref ? 1 :
 								0;
 			}
 		}
@@ -111,70 +192,72 @@ public class DBModel{
 			@Override
 			public int compare(City lhs, City rhs) {
 				// if it is dummy, do not sorting
-				if(lhs.city_no<1 || rhs.city_no <1)
+				if(lhs._id<1 || rhs._id <1)
 					return 0;
 				else
 					return
-						!rhs.high && lhs.high ? -1 :
-							rhs.high && !lhs.high ? 1 :
+						!rhs.pref && lhs.pref ? -1 :
+							rhs.pref && !lhs.pref ? 1 :
 								0;
 			}
 		}
 	}
-	public static class DepartureCity extends City{}
-	public static class DestinationCity extends City{}
+	public static class Departure extends City{}
+	public static class Destination extends City{}
 	
 	public static class Company extends Model{
-		private int company_no;
-		private String company_name;
+		private int _id;
+		private String name;
 		
-		public void setCompanyNo(int no){
-			company_no = no;
+		public void setId(int id){
+			_id = id;
 		}
-		public int getCompanyNo(){
-			return company_no;
+		public int getId(){
+			return _id;
 		}
-		public void setCompanyName(String name){
-			company_name = name;
+		public void setName(String name){
+			this.name = name;
 		}
-		public String getCompanyName(){
-			return company_name;
+		public String getName(){
+			return name;
 		}
 	}
-	public static class BusType extends Model{
-		private int type_no;
-		private String type_name;
+	public static class Type extends Model{
+		private int _id;
+		private String name;
 		
-		public void setTypeNo(int no){
-			type_no = no;
+		public void setId(int id){
+			_id = id;
 		}
-		public int getTypeNo(){
-			return type_no;
+		public int getId(){
+			return _id;
 		}
-		public void setTypeName(String name){
-			type_name = name;
+		public void setName(String name){
+			this.name = name;
 		}
-		public String getTypeName(){
-			return type_name;
+		public String getName(){
+			return name;
 		}
 	}
 	public static class Terminal extends Model{
-		private int terminal_no;
-		private String terminal_name;
-		private int city_no;
+		private int _id;
+		private String name;
+		private int city_id;
 		private String city_name;
-		private int company_no;
+		private int company_id;
 		private String company_name;
-		private String phone_no;
+		private String phone;
 		private boolean purchase;
-		private boolean get_in;
-		private boolean get_off;
-		private String link;
+		private boolean in;
+		private boolean off;
+		//private String link;
 		private String address;
-		private String misc_en;
-		private String misc_ko;
+		//private String misc_en;
+		//private String misc_ko;
+		private HashMap<String,String> misc;
 		private double latitude;
 		private double longitude;
+		private String latlng;
 		private boolean hasPosition;
 		
 		public void setLatLng(String value){
@@ -206,11 +289,11 @@ public class DBModel{
 				return null;
 		}
 		
-		public void setPhoneNo(String no){
-			phone_no = no;
+		public void setPhone(String no){
+			phone = no;
 		}
-		public String getPhoneNo(){
-			return phone_no;
+		public String getPhone(){
+			return phone;
 		}
 		public void setPurchase(boolean purchase){
 			this.purchase = purchase;
@@ -219,29 +302,32 @@ public class DBModel{
 			return purchase;
 		}
 		public void setGetIn(boolean in){
-			get_in = in;
+			this.in = in;
 		}
 		public boolean isGetIn(){
-			return get_in;
+			return in;
 		}
 		public void setGetOff(boolean off){
-			get_off = off;
+			this.off = off;
 		}
 		public boolean isGetOff(){
-			return get_off;
+			return off;
 		}
+		/*/
 		public void setLink(String link){
 			this.link = link;
 		}
 		public String getLink(){
 			return link;
 		}
+		/**/
 		public void setAddress(String address){
 			this.address = address;
 		}
 		public String getAddress(){
 			return address;
 		}
+		/*/
 		public void setMiscEn(String misc){
 			misc_en = misc;
 		}
@@ -254,23 +340,67 @@ public class DBModel{
 		public String getMiscKo(){
 			return misc_ko;
 		}
-		public void setTerminalNo(int no){
-			terminal_no = no;
+		/**/
+		public void setMisc(String language, String misc){
+			if(this.misc==null)
+				this.misc = new HashMap<String, String>();
+			this.misc.put(language,misc);
 		}
-		public int getTerminalNo(){
-			return terminal_no;
+		public void setMisc(String json){
+			if(this.misc==null)
+				this.misc = new HashMap<String, String>();
+			try {
+				JSONArray jsonArray = new JSONArray(json);
+				for(int i=0; i<jsonArray.length(); i++){
+					JSONObject obj = jsonArray.getJSONObject(i);
+					misc.put(obj.getString("lang"),obj.getString("misc"));
+				}
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
 		}
-		public void setTerminalName(String name){
-			terminal_name = name;
+		/*/
+		public HashMap<String,String> getMisc(){
+			return misc;
 		}
-		public String getTerminalName(){
-			return terminal_name;
+		/**/
+		public String getMisc(){
+			String val = "";
+			if(misc!=null){
+				for(Entry<String, String> entry: misc.entrySet()){
+					val += "{\"lang\":\""+entry.getKey()+"\",\"misc\":\""+entry.getValue()+"\"},";
+				}
+				if(val.length()>0){
+					val = val.substring(0, val.length()-1);
+				}
+			}
+			return "["+val+"]";
 		}
-		public void setCityNo(int no){
-			city_no = no;
+		public String getMisc(String language){
+			if(misc!=null){
+				return misc.get(language);
+			}else{
+				return null;
+			}
 		}
-		public int getCityNo(){
-			return city_no;
+		/**/
+		public void setId(int id){
+			_id = id;
+		}
+		public int getId(){
+			return _id;
+		}
+		public void setName(String name){
+			this.name = name;
+		}
+		public String getName(){
+			return name;
+		}
+		public void setCityId(int id){
+			city_id = id;
+		}
+		public int getCityId(){
+			return city_id;
 		}
 		public void setCityName(String name){
 			city_name = name;
@@ -278,11 +408,11 @@ public class DBModel{
 		public String getCityName(){
 			return city_name;
 		}
-		public void setCompanyNo(int no){
-			company_no = no;
+		public void setCompanyId(int id){
+			company_id = id;
 		}
-		public int getCompanyNo(){
-			return company_no;
+		public int getCompanyId(){
+			return company_id;
 		}
 		public void setCompanyName(String name){
 			company_name = name;
@@ -290,44 +420,44 @@ public class DBModel{
 		public String getCompanyName(){
 			return company_name;
 		}
-		public String[] getPhoneNoList(){
-			String[] list = phone_no.split("/");
+		public String[] getPhoneList(){
+			String[] list = phone.split("/");
 			for(int i=0; i<list.length; i++){
-				list[i] = list[i].trim();
+				list[i] = list[i].trim().replace('.','-');
 			}
 			return list;
 		}
 		
 	}
 	public static class Line extends Model{
-		private int line_no;
-		private int dept_no;
+		private int line_id;
+		private int dept_id;
 		private String dept_name;
-		private boolean dept_high;
-		private int dept_order;
-		private int dest_no;
+		private boolean deptPref;
+		private int deptIndex;
+		private int dest_id;
 		private String dest_name;
-		private boolean dest_high;
-		private int dest_order;
+		private boolean destPref;
+		private int destIndex;
 		private int distance;
 		
-		public void setLineNo(int no){
-			line_no = no;
+		public void setLineId(int id){
+			line_id = id;
 		}
-		public int getLineNo(){
-			return line_no;
+		public int getLineId(){
+			return line_id;
 		}
-		public void setDeptNo(int no){
-			dept_no = no;
+		public void setDeptId(int id){
+			dept_id = id;
 		}
-		public int getDeptNo(){
-			return dept_no;
+		public int getDeptId(){
+			return dept_id;
 		}
-		public void setDestNo(int no){
-			dest_no = no;
+		public void setDestId(int id){
+			dest_id = id;
 		}
-		public int getDestNo(){
-			return dest_no;
+		public int getDestId(){
+			return dest_id;
 		}
 		public void setDeptName(String name){
 			dept_name = name;
@@ -341,30 +471,32 @@ public class DBModel{
 		public String getDestName(){
 			return dest_name;
 		}
-		public void setDeptHigh(boolean high){
-			dept_high = high;
+		
+		public void setDeptPref(boolean pref){
+			deptPref = pref;
 		}
-		public void setDeptOrder(int order){
-			dept_order = order;
+		public void setDeptIndex(int index){
+			deptIndex = index;
 		}
-		public boolean getDeptHigh(){
-			return dept_high;
+		public boolean getDeptPref(){
+			return deptPref;
 		}
-		public int getDeptOrder(){
-			return dept_order;
+		public int getDeptIndex(){
+			return deptIndex;
 		}
-		public void setDestHigh(boolean high){
-			dest_high = high;
+		public void setDestPref(boolean pref){
+			destPref = pref;
 		}
-		public void setDestOrder(int order){
-			dest_order = order;
+		public void setDestIndex(int index){
+			destIndex = index;
 		}
-		public boolean getDestHigh(){
-			return dest_high;
+		public boolean getDestPref(){
+			return destPref;
 		}
-		public int getDestOrder(){
-			return dest_order;
+		public int getDestIndex(){
+			return destIndex;
 		}
+		
 		public void setDistance(int distance){
 			this.distance = distance;
 		}
@@ -373,29 +505,54 @@ public class DBModel{
 		}
 	}
 	
-	public static class LineBus extends Line{
-		private int linebus_no;
-		private int company_no;
+	public static class Bus extends Line{
+		private int bus_id;
+		private int company_id;
 		private String company_name;
-		private int type_no;
+		private int type_id;
 		private String type_name;
-		private double duration_time = 0;
-		private double native_price = 0;
-		private double foreigner_price = 0;
-		private double visa = 0;
-		private String dn;
 		
-		public void setLineBusNo(int no){
-			linebus_no = no;
+		private int mid_id;
+		private String mid_name;
+		
+		private double duration = 0;
+		private double _native = 0;
+		private double foreign = 0;
+		private double visa = 0;
+		private boolean abroad;
+		
+		private int seat = 0;
+		
+		public void setSeat(int seat){
+			this.seat = seat;
 		}
-		public int getLineBusNo(){
-			return linebus_no;
+		public int getSeat(){
+			return seat;
 		}
-		public void setCompanyNo(int no){
-			company_no = no;
+		public void setMidId(int id){
+			mid_id = id;
 		}
-		public int getCompanyNo(){
-			return company_no;
+		public int getMidId(){
+			return mid_id;
+		}
+		public void setMidName(String name){
+			mid_name = name;
+		}
+		public String getMidName(){
+			return mid_name;
+		}
+		
+		public void setBusId(int id){
+			bus_id = id;
+		}
+		public int getBusId(){
+			return bus_id;
+		}
+		public void setCompanyId(int id){
+			company_id = id;
+		}
+		public int getCompanyId(){
+			return company_id;
 		}
 		public void setCompanyName(String name){
 			company_name = name;
@@ -403,11 +560,11 @@ public class DBModel{
 		public String getCompanyName(){
 			return company_name;
 		}
-		public void setTypeNo(int no){
-			type_no = no;
+		public void setTypeId(int id){
+			type_id = id;
 		}
-		public int getTypeNo(){
-			return type_no;
+		public int getTypeId(){
+			return type_id;
 		}
 		public void setTypeName(String name){
 			type_name = name;
@@ -415,24 +572,24 @@ public class DBModel{
 		public String getTypeName(){
 			return type_name;
 		}
-		public void setDurationTime(double time){
-			duration_time = time;
+		public void setDuration(double time){
+			duration = time;
 		}
-		public double getDurationTime(){
-			return duration_time;
+		public double getDuration(){
+			return duration;
 		}
 		
-		public void setNativePrice(double price){
-			native_price = price;
+		public void setNative(double price){
+			_native = price;
 		}
-		public double getNativePrice(){
-			return native_price;
+		public double getNative(){
+			return _native;
 		}
-		public void setForeignerPrice(double price){
-			foreigner_price = price;
+		public void setForeign(double price){
+			foreign = price;
 		}
-		public double getForeignerPrice(){
-			return foreigner_price;
+		public double getForeign(){
+			return foreign;
 		}
 		public void setVisa(double visa){
 			this.visa = visa;
@@ -440,18 +597,16 @@ public class DBModel{
 		public double getVisa(){
 			return visa;
 		}
-		public void setDN(String dn){
-			this.dn = dn;
+		public void setAbroad(boolean abroad){
+			this.abroad = abroad;
 		}
-		public String getDN(){
-			return dn;
+		public boolean getAbroad(){
+			return abroad;
 		}
 	}
 	
-	public static class LineBusTime extends LineBus{
-		private int linebustime_no;
-		private int mid_no;
-		private String middle_city;
+	public static class Time extends Bus{
+		private int time_id;
 		
 		private int dept_hour;
 		private int dept_min;
@@ -459,37 +614,29 @@ public class DBModel{
 		private int arrival_hour;
 		private int arrival_min;
 		
+		/**/
 		private ArrayList<Terminal> terminal_list = new ArrayList<Terminal>();
-		
+
 		public void addTerminal(Terminal terminal){
 			if(!terminal_list.contains(terminal))
 				terminal_list.add(terminal);
 		}
+		
 		public ArrayList<Terminal> getTerminalList(){
 			return terminal_list;
 		}
+		/**/
 		
 		public int getDeptHour(){
 			return dept_hour;
 		}
-		public void setLineBusTimeNo(int no){
-			linebustime_no = no;
+		public void setTimeId(int id){
+			time_id = id;
 		}
-		public int getLineBusTimeNo(){
-			return linebustime_no;
+		public int getTimeId(){
+			return time_id;
 		}
-		public void setMidNo(int no){
-			mid_no = no;
-		}
-		public int getMidNo(){
-			return mid_no;
-		}
-		public void setMiddleCity(String name){
-			middle_city = name;
-		}
-		public String getMiddleCity(){
-			return middle_city;
-		}
+		
 		
 		public void setDeptTime(String dept_time){
 			String[] time = dept_time.split(":");
@@ -521,45 +668,61 @@ public class DBModel{
 			return String.format("%02d:%02d", arrival_hour, arrival_min);
 		}
 		// order by departure time asc
-		public static class DepartureTimeAscCompare implements Comparator<LineBusTime>{
+		public static class DepartureTimeAscCompare implements Comparator<Time>{
 			@Override
-			public int compare(LineBusTime lhs, LineBusTime rhs) {
+			public int compare(Time lhs, Time rhs) {
 				return lhs.getDeptTime().compareTo(rhs.getDeptTime());
 			}
 		}
 		// order by departure time desc
-		public static class DepartureTimeDescCompare implements Comparator<LineBusTime>{
+		public static class DepartureTimeDescCompare implements Comparator<Time>{
 			@Override
-			public int compare(LineBusTime lhs, LineBusTime rhs) {
+			public int compare(Time lhs, Time rhs) {
 				return rhs.getDeptTime().compareTo(lhs.getDeptTime());
 			}
 		}
 		
 		// order by foreigner price asc
-		public static class ForeignerPriceAscCompare implements Comparator<LineBusTime>{
+		public static class ForeignerPriceAscCompare implements Comparator<Time>{
 			@Override
-			public int compare(LineBusTime lhs, LineBusTime rhs) {
+			public int compare(Time lhs, Time rhs) {
 				return
-						lhs.getForeignerPrice() < rhs.getForeignerPrice() ? -1 :
-							lhs.getForeignerPrice() > rhs.getForeignerPrice() ? 1 :
+						lhs.getForeign() < rhs.getForeign() ? -1 :
+							lhs.getForeign() > rhs.getForeign() ? 1 :
 								0;
 			}
 		}
 		// order by foreigner price desc
-		public static class ForeignerPriceDescCompare implements Comparator<LineBusTime>{
+		public static class ForeignerPriceDescCompare implements Comparator<Time>{
 			@Override
-			public int compare(LineBusTime lhs, LineBusTime rhs) {
+			public int compare(Time lhs, Time rhs) {
 				return
-						rhs.getForeignerPrice() < lhs.getForeignerPrice() ? -1 :
-							rhs.getForeignerPrice() > lhs.getForeignerPrice() ? 1 :
+						rhs.getForeign() < lhs.getForeign() ? -1 :
+							rhs.getForeign() > lhs.getForeign() ? 1 :
 								0;
 			}
 		}
-		
-		// order by distance asc
-		public static class DistanceAscCompare implements Comparator<LineBusTime>{
+		public static class CompanyNameAscCompare implements Comparator<Time>{
 			@Override
-			public int compare(LineBusTime lhs, LineBusTime rhs) {
+			public int compare(Time lhs, Time rhs){
+				int n = lhs.getCompanyName().toLowerCase().compareTo(rhs.getCompanyName().toLowerCase());
+				return n>0 ? 1 :
+					n<0 ? -1 : 0;
+			}
+		}
+		public static class CompanyNameDescCompare implements Comparator<Time>{
+			@Override
+			public int compare(Time lhs, Time rhs){
+				int n = rhs.getCompanyName().toLowerCase().compareTo(lhs.getCompanyName().toLowerCase());
+				return n>0 ? 1 :
+					n<0 ? -1 : 0;
+			}
+		}
+		/*/
+		// order by distance asc
+		public static class DistanceAscCompare implements Comparator<Time>{
+			@Override
+			public int compare(Time lhs, Time rhs) {
 				return
 						lhs.getDistance() < rhs.getDistance() ? -1 :
 							lhs.getDistance() > rhs.getDistance() ? 1 :
@@ -567,14 +730,15 @@ public class DBModel{
 			}
 		}
 		// order by distance desc
-		public static class DistanceDescCompare implements Comparator<LineBusTime>{
+		public static class DistanceDescCompare implements Comparator<Time>{
 			@Override
-			public int compare(LineBusTime lhs, LineBusTime rhs) {
+			public int compare(Time lhs, Time rhs) {
 				return
 						rhs.getDistance() < lhs.getDistance() ? -1 :
 							rhs.getDistance() > lhs.getDistance() ? 1 :
 								0;
 			}
 		}
+		/**/
 	}
 }

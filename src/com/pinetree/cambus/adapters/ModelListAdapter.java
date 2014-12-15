@@ -3,7 +3,9 @@ package com.pinetree.cambus.adapters;
 import java.util.ArrayList;
 
 import com.pinetree.cambus.R;
-import com.pinetree.cambus.models.DBModel.LineBusTime;
+import com.pinetree.cambus.models.DBModel.City;
+import com.pinetree.cambus.models.DBModel.CityRoute;
+import com.pinetree.cambus.models.DBModel.Time;
 import com.pinetree.cambus.utils.DateUtils;
 import com.pinetree.cambus.utils.DeviceInfo;
 import com.pinetree.cambus.utils.FontLoader;
@@ -13,7 +15,6 @@ import com.pinetree.cambus.viewholders.ViewHolder;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,95 +59,91 @@ public class ModelListAdapter<T> extends ArrayAdapter<T>{
 	public View getView(int position, View convertView, ViewGroup parent) {
 		View view = convertView;
 		
-		if(view == null){
-			view = inflater.inflate(R.layout.bus_list_row, parent, false);
+		T object = objects.get(position);
+		
+		//Log.i("DebugPrint","super:"+object.getClass());
+		
+		// Time
+		if(object.getClass().equals(Time.class)){
+			if(view == null){
+				view = inflater.inflate(R.layout.bus_list_row, parent, false);
+			}
+			Time time = (Time) object;
+			
+			TextView textCompany = ViewHolder.get(view, R.id.textCompany);
+			FontLoader.setTextViewTypeFace(getContext(),
+					textCompany, time.getCompanyName(), R.string.lato_semibold, (float)8.48);
+			
+			ImageView imageSeat = ViewHolder.get(view, R.id.imageSeat);
+			imageSeat.setImageDrawable(ImageLoader.getResizedDrawable(
+					this.getContext().getResources(),
+					R.drawable.chair,
+					app.getScaledRate()
+					));
+			
+			TextView textPrice = ViewHolder.get(view, R.id.textPrice);
+			FontLoader.setTextViewTypeFace(getContext(),
+					textPrice, time.getForeign()+"$", R.string.lato_regular, (float)8.25);
+
+			TextView textDeptTime = ViewHolder.get(view, R.id.textDeptTime);
+			FontLoader.setTextViewTypeFace(getContext(),
+					textDeptTime, time.getDeptTime(), R.string.lato_medium, (float)9.02);
+			
+			TextView textSeat = ViewHolder.get(view, R.id.textSeat);
+			String seat;
+			if(time.getSeat()!=1){
+				seat = time.getSeat() + " " + getContext().getResources().getString(R.string.seats);
+			}else{
+				seat = time.getSeat() + " " + getContext().getResources().getString(R.string.seat);			
+			}
+			FontLoader.setTextViewTypeFace(getContext(),
+					textSeat, seat, R.string.lato_regular, (float)8.25);
+			
+			//TODO setTerminal Info
+			if(time.getTerminalList().size()>0){
+				
+				ImageView imageMoreInfo = ViewHolder.get(view, R.id.moreBtn);
+				imageMoreInfo.setImageDrawable(ImageLoader.getResizedDrawable(
+						this.getContext().getResources(),
+						R.drawable.drop_down_btn,
+						app.getScaledRate()
+						));
+			}
 		}
-		
-		TextView textCompany = ViewHolder.get(view, R.id.TextCompany);
-		//TextView textType = ViewHolder.get(view, R.id.TextType);
-		ImageView imageBusType = ViewHolder.get(view, R.id.ImageBusType);
-		
-		TextView textFee = ViewHolder.get(view, R.id.TextFee);
-		TextView FeeInfo = ViewHolder.get(view, R.id.FeeInfo);
-		TextView textHour = ViewHolder.get(view, R.id.TextHour);
-		
-		TextView textAverage = ViewHolder.get(view, R.id.TextAverage);
-		TextView DurationTimeInfo = ViewHolder.get(view, R.id.DurationTimeInfo);
-		TextView textNextTime = ViewHolder.get(view, R.id.TextNextTime);
-		TextView NextTimeInfo = ViewHolder.get(view, R.id.NextTimeInfo);
-		
-		LineBusTime object = (LineBusTime) getItem(position);
-		
-		textCompany.setText(object.getCompanyName());
-		textCompany.setTypeface(FontLoader.getFontTypeface(
-				getContext().getAssets(),
-				"HelveticaNeueLTStd-Lt.otf"));
-		//textCompany.setTextSize(FontLoader.getFontSizeFromPt(app, (float)7.2));
-		textCompany.setTextSize(TypedValue.COMPLEX_UNIT_PT, (float)7.2);
-		
-		//TODO : 버스타입에 따른 다른 이미지 
-		Drawable dBusType = ImageLoader.getResizedDrawable(
-				this.getContext().getResources(),
-				R.drawable.busicon
-				);
-		
-		imageBusType.setImageDrawable(dBusType);
-		
-		// 
-		textFee.setTypeface(FontLoader.getFontTypeface(
-				getContext().getAssets(),
-				"HelveticaNeueLTStd-Lt.otf"));
-		//textFee.setTextSize(FontLoader.getFontSizeFromPt(app, (float)5));
-		textFee.setTextSize(TypedValue.COMPLEX_UNIT_PT, (float)5.0);
-		FeeInfo.setText(String.valueOf(object.getForeignerPrice())+"$");
-		FeeInfo.setTypeface(FontLoader.getFontTypeface(
-				getContext().getAssets(),
-				"HelveticaNeueLTStd-Lt.otf"));
-		//FeeInfo.setTextSize(FontLoader.getFontSizeFromPt(app, (float)6));
-		FeeInfo.setTextSize(TypedValue.COMPLEX_UNIT_PT, (float)6.0);
-		
-		textAverage.setTypeface(FontLoader.getFontTypeface(
-				getContext().getAssets(),
-				"HelveticaNeueLTStd-Lt.otf"));
-		//textAverage.setTextSize(FontLoader.getFontSizeFromPt(app, (float)5));
-		textAverage.setTextSize(TypedValue.COMPLEX_UNIT_PT, (float)5.0);
-		
-		if(object.getDurationTime()<=1){
-			textHour.setText(R.string.hour);
-		}else{
-			textHour.setText(R.string.hours);
-		}
-		textHour.setTypeface(FontLoader.getFontTypeface(
-				getContext().getAssets(),
-				"HelveticaNeueLTStd-Lt.otf"));
-		//textHour.setTextSize(FontLoader.getFontSizeFromPt(app, (float)5));
-		textHour.setTextSize(TypedValue.COMPLEX_UNIT_PT, (float)5.0);
-		
-		DurationTimeInfo.setText(DateUtils.getDurationTime(object.getDurationTime()));
-		DurationTimeInfo.setTypeface(FontLoader.getFontTypeface(
-				getContext().getAssets(),
-				"HelveticaNeueLTStd-Lt.otf"));
-		//DurationTimeInfo.setTextSize(FontLoader.getFontSizeFromPt(app, (float)6));
-		DurationTimeInfo.setTextSize(TypedValue.COMPLEX_UNIT_PT, (float)6.0);
-		
-		textNextTime.setTypeface(FontLoader.getFontTypeface(
-				getContext().getAssets(),
-				"HelveticaNeueLTStd-Lt.otf"));
-		//textNextTime.setTextSize(FontLoader.getFontSizeFromPt(app, (float)5));
-		textNextTime.setTextSize(TypedValue.COMPLEX_UNIT_PT, (float)5.0);
-		
-		NextTimeInfo.setText(
-				DateUtils.getTimes(object.getDeptTime()));
-		NextTimeInfo.setTypeface(FontLoader.getFontTypeface(
-				getContext().getAssets(),
-				"HelveticaNeueLTStd-Lt.otf"));
-		//NextTimeInfo.setTextSize(FontLoader.getFontSizeFromPt(app, (float)6));
-		NextTimeInfo.setTextSize(TypedValue.COMPLEX_UNIT_PT, (float)6.0);
-		
-		//TODO setTerminal Info
-		if(object.getTerminalList().size()>0){
-			//Log.i("DebugPrint","Terminal:"+object.getTerminalList().size());
-			//NextTimeInfo.setText(""+object.getTerminalList().size());
+		//City Route
+		else if(object.getClass().equals(CityRoute.class)){
+			if(view == null){
+				view = inflater.inflate(R.layout.route_stations_list_row, parent, false);
+			}
+			
+			CityRoute route = (CityRoute) object;
+			
+			ImageView routeDirection = ViewHolder.get(view, R.id.imageStation);
+			if(position==0){
+				routeDirection.setImageDrawable(ImageLoader.getResizedDrawable(
+						this.getContext().getResources(),
+						R.drawable.route_top,
+						app.getScaledRate()
+						));
+			}else if(position==getCount()-1){
+				routeDirection.setImageDrawable(ImageLoader.getResizedDrawable(
+						this.getContext().getResources(),
+						R.drawable.route_bottom,
+						app.getScaledRate()
+						));
+			}else{
+				routeDirection.setImageDrawable(ImageLoader.getResizedDrawable(
+						this.getContext().getResources(),
+						R.drawable.route_mid,
+						app.getScaledRate()
+						));
+			}
+			TextView textEng = ViewHolder.get(view, R.id.textEng);
+			FontLoader.setTextViewTypeFace(
+					getContext(), textEng, route.getName("eng"), R.string.lato_bold, (float)5.5);
+			TextView textKhm = ViewHolder.get(view, R.id.textKhm);
+			FontLoader.setTextViewTypeFace(
+					getContext(), textKhm, route.getName("khm"), R.string.khm_notoserif, (float)5.0);
 		}
 		
 		return view;

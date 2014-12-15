@@ -7,18 +7,20 @@ import java.util.Locale;
 import com.pinetree.cambus.R;
 import com.pinetree.cambus.interfaces.SwitchActivityInterface;
 import com.pinetree.cambus.interfaces.SwitchFragmentInterface;
-import com.pinetree.cambus.models.BusFilterModel;
 import com.pinetree.cambus.models.Model;
 import com.pinetree.cambus.utils.DeviceInfo;
+import com.pinetree.cambus.utils.FontLoader;
 
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 public abstract class BaseFragment extends Fragment {
 	protected SwitchActivityInterface saInterface;
@@ -120,5 +122,7 @@ public abstract class BaseFragment extends Fragment {
 		super.onDestroy();
 		//Log.i("DebugPrint","onDestroy");
 	}
+	
+	
 	
 }

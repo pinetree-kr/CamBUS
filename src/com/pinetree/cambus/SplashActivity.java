@@ -24,7 +24,7 @@ public class SplashActivity extends BaseActivity {
 		// Version Display
         setContentView(R.layout.activity_splash);
         
-        /**/
+        /*/
  		TextView textVersion = (TextView)findViewById(R.id.TextVersion);
  		textVersion.setTypeface(FontLoader.getFontTypeface(
  				this.getAssets(),

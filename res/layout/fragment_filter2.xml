@@ -1,0 +1,201 @@
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+   	xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/FragmentFilter"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+	>
+	<ImageView
+	    android:id="@+id/ImageFilterBackGround"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	     />
+	<LinearLayout
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent"
+	    android:gravity="center_horizontal"
+	    android:orientation="vertical"
+	    android:weightSum="1920" >
+	    <LinearLayout
+	        android:id="@+id/TitleBackGround"
+	        android:layout_width="match_parent"
+		    android:layout_height="0dp"
+	        android:layout_weight="160"
+	        android:gravity="center"
+	        android:weightSum="1080"
+	        >
+	
+	        <TextView
+	            android:id="@+id/TextTitle"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_gravity="center"
+	            android:text="@string/app_name"
+	            android:textColor="@android:color/white"/>
+	
+	    </LinearLayout>
+		<View
+		    android:layout_width="match_parent"
+		    android:layout_height="0dp"
+	        android:layout_weight="150"
+	        android:gravity="center"
+	        android:weightSum="1080"
+		    />
+	    <LinearLayout
+	        android:layout_width="match_parent"
+	        android:layout_height="0dp"
+	        android:gravity="center"
+	        android:layout_weight="240"
+	        android:weightSum="1080" >
+	
+	        <LinearLayout
+	            android:layout_width="0dp"
+	            android:layout_height="match_parent"
+	            android:layout_weight="920"
+	            android:orientation="vertical" >
+	
+	            <TextView
+	                android:id="@+id/filter_departure"
+	                android:layout_width="match_parent"
+	                android:layout_height="wrap_content"
+	                android:text="@string/departure"
+	                android:textSize="15sp"
+	                />
+	
+	            <Spinner
+	            android:id="@+id/SpinnerDeparture"
+	            android:layout_width="fill_parent"
+	            android:layout_height="wrap_content"/>
+	
+	        </LinearLayout>
+	
+	    </LinearLayout>
+	
+	    <LinearLayout
+	        android:layout_width="fill_parent"
+	        android:layout_height="0dp"
+	        android:gravity="center"
+	        android:layout_weight="240"
+	        android:weightSum="1080" >
+			<LinearLayout
+	            android:layout_width="0dp"
+	            android:layout_height="match_parent"
+	            android:layout_weight="920"
+	            android:orientation="vertical" >
+	
+	            <TextView
+	                android:id="@+id/filter_destination"
+	                android:layout_width="match_parent"
+	                android:layout_height="wrap_content"
+	                android:text="@string/destination"
+	                android:textSize="15sp"
+	                />
+		        <Spinner
+		            android:id="@+id/SpinnerDestination"
+		            android:layout_width="fill_parent"
+		            android:layout_height="wrap_content"/>
+			</LinearLayout>
+	    </LinearLayout>
+	
+	    <LinearLayout
+	        android:layout_width="match_parent"
+	        android:layout_height="0dp"
+	        android:gravity="center"
+	        android:layout_weight="240"
+	        android:weightSum="1080" >
+			<LinearLayout
+	            android:layout_width="0dp"
+	            android:layout_height="match_parent"
+	            android:layout_weight="920"
+	            android:orientation="vertical" >
+	
+	            <TextView
+	                android:id="@+id/filter_time"
+	                android:layout_width="match_parent"
+	                android:layout_height="wrap_content"
+	                android:text="@string/time"
+	                android:textSize="15sp"
+	                />
+		        <Spinner
+		            android:id="@+id/SpinnerTime"
+		            android:layout_width="fill_parent"
+		            android:layout_height="wrap_content" />
+			</LinearLayout>
+	    </LinearLayout>
+	    
+	    <LinearLayout
+	        android:layout_width="match_parent"
+	        android:layout_height="0dp"
+	        android:gravity="center"
+	        android:layout_weight="240"
+	        android:weightSum="1080" >
+			<LinearLayout
+	            android:layout_width="0dp"
+	            android:layout_height="match_parent"
+	            android:layout_weight="920"
+	            android:orientation="vertical" >
+	
+	            <TextView
+	                android:id="@+id/filter_type"
+	                android:layout_width="match_parent"
+	                android:layout_height="wrap_content"
+	                android:text="@string/bus_type"
+	                android:textSize="15sp"
+	                />
+		        <Spinner
+		            android:id="@+id/SpinnerType"
+		            android:layout_width="fill_parent"
+		            android:layout_height="wrap_content" />
+			</LinearLayout>
+	    </LinearLayout>
+	    <LinearLayout
+	        android:layout_width="match_parent"
+	        android:layout_height="0dp"
+	        android:layout_weight="650"
+	        android:gravity="center"
+	        android:weightSum="1080"
+	        android:orientation="vertical">
+			<ImageView
+			    android:id="@+id/ImageBus"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center"
+			    />
+			<ImageView
+			    android:id="@+id/ImageTri"
+			    android:layout_width="wrap_content"
+			    android:layout_height="wrap_content"
+			    android:layout_marginTop="7dp"
+			    android:layout_gravity="center"
+			    />
+			<FrameLayout
+			    android:id="@+id/ButtonSearch"
+			    android:layout_width="wrap_content"
+			    android:layout_height="wrap_content"
+			    android:layout_marginTop="10dp"
+			    android:layout_gravity="center">
+		        <ImageView
+		            android:id="@+id/ImageSearch"
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:layout_gravity="center"/>
+			    <TextView
+			        android:id="@+id/TextSearch"
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:layout_gravity="center"
+			        >
+			        
+			    </TextView>
+			</FrameLayout>
+			<!-- 
+			<Button
+			    android:id="@+id/ButtonSearch"
+			    android:layout_width="wrap_content"
+			    android:layout_height="wrap_content"
+			    android:text="@string/search" />
+			    -->		
+		</LinearLayout>
+	</LinearLayout>
+</FrameLayout>

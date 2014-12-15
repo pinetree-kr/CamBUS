@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.pinetree.cambus"
-    android:versionCode="8"
-    android:versionName="1.14.11.28" >
+    android:versionCode="11"
+    android:versionName="1.14.12.16" >
 
     <uses-sdk
         android:minSdkVersion="15"
@@ -35,6 +35,10 @@
         </activity>
         <activity
             android:name=".FilterActivity" />
+        <activity
+            android:name=".CityRoutesActivity" />
+        <activity
+            android:name=".CityRouteActivity" />
         <activity
             android:name=".BusListActivity" />
         <meta-data android:name="com.google.android.maps.v2.API_KEY" android:value="AIzaSyDfzTdLLpNyjwT4MIZRj-2H91hF72uLSC4"/>

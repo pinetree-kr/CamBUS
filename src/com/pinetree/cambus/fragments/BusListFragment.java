@@ -4,8 +4,6 @@ import java.util.ArrayList;
 
 import com.pinetree.cambus.R;
 import com.pinetree.cambus.adapters.ModelListAdapter;
-import com.pinetree.cambus.models.BusFilterModel;
-import com.pinetree.cambus.models.BusListModel;
 import com.pinetree.cambus.models.DBModel.*;
 import com.pinetree.cambus.models.Model;
 import com.pinetree.cambus.utils.DBHandler;
@@ -34,23 +32,31 @@ import android.widget.Toast;
 
 public class BusListFragment extends BaseFragment {
 	private TextView textTitle, textEmpty;
-	private TextView filterInfo, timeInfo, distanceInfo;
-	private TextView textBtnTime, textBtnPrice, textBtnNearest;
 	
-	private ImageView imageTime, imagePrice, imageNearest;
+	private TextView textDept, textDest, textDistance;
+	private TextView textBtnTime, textBtnPrice,
+		//textBtnNearest;
+		textBtnName;
+	
+	private ImageView imageTime, imagePrice,
+		//imageNearest;
+		imageName;
+	
 	private Drawable dSelected, dUnSelected;
 	
 	private ListView listView;
 	private ListAdapter listAdapter;
-	//private LineBusTime linebustime_list;
-	private BusListModel buslistinfo;
 	
-	private int list_type;
+	private Bus bus;
+	private int time;
+	private String order = "time";
+	
 	private DBHandler handler;
-	
-	public static Fragment getInstances(Model model){
+	public static Fragment getInstances(Bus bus, int time){
 		Bundle args = new Bundle();
-		args.putSerializable("model", model);
+		
+		args.putSerializable("bus", bus);
+		args.putInt("time", time);
 		
 		Fragment fragment = new BusListFragment();
 		fragment.setArguments(args);
@@ -63,9 +69,8 @@ public class BusListFragment extends BaseFragment {
 		
 		Bundle args = this.getArguments();
 		if(args != null){
-			//bus_list = (LineBusTime)args.getSerializable("model");
-			buslistinfo = (BusListModel)args.getSerializable("model");
-			list_type = 0;
+			bus = (Bus) args.getSerializable("bus");
+			time = args.getInt("time");
 		}
 	}
 	
@@ -77,21 +82,36 @@ public class BusListFragment extends BaseFragment {
 		// title
 		textTitle = (TextView)view.findViewById(R.id.TextTitle);
 		
-		View titleBg = view.findViewById(R.id.TitleBackGround);
-		titleBg.setBackgroundResource(R.drawable.top);
-		View filterInfoBg = view.findViewById(R.id.FilterInfoBackGround);
-		filterInfoBg.setBackgroundResource(R.drawable.top2);
-		View lineBg = view.findViewById(R.id.LineView);
-		lineBg.setBackgroundResource(R.drawable.line);
+		ImageView titleBg = (ImageView)view.findViewById(R.id.titleBg);
+		Drawable dBg = ImageLoader.getResizedDrawable(
+				getResources(),
+				R.drawable.top,
+				app.getScaledRate());
+		titleBg.setImageDrawable(dBg);
 		
-		filterInfo = (TextView) view.findViewById(R.id.TextFilterInfo);
-		timeInfo = (TextView) view.findViewById(R.id.TextTimeInfo);
-		distanceInfo = (TextView) view.findViewById(R.id.TextDistanceInfo);
+		ImageView filterBg = (ImageView)view.findViewById(R.id.filterBg);
+		Drawable dFilterBg = ImageLoader.getResizedDrawable(
+				getResources(),
+				R.drawable.filter_bar,
+				app.getScaledRate());
+		filterBg.setImageDrawable(dFilterBg);
+		
+		textDept = (TextView) view.findViewById(R.id.textDept);
+		textDest = (TextView) view.findViewById(R.id.textDest);
+		textDistance = (TextView) view.findViewById(R.id.textDistance);
+		
+		ImageView imageBus = (ImageView) view.findViewById(R.id.imageBus);
+		Drawable dBusIcon = ImageLoader.getResizedDrawable(
+				getResources(),
+				R.drawable.bus_icon,
+				app.getScaledRate());
+		imageBus.setImageDrawable(dBusIcon);
+		
 		
 		textEmpty = (TextView) view.findViewById(R.id.EmptyListView);
 		textBtnTime = (TextView) view.findViewById(R.id.TextButtonTime);
 		textBtnPrice = (TextView) view.findViewById(R.id.TextButtonPrice);
-		textBtnNearest = (TextView) view.findViewById(R.id.TextButtonNearest);
+		textBtnName = (TextView) view.findViewById(R.id.TextButtonName);
 		
 		View btnTime = view.findViewById(R.id.ButtonTime);
 		btnTime.setTag("time");
@@ -99,29 +119,26 @@ public class BusListFragment extends BaseFragment {
 		View btnPrice = view.findViewById(R.id.ButtonPrice);
 		btnPrice.setTag("price");
 		btnPrice.setOnClickListener(new OnSortButtonClickListener());
-		View btnNearest = view.findViewById(R.id.ButtonNearest);
-		btnNearest.setTag("nearest");
-		btnNearest.setOnClickListener(new OnSortButtonClickListener());
+		View btnName = view.findViewById(R.id.ButtonName);
+		btnName.setTag("name");
+		btnName.setOnClickListener(new OnSortButtonClickListener());
 		
 		imageTime = (ImageView)view.findViewById(R.id.ImageButtonTime);
 		imagePrice = (ImageView)view.findViewById(R.id.ImageButtonPrice);
-		imageNearest = (ImageView)view.findViewById(R.id.ImageButtonNearest);
+		imageName = (ImageView)view.findViewById(R.id.ImageButtonName);
 		
 		dSelected = ImageLoader.getResizedDrawable(
 				getResources(),
-				R.drawable.btnselected
+				R.drawable.sort_selected
 				);
 		dUnSelected = ImageLoader.getResizedDrawable(
 				getResources(),
-				R.drawable.unselected
+				R.drawable.sort_unselected
 				);
-		
-		//imageSearch.setImageDrawable(dSearch);
 		
 		listView = (ListView) view.findViewById(R.id.ListView);
 		listView.setEmptyView(view.findViewById(R.id.EmptyListView));
 		listView.setOnItemClickListener(new ListViewClickListener());
-		loadListAdapter("time");
 		
 		return view;
 	}
@@ -129,7 +146,10 @@ public class BusListFragment extends BaseFragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState){
 		super.onActivityCreated(savedInstanceState);
-		handler = DBHandler.open(getActivity().getApplicationContext());
+		handler = DBHandler.getInstance(getActivity().getApplicationContext(), false);
+		
+		setLineInfo();
+		loadListAdapter();
 	}
 	@Override
 	public void onStart(){
@@ -144,43 +164,20 @@ public class BusListFragment extends BaseFragment {
 	@Override
 	public void onDestroyView(){
 		super.onDestroyView();
-		handler.close();
 	}
 	
-	public void onClickedOrderButton(String order){
+	public void onClickedOrderButton(){
 		// 선택된 것에 맞게 변경 
 		if(order.equals("time")){
 			initImageButton();
 			imageTime.setImageDrawable(dSelected);
-			/*/
-			textBtnTime.setAlpha((float) 1);
-			if(bus_list.isAsc())
-				textBtnTime.setText(R.string.sort_time_asc);
-			else
-				textBtnTime.setText(R.string.sort_time_desc);
-			/**/
 		}else if(order.equals("price")){
 			initImageButton();
 			imagePrice.setImageDrawable(dSelected);
-			/*/
-			textBtnPrice.setAlpha((float) 1);
-			if(bus_list.isAsc())
-				textBtnPrice.setText(R.string.sort_price_asc);
-			else
-				textBtnPrice.setText(R.string.sort_price_desc);
-			/**/
 		}else if(order.equals("nearest")){
-			/*/
+		}else if(order.equals("name")){
 			initImageButton();
-			imageNearest.setImageDrawable(dSelected);
-			/**/
-			/*/
-			textBtnNearest.setAlpha((float) 1);
-			if(bus_list.isAsc())
-				textBtnNearest.setText(R.string.sort_Nearest_asc);
-			else
-				textBtnNearest.setText(R.string.sort_Nearest_desc);
-			/**/
+			imageName.setImageDrawable(dSelected);
 		}
 	}
 	
@@ -188,103 +185,67 @@ public class BusListFragment extends BaseFragment {
 		// 기본은 선택 x
 		imageTime.setImageDrawable(dUnSelected);
 		imagePrice.setImageDrawable(dUnSelected);
-		imageNearest.setImageDrawable(dUnSelected);
+		//imageNearest.setImageDrawable(dUnSelected);
+		imageName.setImageDrawable(dUnSelected);
 	}
 	
-	public void loadListAdapter(String order){
-		listAdapter = new ModelListAdapter<LineBusTime>(
+	public void loadListAdapter(){
+		listAdapter = new ModelListAdapter<Time>(
 				this.getActivity().getApplicationContext(),
 				R.layout.bus_list_row,
-				buslistinfo.getSortedLineBusTimeList(order));
+				handler.getTimeList(
+						bus.getDeptId(),
+						bus.getDestId(),
+						bus.getTypeId(),
+						bus.getCompanyId(),
+						time,
+						order)
+				);
 		listView.setAdapter(listAdapter);
-		
-		onClickedOrderButton(order);
+		onClickedOrderButton();
 	}
 	
 	private class OnSortButtonClickListener implements OnClickListener{
 		@Override
 		public void onClick(View v) {
 			
-			String order = (String)v.getTag();
+			String c_order = (String)v.getTag();
 			
-			if(order==null || order.equals(buslistinfo.getOrder()))
+			if(c_order == null || c_order.equals(order))
 				return ;
-			
+
 			//TODO : 아직 미지원 
-			if(order.equals("nearest")){
+			if(c_order.equals("nearest")){
 				Toast.makeText(getActivity().getApplicationContext(), R.string.not_supported_yet, 1000).show();
-			}else{
-				loadListAdapter(order);
+			}
+			else{
+				order = c_order;
+				loadListAdapter();
 			}
 		}
 	}
 
-	private void loadTextView() {
-		textTitle.setTypeface(FontLoader.getFontTypeface(
-				getActivity().getAssets(),
-				"HelveticaNeueLTStd-Lt.otf"));
-		//textTitle.setTextSize(FontLoader.getFontSizeFromPt(app, 8));
-		textTitle.setTextSize(TypedValue.COMPLEX_UNIT_PT, (float)8.0);
-		
+	private void setLineInfo(){
 		// Text FilterInfos
-		String dep2des = buslistinfo.getLineInfo().getDeptName() + " > " + buslistinfo.getLineInfo().getDestName();
-		filterInfo.setText(dep2des);
-		filterInfo.setTypeface(FontLoader.getFontTypeface(
-				getActivity().getAssets(),
-				"HelveticaNeueLTStd-Lt.otf"));
-		//filterInfo.setTextSize(FontLoader.getFontSizeFromPt(app, (float)5.5));
-		filterInfo.setTextSize(TypedValue.COMPLEX_UNIT_PT, (float)5.5);
+		Line line = handler.getLineInfo(bus.getDeptId(), bus.getDestId());
+		FontLoader.setTextViewTypeFace(getActivity().getApplicationContext(),textDept, line.getDeptName(), R.string.lato_regular, (float)6.88);
+		FontLoader.setTextViewTypeFace(getActivity().getApplicationContext(),textDest, line.getDestName(), R.string.lato_regular, (float)6.88);
+		FontLoader.setTextViewTypeFace(getActivity().getApplicationContext(),textDistance, line.getDistance()+"km", R.string.lato_regular, (float)6.88);
+	}
+	private void loadTextView() {
+		FontLoader.setTextViewTypeFace(getActivity().getApplicationContext(), textTitle, "CamBUS", R.string.lato_medium, (float)9.17);
 		
-		timeInfo.setText(DateUtils.getTimes(buslistinfo.getDeptTime()));
-		timeInfo.setTypeface(FontLoader.getFontTypeface(
-				getActivity().getAssets(),
-				"HelveticaNeueLTStd-Lt.otf"));
-		//timeInfo.setTextSize(FontLoader.getFontSizeFromPt(app, (float)5.5));
-		timeInfo.setTextSize(TypedValue.COMPLEX_UNIT_PT, (float)5.5);
-		
-		int distance = buslistinfo.getLineInfo().getDistance();
-		String km = distance > 0 ? String.valueOf(distance):"--";
-		distanceInfo.setText(km+" km");
-		distanceInfo.setTypeface(FontLoader.getFontTypeface(
-				getActivity().getAssets(),
-				"HelveticaNeueLTStd-Lt.otf"));
-		//distanceInfo.setTextSize(FontLoader.getFontSizeFromPt(app, (float)5.5));
-		distanceInfo.setTextSize(TypedValue.COMPLEX_UNIT_PT, (float)5.5);
-		
-		textBtnTime.setText(R.string.sort_time);
-		textBtnPrice.setText(R.string.sort_price);
-		textBtnNearest.setText(R.string.sort_nearest);
-		
-		textEmpty.setText(R.string.no_data);
-		
-		textEmpty.setTypeface(FontLoader.getFontTypeface(
-				getActivity().getAssets(),
-				"HelveticaNeueLTStd-Lt.otf"));
-		//textEmpty.setTextSize(FontLoader.getFontSizeFromPt(app, (float)6.5));
-		textEmpty.setTextSize(TypedValue.COMPLEX_UNIT_PT, (float)6.5);
-		
-		textBtnTime.setTypeface(FontLoader.getFontTypeface(
-				getActivity().getAssets(),
-				"HelveticaNeueLTStd-Lt.otf"));
-		//textBtnTime.setTextSize(FontLoader.getFontSizeFromPt(app, (float)7.2));
-		textBtnTime.setTextSize(TypedValue.COMPLEX_UNIT_PT, (float)7.2);
-		textBtnPrice.setTypeface(FontLoader.getFontTypeface(
-				getActivity().getAssets(),
-				"HelveticaNeueLTStd-Lt.otf"));
-		//textBtnPrice.setTextSize(FontLoader.getFontSizeFromPt(app, (float)7.2));
-		textBtnPrice.setTextSize(TypedValue.COMPLEX_UNIT_PT, (float)7.2);
-		textBtnNearest.setTypeface(FontLoader.getFontTypeface(
-				getActivity().getAssets(),
-				"HelveticaNeueLTStd-Lt.otf"));
-		//textBtnNearest.setTextSize(FontLoader.getFontSizeFromPt(app, (float)7.2));
-		textBtnNearest.setTextSize(TypedValue.COMPLEX_UNIT_PT, (float)7.2);
+		FontLoader.setTextViewTypeFace(getActivity().getApplicationContext(), textEmpty, R.string.no_data, R.string.lato_medium, (float)9.5);
+		FontLoader.setTextViewTypeFace(getActivity().getApplicationContext(), textBtnTime, R.string.sort_time, R.string.lato_regular, (float)8.25);
+		FontLoader.setTextViewTypeFace(getActivity().getApplicationContext(), textBtnPrice, R.string.sort_price, R.string.lato_regular, (float)8.25);
+		FontLoader.setTextViewTypeFace(getActivity().getApplicationContext(), textBtnName, R.string.sort_name, R.string.lato_regular, (float)8.25);
 	}
 	
 	private class ListViewClickListener implements AdapterView.OnItemClickListener{
 		@Override
 		public void onItemClick(AdapterView<?> parent, View view, int position,
 				long id) {
-			LineBusTime object = (LineBusTime)parent.getItemAtPosition(position);
+			Time object = (Time)parent.getItemAtPosition(position);
 		    ArrayList<Terminal> terminals = object.getTerminalList();
 
 		    if(terminals.size()!=0){
@@ -296,7 +257,8 @@ public class BusListFragment extends BaseFragment {
 		    	//터미널좌표가 있는 정보 GOTO 맵다이얼로그 
 		    	if(i!=terminals.size()){
 		    		TerminalMapDialogFragment dialog = TerminalMapDialogFragment.getInstances(object.getTerminalList());
-		    		dialog.show(getFragmentManager(), "googlemap");		    		
+		    		dialog.show(getFragmentManager(), "googlemap");
+		    		
 		    	}
 		    	/*/
 		    	//좌표가 없는 정보 GOTO 연락처다이얼로그

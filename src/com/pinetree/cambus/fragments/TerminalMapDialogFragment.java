@@ -163,12 +163,12 @@ public class TerminalMapDialogFragment extends DialogFragment {
 		MarkerOptions marker = new MarkerOptions();
 		
 		marker.position(terminal.getPosition());
-		marker.title(terminal.getTerminalName());
+		marker.title(terminal.getName());
 		String snippet = "";
 		if(terminal.getAddress()!=null){
 			snippet = terminal.getAddress();
 		}
-		marker.snippet(snippet+"\n"+terminal.getPhoneNo());
+		marker.snippet(snippet+"\n"+terminal.getPhone());
 		if(map!=null){
 			map.addMarker(marker).showInfoWindow();
 			map.moveCamera(CameraUpdateFactory.newLatLngZoom(terminal.getPosition(), 12));

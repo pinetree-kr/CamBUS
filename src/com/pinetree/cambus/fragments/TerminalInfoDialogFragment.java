@@ -101,9 +101,9 @@ public class TerminalInfoDialogFragment extends DialogFragment {
 				if(!snippet.equals("")){
 					String[] info = snippet.split("\n");
 					if(info.length>=3){
-						terminal.setTerminalName(info[0].trim());
+						terminal.setName(info[0].trim());
 						terminal.setAddress(info[1].trim());
-						terminal.setPhoneNo(info[2].trim());
+						terminal.setPhone(info[2].trim());
 					}
 				}
 			}
@@ -157,7 +157,7 @@ public class TerminalInfoDialogFragment extends DialogFragment {
 		textName.setLayoutParams(param);
 		textName.setGravity(Gravity.CENTER);
 		textName.setTextColor(Color.BLACK);
-		textName.setText(terminal.getTerminalName());
+		textName.setText(terminal.getName());
 		textName.setTextSize(TypedValue.COMPLEX_UNIT_PT, (float)8.0);
 		infoView.addView(textName);
 		
@@ -179,11 +179,11 @@ public class TerminalInfoDialogFragment extends DialogFragment {
 		
 		Button phoneView;
 		String phoneText;
-		for(String phone : terminal.getPhoneNoList()){
+		for(String phone : terminal.getPhoneList()){
 			if(!phone.equals("")){
 				phoneText = phone.trim().replaceAll("\\D", "");
 				phoneView = new Button(getActivity().getApplicationContext());
-				phoneView.setBackgroundResource(R.drawable.button_default);
+				//phoneView.setBackgroundResource(R.);
 				phoneView.setText(phoneText);
 				phoneView.setTag(phoneText);
 				phoneView.setOnClickListener(new CallClickListener());

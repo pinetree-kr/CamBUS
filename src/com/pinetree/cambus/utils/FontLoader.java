@@ -4,11 +4,33 @@ import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Typeface;
 import android.util.Log;
+import android.util.TypedValue;
+import android.widget.TextView;
 
 public class FontLoader {
-	public static Typeface getFontTypeface(AssetManager asset, String font_type){
-		return Typeface.createFromAsset(asset, font_type);
+	public static Typeface getFontTypeface(Context context, int font){
+		String fontType = context.getResources().getText(font).toString();
+		return Typeface.createFromAsset(context.getAssets(), fontType);
 	}
+	
+	public static void setTextViewTypeFace(Context context, TextView view, int font, float size){
+		view.setTypeface(FontLoader.getFontTypeface(
+				context,
+				font));
+		view.setTextSize(TypedValue.COMPLEX_UNIT_PT, size);
+	}
+	public static void setTextViewTypeFace(Context context, TextView view, int text, int font, float size){
+		view.setText(text);
+		//view.setTextColor(color);
+		setTextViewTypeFace(context, view, font, size);
+	}
+	
+	public static void setTextViewTypeFace(Context context, TextView view, String text, int font, float size){
+		view.setText(text);
+		//view.setTextColor(color);
+		setTextViewTypeFace(context, view, font, size);
+	}
+	
 	/*/
 	public static int getFontSizeFromPt(Context con, float pt){
 		//mac pt to px

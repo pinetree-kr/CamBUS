@@ -2,22 +2,26 @@ package com.pinetree.cambus.adapters;
 
 import java.util.ArrayList;
 
-import com.pinetree.cambus.R;
-import com.pinetree.cambus.models.DBModel.*;
-import com.pinetree.cambus.utils.DateUtils;
-import com.pinetree.cambus.utils.DeviceInfo;
-import com.pinetree.cambus.utils.FontLoader;
-
-import android.R.color;
 import android.content.Context;
 import android.graphics.Color;
-import android.util.Log;
+import android.graphics.drawable.Drawable;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.pinetree.cambus.R;
+import com.pinetree.cambus.models.DBModel.City;
+import com.pinetree.cambus.models.DBModel.Company;
+import com.pinetree.cambus.models.DBModel.Type;
+import com.pinetree.cambus.utils.DateUtils;
+import com.pinetree.cambus.utils.DeviceInfo;
+import com.pinetree.cambus.utils.FontLoader;
+import com.pinetree.cambus.utils.ImageLoader;
+import com.pinetree.cambus.viewholders.ViewHolder;
 
 public class SpinnerAdapter<T> extends ArrayAdapter<T>{
 	protected LayoutInflater inflater;
@@ -43,37 +47,44 @@ public class SpinnerAdapter<T> extends ArrayAdapter<T>{
 	
 	public View getSpinnerView(int position, View convertView, ViewGroup parent){
 		View view = convertView;
-		TextView textName, textPreference;
-		
-		if(view == null){
-			view = inflater.inflate(R.layout.custom_spinner, parent, false);
-		}
-		textName = (TextView) view.findViewById(R.id.spinnerText);
-		textPreference = (TextView) view.findViewById(R.id.spinnerPreference);
 		
 		T object = objects.get(position);
 		
-		view.setTag(object);
-		textPreference.setText("");
+		if(view == null){
+			view = inflater.inflate(R.layout.spinner_row, parent, false);
+		}
+		
+		TextView textName = ViewHolder.get(view, R.id.spinnerText);
+		//TextView textName = (TextView)view.findViewById(R.id.spinnerText);
+		ImageView imageBg = ViewHolder.get(view, R.id.spinnerBg);
+		//ImageView imageBg= (ImageView)view.findViewById(R.id.spinnerBg);
+		
+		imageBg.setImageDrawable(ImageLoader.getResizedDrawable(
+				this.getContext().getResources(),
+				R.drawable.drop_down_bg,
+				app.getScaledRate()
+				));
+		
+		//view.setTag(object);
+		
 		// city이면
 		if(object.getClass().getSuperclass().equals(City.class)){
-			String cityName =((City)object).getCityName();
-			if(((City)object).getHigh()){
+			String cityName =((City)object).getName();
+			if(((City)object).getPref()){
 				textName.setTextColor(Color.RED);
 				textName.setText("*"+cityName);
 			}else{
-				textName.setTextColor(Color.BLACK);
+				textName.setTextColor(getContext().getResources().getColor(R.color.search_select));
 				textName.setText(cityName);
 			}
 			textName.setHint(R.string.select_city);
 		}
 		// type이면
-		else if(object.getClass().equals(BusType.class)){
-			if((((BusType)object).getTypeNo()<1))
+		else if(object.getClass().equals(Type.class)){
+			if((((Type)object).getId()<1))
 				textName.setText(R.string.all_type);
 			else	
-				textName.setText(((BusType)object).getTypeName());
-			textName.setHint(R.string.select_type);
+				textName.setText(((Type)object).getName());
 		}
 		// time이면
 		else if(object.getClass().equals(Integer.class)){
@@ -86,12 +97,17 @@ public class SpinnerAdapter<T> extends ArrayAdapter<T>{
 			}
 			textName.setHint(R.string.select_time);
 		}
+		// company이면
+		else if(object.getClass().equals(Company.class)){
+			if((((Company)object).getId()<1))
+				textName.setText(R.string.all_company);
+			else	
+				textName.setText(((Company)object).getName());
+			textName.setHint(R.string.select_company);
+		}
 		
-		textName.setTypeface(FontLoader.getFontTypeface(
-				getContext().getAssets(),
-				"HelveticaNeueLTStd-Lt.otf"));
-		//textName.setTextSize(FontLoader.getFontSizeFromPt(app, (float)7.2));
-		textName.setTextSize(TypedValue.COMPLEX_UNIT_PT, (float)7.2);
+		FontLoader.setTextViewTypeFace(getContext(),
+				textName, R.string.lato_light, (float)7);
 		return view;
 	}
 }

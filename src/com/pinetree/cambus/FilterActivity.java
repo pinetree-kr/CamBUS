@@ -19,18 +19,18 @@ public class FilterActivity extends BaseActivity {
 		setContentView(R.layout.activity_main);
 		
 		if(savedInstanceState == null){
-			Intent intent = getIntent();
-			Model model = (Model)intent.getSerializableExtra("model");
 			Fragment fragment;
 			switch(getResources().getConfiguration().orientation){
 			// 세로형 
 			case Configuration.ORIENTATION_PORTRAIT:
-				fragment = FilterFragment.getInstances(model);
+				//fragment = FilterFragment.getInstances(model);
+				fragment = FilterFragment.getInstances(null);
 				switchFragment(fragment, true);
 				break;
 			// 가로형 
 			case Configuration.ORIENTATION_LANDSCAPE:
-				fragment = FilterFragment.getInstances(model);
+				//fragment = FilterFragment.getInstances(model);
+				fragment = FilterFragment.getInstances(null);
 				switchFragment(fragment, true);
 				break;
 			}

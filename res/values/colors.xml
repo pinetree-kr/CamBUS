@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<color name="cambus_title">#ffffff</color>
+	
+	<!-- search filter -->
+	<color name="search_label">#4b4b4b</color>
+	<color name="search_btn">#4b4b4b</color>
+	<color name="search_select">#4b4b4b</color>
+	
+	<!-- city route -->
+	<color name="city_route_national">#363e63</color>
+	<color name="city_route_via">#5e5e5e</color>
+
+	<!-- bus list -->
+	<color name="line_info">#ffffff</color>
+	<color name="line_sort">#363e63</color>
+	<color name="bus_company">#4b4b4b</color>
+	<color name="bus_time">#ce5446</color>
+	<color name="bus_seat">#4b4b4b</color>
+	<color name="bus_price">#4b4b4b</color>
+	<color name="divider">#e2e2e2</color>
+	
+</resources> 

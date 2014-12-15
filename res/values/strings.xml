@@ -12,19 +12,25 @@
     <string name="destination">Destination</string>
     <string name="time">Time</string>
     <string name="bus_type">Bus Type</string>
-    <string name="select_city">Select City</string>
-    <string name="select_time">Select Time</string>
-    <string name="select_type">Select Type</string>
-    <string name="select_departure">Select Departure</string>
-    <string name="select_destination">Select Destination</string>
-    <string name="all_type">All Type</string>
+    <string name="bus_company">Bus Company</string>
+    <string name="select_city">Select city</string>
+    <string name="select_time">Select time</string>
+    <string name="select_type">Select type</string>
+    <string name="select_company">Select company</string>
+    
+    <string name="select_departure">Select departure</string>
+    <string name="select_destination">Select destination</string>
+    
+    <string name="all_type">All type</string>
+    <string name="all_company">All company</string>
     <string name="departure_time">Departure Time</string>
     <string name="search">Search</string>
 	
     <!-- buslistfragment -->
-    <string name="sort_time">SCHEDULE</string>
-    <string name="sort_price">PRICE</string>
-    <string name="sort_nearest">NEAREST</string>
+    <string name="sort_time">time</string>
+    <string name="sort_price">price</string>
+    <string name="sort_nearest">A-Z</string>
+    <string name="sort_name">A-Z</string>
     <!-- 
     <string name="sort_time_asc">time △</string>
     <string name="sort_price_asc">price △</string>
@@ -35,6 +41,8 @@
     -->
     <string name="hour">hour</string>
     <string name="hours">hours</string>
+    <string name="seats">seats</string>
+    <string name="seat">seat</string>
     <string name="fee">fee : </string>
     <string name="average">average : </string>
     <string name="next_time">time : </string>
@@ -43,4 +51,39 @@
     
     <string name="no_data">No Data</string>
     <string name="no_terminal_info"></string>
+    
+    <!-- Route -->
+    <string name="route1">National Rd.5 ▶ National Rd No.1</string>
+    <string name="via1">via Monivong Blvd</string>
+    <string name="route2">Night Market ▶ Takmao</string>
+    <string name="via2">via Toul Kork, Mao Tsu Toung Blvd</string>
+    <string name="route3">Night Market ▶ Chom chay Roundabout</string>
+    <string name="via3">via Kampuchea Krom Blvd, Russia Blvd,\nPochentong Airpot</string>
+
+    <string name="route_info">From 05:30 to 20:00, 10~15min interval</string>
+    
+    <string name="lato_medium">Lato-Medium.ttf</string>
+    <string name="lato_mediumit">Lato-MediumItalic.ttf</string>
+    <string name="lato_regular">Lato-Regular.ttf</string>
+    <string name="lato_regularit">Lato-RegularItalic.ttf</string>
+    <string name="lato_light">Lato-Light.ttf</string>
+    <string name="lato_lightit">Lato-LightItalic.ttf</string>
+    <string name="lato_semibold">Lato-Semibold.ttf</string>
+    <string name="lato_bold">Lato-Bold.ttf</string>
+    <string name="lato_boldit">Lato-BoldItalic.ttf</string>
+    
+    <string name="khmer_muollight">KhmerOS_muollight.ttf</string>
+    <string name="khmer_ot">KhmerOT.ttf</string>
+    <string name="myriad_bold">MYRIADPRO-BOLD.OTF</string>
+    <string name="myriad_boldcond">MYRIADPRO-BOLDCOND.OTF</string>
+    <string name="myriad_boldcondit">MYRIADPRO-BOLDCONDIT.OTF</string>
+    <string name="myriad_boldit">MYRIADPRO-BOLDIT.OTF</string>
+    <string name="myriad_cond">MYRIADPRO-COND.OTF</string>
+    <string name="myriad_condit">MYRIADPRO-CONDIT.OTF</string>
+    <string name="myriad_regular">MYRIADPRO-REGULAR.OTF</string>
+    <string name="myriad_semibold">MYRIADPRO-SEMIBOLD.OTF</string>
+    <string name="myriad_semiboldit">MYRIADPRO-SEMIBOLDIT.OTF</string>
+    <string name="khm_notoserifbold">NotoSerifKhmer-Bold.ttf</string>
+    <string name="khm_notoserif">NotoSerifKhmer-Regular.ttf</string>
+    
 </resources>
