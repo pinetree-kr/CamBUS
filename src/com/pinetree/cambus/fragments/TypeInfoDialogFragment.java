@@ -4,30 +4,30 @@ import java.util.ArrayList;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.view.Gravity;
+import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.pinetree.cambus.R;
 import com.pinetree.cambus.models.DBModel.Type;
 import com.pinetree.cambus.utils.DeviceInfo;
-import com.pinetree.cambus.utils.ImageLoader;
+import com.pinetree.utils.FontLoader;
+import com.pinetree.utils.ImageLoader;
 
 public class TypeInfoDialogFragment extends DialogFragment {
 	private boolean isModal;
 	private LinearLayout infoView;
 	private String[] type_list;
 	private DeviceInfo app;
+	private ImageLoader imageLoader;
+	private FontLoader fontLoader;
 	public static TypeInfoDialogFragment getInstances(ArrayList<Type> types){
 		Bundle args = new Bundle();
 		
@@ -50,6 +50,9 @@ public class TypeInfoDialogFragment extends DialogFragment {
 		
 		LayoutInflater inflater = getActivity().getLayoutInflater();
 		app = (DeviceInfo)getActivity().getApplicationContext();
+		fontLoader = new FontLoader(getActivity().getApplicationContext());
+		imageLoader = new ImageLoader(getResources(), app.getScaledRate());
+		
 		View view = inflater.inflate(R.layout.fragment_dialog_type_info, null);
 		view.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 		builder.setView(view);
@@ -125,11 +128,7 @@ public class TypeInfoDialogFragment extends DialogFragment {
 	
 	public void setupUI(View view){
 		ImageView typeInfo = (ImageView)view.findViewById(R.id.imageTypeInfo);
-		typeInfo.setImageDrawable(ImageLoader.getResizedDrawable(
-				getResources(),
-				R.drawable.popup,
-				app.getScaledRate()
-				));
+		typeInfo.setImageDrawable(imageLoader.getResizedDrawable(R.drawable.popup));
 		
 		/*/
 		if(infoView==null){

@@ -1,34 +1,13 @@
 package com.pinetree.cambus.fragments;
 
-import java.util.ArrayList;
-
-import org.json.JSONException;
-
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
-import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
-import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.pinetree.cambus.R;
-import com.pinetree.cambus.models.DBModel.Terminal;
-import com.pinetree.cambus.utils.DeviceInfo;
-
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.DialogFragment;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v4.app.DialogFragment;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -36,10 +15,13 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
+
+import com.pinetree.cambus.R;
+import com.pinetree.cambus.models.DBModel.Terminal;
+import com.pinetree.cambus.utils.DeviceInfo;
 
 public class TerminalInfoDialogFragment extends DialogFragment {
 	private boolean isModal;
@@ -96,9 +78,9 @@ public class TerminalInfoDialogFragment extends DialogFragment {
 			if(obj!=null){
 				terminal = obj;
 			}else{
-				String snippet = (String)args.getString("snippet","");
+				String snippet = (String)args.getString("snippet");
 				terminal = new Terminal();
-				if(!snippet.equals("")){
+				if(snippet!=null && !snippet.equals("")){
 					String[] info = snippet.split("\n");
 					if(info.length>=3){
 						terminal.setName(info[0].trim());

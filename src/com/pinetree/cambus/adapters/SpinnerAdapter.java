@@ -4,8 +4,6 @@ import java.util.ArrayList;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,22 +15,26 @@ import com.pinetree.cambus.R;
 import com.pinetree.cambus.models.DBModel.City;
 import com.pinetree.cambus.models.DBModel.Company;
 import com.pinetree.cambus.models.DBModel.Type;
-import com.pinetree.cambus.utils.DateUtils;
 import com.pinetree.cambus.utils.DeviceInfo;
-import com.pinetree.cambus.utils.FontLoader;
-import com.pinetree.cambus.utils.ImageLoader;
-import com.pinetree.cambus.viewholders.ViewHolder;
+import com.pinetree.utils.FontLoader;
+import com.pinetree.utils.FormatUtil;
+import com.pinetree.utils.ImageLoader;
+import com.pinetree.utils.ViewHolder;
 
 public class SpinnerAdapter<T> extends ArrayAdapter<T>{
 	protected LayoutInflater inflater;
 	protected ArrayList<T> objects;
 	protected DeviceInfo app;
+	protected FontLoader fontLoader;
+	protected ImageLoader imageLoader;
 	
 	public SpinnerAdapter(Context context, int resource, ArrayList<T> objects) {
 		super(context, resource, objects);
 		inflater = LayoutInflater.from(context);
 		this.objects = objects;
 		app = (DeviceInfo)context;
+		fontLoader = new FontLoader(context);
+		imageLoader = new ImageLoader(context.getResources(), app.getScaledRate());
 	}
 	
 	@Override
@@ -59,11 +61,8 @@ public class SpinnerAdapter<T> extends ArrayAdapter<T>{
 		ImageView imageBg = ViewHolder.get(view, R.id.spinnerBg);
 		//ImageView imageBg= (ImageView)view.findViewById(R.id.spinnerBg);
 		
-		imageBg.setImageDrawable(ImageLoader.getResizedDrawable(
-				this.getContext().getResources(),
-				R.drawable.drop_down_bg,
-				app.getScaledRate()
-				));
+		imageBg.setImageDrawable(
+				imageLoader.getResizedDrawable(R.drawable.drop_down_bg));
 		
 		//view.setTag(object);
 		
@@ -91,7 +90,7 @@ public class SpinnerAdapter<T> extends ArrayAdapter<T>{
 			// 시간출력 
 			int time = (Integer)object;
 			if(time>0){
-				textName.setText(DateUtils.getTimes(time));
+				textName.setText(FormatUtil.getTimes(time));
 			}else{
 				textName.setText("");
 			}
@@ -106,8 +105,7 @@ public class SpinnerAdapter<T> extends ArrayAdapter<T>{
 			textName.setHint(R.string.select_company);
 		}
 		
-		FontLoader.setTextViewTypeFace(getContext(),
-				textName, R.string.lato_light, (float)7);
+		fontLoader.setTextViewTypeFace(textName, R.string.lato_light, (float)7);
 		return view;
 	}
 }

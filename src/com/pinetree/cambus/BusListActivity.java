@@ -1,8 +1,8 @@
 package com.pinetree.cambus;
 
-import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 
 import com.pinetree.cambus.fragments.BusListFragment;
 import com.pinetree.cambus.models.DBModel.Bus;

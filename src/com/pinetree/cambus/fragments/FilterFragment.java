@@ -1,38 +1,31 @@
 package com.pinetree.cambus.fragments;
 
-import java.util.ArrayList;
-
-import com.pinetree.cambus.BusListActivity;
-import com.pinetree.cambus.CityRoutesActivity;
-import com.pinetree.cambus.FilterActivity;
-import com.pinetree.cambus.R;
-import com.pinetree.cambus.adapters.SpinnerAdapter;
-import com.pinetree.cambus.interfaces.ModelCallbackInterface;
-import com.pinetree.cambus.models.Model;
-import com.pinetree.cambus.models.DBModel.*;
-import com.pinetree.cambus.utils.DBHandler;
-import com.pinetree.cambus.utils.FontLoader;
-import com.pinetree.cambus.utils.ImageLoader;
-
-import android.app.Fragment;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Log;
-import android.util.TypedValue;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.pinetree.cambus.BusListActivity;
+import com.pinetree.cambus.CityRoutesActivity;
+import com.pinetree.cambus.R;
+import com.pinetree.cambus.adapters.SpinnerAdapter;
+import com.pinetree.cambus.models.DBModel.Bus;
+import com.pinetree.cambus.models.DBModel.Company;
+import com.pinetree.cambus.models.DBModel.Departure;
+import com.pinetree.cambus.models.DBModel.Destination;
+import com.pinetree.cambus.models.DBModel.Type;
+import com.pinetree.cambus.models.Model;
+import com.pinetree.cambus.utils.DBHandler;
 
 public class FilterFragment extends BaseFragment {
 	private Spinner
@@ -79,10 +72,7 @@ public class FilterFragment extends BaseFragment {
 		textTitle = (TextView)view.findViewById(R.id.TextTitle);
 		
 		ImageView titleBg = (ImageView)view.findViewById(R.id.titleBg);
-		Drawable dBg = ImageLoader.getResizedDrawable(
-				getResources(),
-				R.drawable.top,
-				app.getScaledRate());
+		Drawable dBg = imageLoader.getResizedDrawable(R.drawable.top);
 		titleBg.setImageDrawable(dBg);
 		
 		// text
@@ -97,35 +87,19 @@ public class FilterFragment extends BaseFragment {
 		// image
 		
 		ImageView imageTypeInfo = (ImageView)view.findViewById(R.id.imageTypeInfo);
-		Drawable dTypeInfo = ImageLoader.getResizedDrawable(
-				getResources(),
-				R.drawable.info_icon,
-				app.getScaledRate()
-				);
+		Drawable dTypeInfo = imageLoader.getResizedDrawable(R.drawable.info_icon);
 		imageTypeInfo.setImageDrawable(dTypeInfo);
 		
 		ImageView imageSearch = (ImageView)view.findViewById(R.id.ImageSearch);
-		Drawable dSearch = ImageLoader.getResizedDrawable(
-				getResources(),
-				R.drawable.search_btn,
-				app.getScaledRate()
-				);
+		Drawable dSearch = imageLoader.getResizedDrawable(R.drawable.search_btn);
 		imageSearch.setImageDrawable(dSearch);
 		
 		ImageView imageIntercityBg = (ImageView)view.findViewById(R.id.intercityBg);
-		Drawable dInterBg = ImageLoader.getResizedDrawable(
-				getResources(),
-				R.drawable.citybus_flip,
-				app.getScaledRate()
-				);
+		Drawable dInterBg = imageLoader.getResizedDrawable(R.drawable.citybus_flip);
 		imageIntercityBg.setImageDrawable(dInterBg);
 		
 		ImageView imageIntercityBtn = (ImageView)view.findViewById(R.id.intercityButton);
-		Drawable dInterBtn = ImageLoader.getResizedDrawable(
-				getResources(),
-				R.drawable.citybus_icon,
-				app.getScaledRate()
-				);
+		Drawable dInterBtn = imageLoader.getResizedDrawable(R.drawable.citybus_icon);
 		imageIntercityBtn.setImageDrawable(dInterBtn);
 		imageIntercityBtn.setTag("routes");
 		imageIntercityBtn.setOnClickListener(new OnButtonClickListener());
@@ -188,14 +162,14 @@ public class FilterFragment extends BaseFragment {
 	}
 	
 	protected void loadTextView(){
-		FontLoader.setTextViewTypeFace(getActivity().getApplicationContext(), textTitle, "CamBUS", R.string.lato_medium, (float)9.17);
+		fontLoader.setTextViewTypeFace(textTitle, "CamBUS", R.string.lato_medium, (float)9.17);
 		
-		FontLoader.setTextViewTypeFace(getActivity().getApplicationContext(), textDeparture, R.string.departure, R.string.lato_regular, (float)7);
-		FontLoader.setTextViewTypeFace(getActivity().getApplicationContext(), textDestination, R.string.destination, R.string.lato_regular, (float)7);
-		FontLoader.setTextViewTypeFace(getActivity().getApplicationContext(), textTime, R.string.time, R.string.lato_regular, (float)7);
-		FontLoader.setTextViewTypeFace(getActivity().getApplicationContext(), textType, R.string.bus_type, R.string.lato_regular, (float)7);
-		FontLoader.setTextViewTypeFace(getActivity().getApplicationContext(), textCompany, R.string.bus_company, R.string.lato_regular, (float)7);
-		FontLoader.setTextViewTypeFace(getActivity().getApplicationContext(), textSearch, R.string.search, R.string.lato_regular, (float)8);
+		fontLoader.setTextViewTypeFace(textDeparture, R.string.departure, R.string.lato_regular, (float)7);
+		fontLoader.setTextViewTypeFace(textDestination, R.string.destination, R.string.lato_regular, (float)7);
+		fontLoader.setTextViewTypeFace(textTime, R.string.time, R.string.lato_regular, (float)7);
+		fontLoader.setTextViewTypeFace(textType, R.string.bus_type, R.string.lato_regular, (float)7);
+		fontLoader.setTextViewTypeFace(textCompany, R.string.bus_company, R.string.lato_regular, (float)7);
+		fontLoader.setTextViewTypeFace(textSearch, R.string.search, R.string.lato_regular, (float)8);
 	}
 	
 	protected void loadDepartureAdapter(){

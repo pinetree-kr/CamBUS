@@ -1,26 +1,21 @@
 package com.pinetree.cambus.fragments;
 
-import io.userhabit.service.Userhabit;
-
 import java.util.Locale;
+
+import android.app.Activity;
+import android.content.res.Configuration;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
 import com.pinetree.cambus.R;
 import com.pinetree.cambus.interfaces.SwitchActivityInterface;
 import com.pinetree.cambus.interfaces.SwitchFragmentInterface;
-import com.pinetree.cambus.models.Model;
 import com.pinetree.cambus.utils.DeviceInfo;
-import com.pinetree.cambus.utils.FontLoader;
-
-import android.app.Activity;
-import android.app.Fragment;
-import android.content.res.Configuration;
-import android.os.Bundle;
-import android.util.Log;
-import android.util.TypedValue;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.widget.TextView;
+import com.pinetree.utils.FontLoader;
+import com.pinetree.utils.ImageLoader;
 
 public abstract class BaseFragment extends Fragment {
 	protected SwitchActivityInterface saInterface;
@@ -28,7 +23,8 @@ public abstract class BaseFragment extends Fragment {
 	//protected FragmentCallbackInterface fcInterface = callbacks;
 	protected CharSequence fragmentTitle;
 	protected DeviceInfo app;
-	
+	protected FontLoader fontLoader;
+	protected ImageLoader imageLoader;
 	// 액티비티에 Add될때의 이벤트
 	@Override
 	public void onAttach(Activity activity){
@@ -36,6 +32,8 @@ public abstract class BaseFragment extends Fragment {
 		saInterface = (SwitchActivityInterface)activity;
 		sfInterface = (SwitchFragmentInterface)activity;
 		app = (DeviceInfo)activity.getApplicationContext();
+		fontLoader = new FontLoader(activity.getApplicationContext());
+		imageLoader = new ImageLoader(getResources(), app.getScaledRate());
 	}
 
 	@Override

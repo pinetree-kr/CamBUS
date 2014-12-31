@@ -2,13 +2,16 @@ package com.pinetree.cambus.fragments;
 
 import java.util.ArrayList;
 
-import org.json.JSONException;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.InfoWindowAdapter;
 import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
-import com.google.android.gms.maps.MapFragment;
+
+import com.google.android.gms.maps.OnMapReadyCallback;
+
+import com.google.android.gms.maps.SupportMapFragment;
+
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.pinetree.cambus.R;
@@ -17,33 +20,31 @@ import com.pinetree.cambus.utils.DeviceInfo;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.DialogFragment;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 
 public class TerminalMapDialogFragment extends DialogFragment {
-	private boolean isModal;
 	private ArrayList<Terminal> terminal_list;
-	private LinearLayout infoView;
-	private MapFragment mapView;
-	private GoogleMap map;
-	
+	//private LinearLayout infoView;
+	private SupportMapFragment mapView;
+	private GoogleMap googleMap;
 	public static TerminalMapDialogFragment getInstances(ArrayList<Terminal> model){
 		Bundle args = new Bundle();
 		args.putSerializable("model", model);
@@ -52,22 +53,6 @@ public class TerminalMapDialogFragment extends DialogFragment {
 		dialog.setArguments(args);
 		
 		return dialog;
-	}
-	
-
-	@Override
-	public Dialog onCreateDialog(Bundle savedInstanceState){
-		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		
-		LayoutInflater inflater = getActivity().getLayoutInflater();
-		
-		View view = inflater.inflate(R.layout.fragment_dialog_terminal_map, null);
-		
-		builder.setView(view);
-		setupUI(view);			
-		isModal = true;
-		
-		return builder.create();
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -91,53 +76,46 @@ public class TerminalMapDialogFragment extends DialogFragment {
 	@Override
 	public void onDestroyView(){
 		super.onDestroyView();
-		KilledView();
-		
 	}
 	@Override
 	public void onDismiss(DialogInterface dialog){
 		super.onDismiss(dialog);
-		KilledView();
 	}
 	
 	@Override
 	public void onDetach(){
 		super.onDetach();
-		KilledView();
-		
 	}
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		if(isModal){
-			return super.onCreateView(inflater, container, savedInstanceState);
-		}else{
-			View view = inflater.inflate(R.layout.fragment_dialog_terminal_map, container, false);
-			setupUI(view);
-			return view;
-		}
+		Window window = getDialog().getWindow();
+		window.requestFeature(Window.FEATURE_NO_TITLE);
+		View view = inflater.inflate(R.layout.fragment_dialog_terminal_map, container, false);
+		setupUI(view);
+		
+		return view;
 	}
 	
 	public void setupUI(View view){
-		if(infoView==null){
-			infoView = (LinearLayout)view.findViewById(R.id.terminal_info);
-		}
-		FrameLayout group = (FrameLayout)view.findViewById(R.id.terminal_view);
-		group.removeView(infoView);
-		if(mapView==null)
-			mapView = (MapFragment)getFragmentManager().findFragmentById(R.id.map);
-		map = mapView.getMap();
-		
-		if(map!=null)
-			map.setInfoWindowAdapter(new MarkerInfoWindowAdapter());
+		mapView = SupportMapFragment.newInstance();
+		FragmentTransaction ft = getChildFragmentManager().beginTransaction();
+		ft.add(R.id.map, mapView);
+		ft.commit();
+		mapView.getMapAsync(new gMapCallback());
 	}
 	
-	
-	private void KilledView(){
-		if(mapView != null){
-			FragmentManager fm = getFragmentManager();
-			fm.beginTransaction().remove(mapView).commit();
+	private class gMapCallback implements OnMapReadyCallback{
+		@Override
+		public void onMapReady(GoogleMap googleMap) {
+			googleMap.setInfoWindowAdapter(new MarkerInfoWindowAdapter());
+
+			for(Terminal terminal : terminal_list){
+				//TODO: 좌표가 없는 터미널은 어떻게 표시해줄것인가? 연락처라도 알아내야함
+				if(terminal.hasPosition())
+					drawMarker(googleMap, terminal);
+			}
 		}
 	}
 	
@@ -147,17 +125,13 @@ public class TerminalMapDialogFragment extends DialogFragment {
 	}
 	@Override
 	public void onStart(){
-		super.onStart();
-
+		Window window = getDialog().getWindow();
+		
 		int height = (int)(((DeviceInfo)getActivity().getApplicationContext()).getHeight()*7/10);
 		int width = (int)(((DeviceInfo)getActivity().getApplicationContext()).getWidth()*9/10);
-		getDialog().getWindow().setLayout(width, height);
-		
-		for(Terminal terminal : terminal_list){
-			//TODO: 좌표가 없는 터미널은 어떻게 표시해줄것인가? 연락처라도 알아내야함
-			if(terminal.hasPosition())
-				drawMarker(map, terminal);
-		}
+		window.setLayout(width, height);
+		window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+		super.onStart();
 	}
 	public void drawMarker(GoogleMap map, Terminal terminal){
 		MarkerOptions marker = new MarkerOptions();

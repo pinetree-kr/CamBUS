@@ -1,11 +1,9 @@
 package com.pinetree.cambus.fragments;
 
 import java.io.IOException;
-import java.util.Calendar;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.pinetree.cambus.FilterActivity;
 import com.pinetree.cambus.R;
@@ -24,8 +21,6 @@ import com.pinetree.cambus.models.Model;
 import com.pinetree.cambus.utils.DBHandler;
 import com.pinetree.cambus.utils.ExcelFileInfo;
 import com.pinetree.cambus.utils.ExcelHandler;
-import com.pinetree.cambus.utils.FontLoader;
-import com.pinetree.cambus.utils.ImageLoader;
 import com.pinetree.cambus.utils.ModelAsyncTask;
 
 public class SplashFragment extends BaseFragment {
@@ -48,17 +43,9 @@ public class SplashFragment extends BaseFragment {
 		
 		ImageView title = (ImageView) view.findViewById(R.id.AppTitle);
 		title.setBackgroundDrawable(
-				ImageLoader.getResizedDrawable(
-						getResources(),
-						R.drawable.bg,
-						app.getScaledRate()
-						));
+				imageLoader.getResizedDrawable(R.drawable.bg));
 		title.setImageDrawable(
-				ImageLoader.getResizedDrawable(
-						getResources(),
-						R.drawable.main,
-						app.getScaledRate()
-						));
+				imageLoader.getResizedDrawable(R.drawable.main));
 		
 		return view;
 	}

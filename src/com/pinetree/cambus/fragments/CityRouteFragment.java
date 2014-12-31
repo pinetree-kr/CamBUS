@@ -1,18 +1,7 @@
 package com.pinetree.cambus.fragments;
 
-import java.util.ArrayList;
-
-import com.pinetree.cambus.R;
-import com.pinetree.cambus.adapters.ModelListAdapter;
-import com.pinetree.cambus.models.DBModel.*;
-import com.pinetree.cambus.utils.DBHandler;
-import com.pinetree.cambus.utils.FontLoader;
-import com.pinetree.cambus.utils.ImageLoader;
-
-import android.app.Fragment;
-import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -21,6 +10,11 @@ import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.pinetree.cambus.R;
+import com.pinetree.cambus.adapters.ModelListAdapter;
+import com.pinetree.cambus.models.DBModel.CityRoute;
+import com.pinetree.cambus.utils.DBHandler;
 
 public class CityRouteFragment extends BaseFragment {
 	private DBHandler handler;
@@ -57,11 +51,7 @@ public class CityRouteFragment extends BaseFragment {
 		
 		ImageView imageTitle = (ImageView)view.findViewById(R.id.titleBg);
 		imageTitle.setBackgroundDrawable(
-				ImageLoader.getResizedDrawable(
-						getResources(),
-						R.drawable.top,
-						app.getScaledRate()
-						));
+				imageLoader.getResizedDrawable(R.drawable.top));
 		textTitle = (TextView)view.findViewById(R.id.TextTitle);
 		textRouteInfo = (TextView)view.findViewById(R.id.ListHeader);
 		
@@ -145,22 +135,16 @@ public class CityRouteFragment extends BaseFragment {
 			else{
 				dLine = getResources().getIdentifier(unselectedIds[i],"drawable",this.getActivity().getPackageName());				
 			}
-			imageLine[i].setImageDrawable(ImageLoader.getResizedDrawable(
-					getResources(),
-					dLine,
-					app.getScaledRate()
-					));
+			imageLine[i].setImageDrawable(imageLoader.getResizedDrawable(dLine));
 		}
 	}
 	protected void loadTextView(){
-		FontLoader.setTextViewTypeFace(
-				getActivity().getApplicationContext(),
+		fontLoader.setTextViewTypeFace(
 				textTitle,
 				"City bus routes",
 				R.string.lato_medium,
 				(float)9.17);
-		FontLoader.setTextViewTypeFace(
-				getActivity().getApplicationContext(),
+		fontLoader.setTextViewTypeFace(
 				textRouteInfo,
 				R.string.route_info,
 				R.string.lato_medium,

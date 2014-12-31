@@ -1,19 +1,9 @@
 package com.pinetree.cambus;
 
-import com.pinetree.cambus.fragments.SplashFragment;
-import com.pinetree.cambus.utils.DeviceInfo;
-import com.pinetree.cambus.utils.ExcelFileInfo;
-import com.pinetree.cambus.utils.FontLoader;
-
-import android.R.drawable;
-import android.app.Fragment;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.util.TypedValue;
-import android.view.Menu;
-import android.widget.TextView;
+import android.support.v4.app.Fragment;
+
+import com.pinetree.cambus.fragments.SplashFragment;
 
 public class SplashActivity extends BaseActivity {
 	@Override

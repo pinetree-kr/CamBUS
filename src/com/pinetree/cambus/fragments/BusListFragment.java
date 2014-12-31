@@ -2,33 +2,27 @@ package com.pinetree.cambus.fragments;
 
 import java.util.ArrayList;
 
-import com.pinetree.cambus.R;
-import com.pinetree.cambus.adapters.ModelListAdapter;
-import com.pinetree.cambus.models.DBModel.*;
-import com.pinetree.cambus.models.Model;
-import com.pinetree.cambus.utils.DBHandler;
-import com.pinetree.cambus.utils.DateUtils;
-import com.pinetree.cambus.utils.FontLoader;
-import com.pinetree.cambus.utils.ImageLoader;
-
-import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Log;
-import android.util.TypedValue;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
-import android.view.WindowManager;
-import android.widget.Adapter;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.pinetree.cambus.R;
+import com.pinetree.cambus.adapters.ModelListAdapter;
+import com.pinetree.cambus.models.DBModel.Bus;
+import com.pinetree.cambus.models.DBModel.Line;
+import com.pinetree.cambus.models.DBModel.Terminal;
+import com.pinetree.cambus.models.DBModel.Time;
+import com.pinetree.cambus.utils.DBHandler;
 
 public class BusListFragment extends BaseFragment {
 	private TextView textTitle, textEmpty;
@@ -83,17 +77,11 @@ public class BusListFragment extends BaseFragment {
 		textTitle = (TextView)view.findViewById(R.id.TextTitle);
 		
 		ImageView titleBg = (ImageView)view.findViewById(R.id.titleBg);
-		Drawable dBg = ImageLoader.getResizedDrawable(
-				getResources(),
-				R.drawable.top,
-				app.getScaledRate());
+		Drawable dBg = imageLoader.getResizedDrawable(R.drawable.top);
 		titleBg.setImageDrawable(dBg);
 		
 		ImageView filterBg = (ImageView)view.findViewById(R.id.filterBg);
-		Drawable dFilterBg = ImageLoader.getResizedDrawable(
-				getResources(),
-				R.drawable.filter_bar,
-				app.getScaledRate());
+		Drawable dFilterBg = imageLoader.getResizedDrawable(R.drawable.filter_bar);
 		filterBg.setImageDrawable(dFilterBg);
 		
 		textDept = (TextView) view.findViewById(R.id.textDept);
@@ -101,10 +89,7 @@ public class BusListFragment extends BaseFragment {
 		textDistance = (TextView) view.findViewById(R.id.textDistance);
 		
 		ImageView imageBus = (ImageView) view.findViewById(R.id.imageBus);
-		Drawable dBusIcon = ImageLoader.getResizedDrawable(
-				getResources(),
-				R.drawable.bus_icon,
-				app.getScaledRate());
+		Drawable dBusIcon = imageLoader.getResizedDrawable(R.drawable.bus_icon);
 		imageBus.setImageDrawable(dBusIcon);
 		
 		
@@ -127,14 +112,8 @@ public class BusListFragment extends BaseFragment {
 		imagePrice = (ImageView)view.findViewById(R.id.ImageButtonPrice);
 		imageName = (ImageView)view.findViewById(R.id.ImageButtonName);
 		
-		dSelected = ImageLoader.getResizedDrawable(
-				getResources(),
-				R.drawable.sort_selected
-				);
-		dUnSelected = ImageLoader.getResizedDrawable(
-				getResources(),
-				R.drawable.sort_unselected
-				);
+		dSelected = imageLoader.getResizedDrawable(R.drawable.sort_selected);
+		dUnSelected = imageLoader.getResizedDrawable(R.drawable.sort_unselected);
 		
 		listView = (ListView) view.findViewById(R.id.ListView);
 		listView.setEmptyView(view.findViewById(R.id.EmptyListView));
@@ -228,17 +207,17 @@ public class BusListFragment extends BaseFragment {
 	private void setLineInfo(){
 		// Text FilterInfos
 		Line line = handler.getLineInfo(bus.getDeptId(), bus.getDestId());
-		FontLoader.setTextViewTypeFace(getActivity().getApplicationContext(),textDept, line.getDeptName(), R.string.lato_regular, (float)6.88);
-		FontLoader.setTextViewTypeFace(getActivity().getApplicationContext(),textDest, line.getDestName(), R.string.lato_regular, (float)6.88);
-		FontLoader.setTextViewTypeFace(getActivity().getApplicationContext(),textDistance, line.getDistance()+"km", R.string.lato_regular, (float)6.88);
+		fontLoader.setTextViewTypeFace(textDept, line.getDeptName(), R.string.lato_regular, (float)6.88);
+		fontLoader.setTextViewTypeFace(textDest, line.getDestName(), R.string.lato_regular, (float)6.88);
+		fontLoader.setTextViewTypeFace(textDistance, line.getDistance()+"km", R.string.lato_regular, (float)6.88);
 	}
 	private void loadTextView() {
-		FontLoader.setTextViewTypeFace(getActivity().getApplicationContext(), textTitle, "CamBUS", R.string.lato_medium, (float)9.17);
+		fontLoader.setTextViewTypeFace( textTitle, "CamBUS", R.string.lato_medium, (float)9.17);
 		
-		FontLoader.setTextViewTypeFace(getActivity().getApplicationContext(), textEmpty, R.string.no_data, R.string.lato_medium, (float)9.5);
-		FontLoader.setTextViewTypeFace(getActivity().getApplicationContext(), textBtnTime, R.string.sort_time, R.string.lato_regular, (float)8.25);
-		FontLoader.setTextViewTypeFace(getActivity().getApplicationContext(), textBtnPrice, R.string.sort_price, R.string.lato_regular, (float)8.25);
-		FontLoader.setTextViewTypeFace(getActivity().getApplicationContext(), textBtnName, R.string.sort_name, R.string.lato_regular, (float)8.25);
+		fontLoader.setTextViewTypeFace( textEmpty, R.string.no_data, R.string.lato_medium, (float)9.5);
+		fontLoader.setTextViewTypeFace( textBtnTime, R.string.sort_time, R.string.lato_regular, (float)8.25);
+		fontLoader.setTextViewTypeFace( textBtnPrice, R.string.sort_price, R.string.lato_regular, (float)8.25);
+		fontLoader.setTextViewTypeFace( textBtnName, R.string.sort_name, R.string.lato_regular, (float)8.25);
 	}
 	
 	private class ListViewClickListener implements AdapterView.OnItemClickListener{

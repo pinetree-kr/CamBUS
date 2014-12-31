@@ -10,7 +10,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.pinetree.cambus.utils.NumberUtils;
+import com.pinetree.utils.FormatUtil;
 
 public class DBModel{
 	public static class CityRoute extends Model{
@@ -649,7 +649,7 @@ public class DBModel{
 		}
 		public void setArrivalTime(String arrival_time){
 			String[] time = arrival_time.split(":");
-			if(NumberUtils.isNumeric(time[0]) && NumberUtils.isNumeric(time[1])){
+			if(FormatUtil.isNumeric(time[0]) && FormatUtil.isNumeric(time[1])){
 				arrival_hour = Integer.parseInt(time[0]);
 				arrival_min = Integer.parseInt(time[1]);
 				

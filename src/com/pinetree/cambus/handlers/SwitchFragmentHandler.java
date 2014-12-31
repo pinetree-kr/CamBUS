@@ -1,8 +1,8 @@
 package com.pinetree.cambus.handlers;
 
-import com.pinetree.cambus.interfaces.SwitchFragmentInterface;
+import android.support.v4.app.Fragment;
 
-import android.app.Fragment;
+import com.pinetree.cambus.interfaces.SwitchFragmentInterface;
 
 //observer pattern을 통한 call back
 public class SwitchFragmentHandler implements Runnable{

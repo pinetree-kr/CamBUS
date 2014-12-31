@@ -2,9 +2,9 @@ package com.pinetree.cambus;
 
 import com.pinetree.cambus.fragments.CityRoutesFragment;
 
-import android.app.Fragment;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 
 public class CityRoutesActivity extends BaseActivity {

@@ -3,25 +3,19 @@ package com.pinetree.cambus;
 
 
 import io.userhabit.service.Userhabit;
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.Handler;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 
 import com.pinetree.cambus.handlers.SwitchActivityHandler;
 import com.pinetree.cambus.handlers.SwitchFragmentHandler;
 import com.pinetree.cambus.interfaces.SwitchActivityInterface;
 import com.pinetree.cambus.interfaces.SwitchFragmentInterface;
-import com.pinetree.cambus.utils.DeviceInfo;
-import com.pinetree.cambus.utils.ExcelFileInfo;
-import com.pinetree.cambus.utils.FontLoader;
 
-import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentTransaction;
-import android.content.Intent;
-import android.os.Bundle;
-import android.os.Handler;
-import android.util.Log;
-import android.widget.TextView;
-
-public abstract class BaseActivity extends Activity
+public abstract class BaseActivity extends FragmentActivity
 		implements SwitchActivityInterface, SwitchFragmentInterface{
     
 	@Override
@@ -56,8 +50,8 @@ public abstract class BaseActivity extends Activity
 	
 	@Override
 	public void reloadFragment(){
-		Fragment fragment = this.getFragmentManager().findFragmentById(R.id.base_fragment);
-		FragmentTransaction transaction = getFragmentManager().beginTransaction();
+		Fragment fragment = this.getSupportFragmentManager().findFragmentById(R.id.base_fragment);
+		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 		transaction.detach(fragment);
 		transaction.attach(fragment);
 		transaction.commit();
@@ -65,7 +59,7 @@ public abstract class BaseActivity extends Activity
 	
 	@Override
 	public void switchFragment(Fragment fragment, boolean close) {
-		FragmentTransaction transaction = getFragmentManager().beginTransaction();
+		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 		
 		if(close){
 			transaction.replace(R.id.base_fragment, fragment);

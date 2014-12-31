@@ -2,19 +2,7 @@ package com.pinetree.cambus.adapters;
 
 import java.util.ArrayList;
 
-import com.pinetree.cambus.R;
-import com.pinetree.cambus.models.DBModel.City;
-import com.pinetree.cambus.models.DBModel.CityRoute;
-import com.pinetree.cambus.models.DBModel.Time;
-import com.pinetree.cambus.utils.DateUtils;
-import com.pinetree.cambus.utils.DeviceInfo;
-import com.pinetree.cambus.utils.FontLoader;
-import com.pinetree.cambus.utils.ImageLoader;
-import com.pinetree.cambus.viewholders.ViewHolder;
-
 import android.content.Context;
-import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,11 +10,20 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.pinetree.cambus.R;
+import com.pinetree.cambus.models.DBModel.CityRoute;
+import com.pinetree.cambus.models.DBModel.Time;
+import com.pinetree.cambus.utils.DeviceInfo;
+import com.pinetree.utils.FontLoader;
+import com.pinetree.utils.ImageLoader;
+import com.pinetree.utils.ViewHolder;
+
 public class ModelListAdapter<T> extends ArrayAdapter<T>{
 	protected LayoutInflater inflater;
 	protected ArrayList<T> objects;
 	protected DeviceInfo app;
-	
+	protected FontLoader fontLoader;
+	protected ImageLoader imageLoader;
 	public ModelListAdapter(Context context, int resource,
 			ArrayList<T> objects) {		
 		super(context, resource);
@@ -34,6 +31,8 @@ public class ModelListAdapter<T> extends ArrayAdapter<T>{
 		inflater = LayoutInflater.from(context);
 		this.objects = objects;
 		app = (DeviceInfo)context;
+		fontLoader = new FontLoader(context);
+		imageLoader = new ImageLoader(context.getResources(), app.getScaledRate());
 	}
 	
 	@Override
@@ -71,23 +70,17 @@ public class ModelListAdapter<T> extends ArrayAdapter<T>{
 			Time time = (Time) object;
 			
 			TextView textCompany = ViewHolder.get(view, R.id.textCompany);
-			FontLoader.setTextViewTypeFace(getContext(),
-					textCompany, time.getCompanyName(), R.string.lato_semibold, (float)8.48);
+			fontLoader.setTextViewTypeFace(textCompany, time.getCompanyName(), R.string.lato_semibold, (float)8);
 			
 			ImageView imageSeat = ViewHolder.get(view, R.id.imageSeat);
-			imageSeat.setImageDrawable(ImageLoader.getResizedDrawable(
-					this.getContext().getResources(),
-					R.drawable.chair,
-					app.getScaledRate()
-					));
+			imageSeat.setImageDrawable(
+					imageLoader.getResizedDrawable(R.drawable.chair));
 			
 			TextView textPrice = ViewHolder.get(view, R.id.textPrice);
-			FontLoader.setTextViewTypeFace(getContext(),
-					textPrice, time.getForeign()+"$", R.string.lato_regular, (float)8.25);
+			fontLoader.setTextViewTypeFace(textPrice, time.getForeign()+"$", R.string.lato_regular, (float)8.25);
 
 			TextView textDeptTime = ViewHolder.get(view, R.id.textDeptTime);
-			FontLoader.setTextViewTypeFace(getContext(),
-					textDeptTime, time.getDeptTime(), R.string.lato_medium, (float)9.02);
+			fontLoader.setTextViewTypeFace(textDeptTime, time.getDeptTime(), R.string.lato_medium, (float)8.5);
 			
 			TextView textSeat = ViewHolder.get(view, R.id.textSeat);
 			String seat;
@@ -96,18 +89,14 @@ public class ModelListAdapter<T> extends ArrayAdapter<T>{
 			}else{
 				seat = time.getSeat() + " " + getContext().getResources().getString(R.string.seat);			
 			}
-			FontLoader.setTextViewTypeFace(getContext(),
-					textSeat, seat, R.string.lato_regular, (float)8.25);
+			fontLoader.setTextViewTypeFace(textSeat, seat, R.string.lato_regular, (float)8.25);
 			
 			//TODO setTerminal Info
 			if(time.getTerminalList().size()>0){
 				
 				ImageView imageMoreInfo = ViewHolder.get(view, R.id.moreBtn);
-				imageMoreInfo.setImageDrawable(ImageLoader.getResizedDrawable(
-						this.getContext().getResources(),
-						R.drawable.drop_down_btn,
-						app.getScaledRate()
-						));
+				imageMoreInfo.setImageDrawable(
+						imageLoader.getResizedDrawable(R.drawable.info_icon));
 			}
 		}
 		//City Route
@@ -120,30 +109,19 @@ public class ModelListAdapter<T> extends ArrayAdapter<T>{
 			
 			ImageView routeDirection = ViewHolder.get(view, R.id.imageStation);
 			if(position==0){
-				routeDirection.setImageDrawable(ImageLoader.getResizedDrawable(
-						this.getContext().getResources(),
-						R.drawable.route_top,
-						app.getScaledRate()
-						));
+				routeDirection.setImageDrawable(
+						imageLoader.getResizedDrawable(R.drawable.route_top));
 			}else if(position==getCount()-1){
-				routeDirection.setImageDrawable(ImageLoader.getResizedDrawable(
-						this.getContext().getResources(),
-						R.drawable.route_bottom,
-						app.getScaledRate()
-						));
+				routeDirection.setImageDrawable(
+						imageLoader.getResizedDrawable(R.drawable.route_bottom));
 			}else{
-				routeDirection.setImageDrawable(ImageLoader.getResizedDrawable(
-						this.getContext().getResources(),
-						R.drawable.route_mid,
-						app.getScaledRate()
-						));
+				routeDirection.setImageDrawable(
+						imageLoader.getResizedDrawable(R.drawable.route_mid));
 			}
 			TextView textEng = ViewHolder.get(view, R.id.textEng);
-			FontLoader.setTextViewTypeFace(
-					getContext(), textEng, route.getName("eng"), R.string.lato_bold, (float)5.5);
+			fontLoader.setTextViewTypeFace(textEng, route.getName("eng"), R.string.lato_bold, (float)5.5);
 			TextView textKhm = ViewHolder.get(view, R.id.textKhm);
-			FontLoader.setTextViewTypeFace(
-					getContext(), textKhm, route.getName("khm"), R.string.khm_notoserif, (float)5.0);
+			fontLoader.setTextViewTypeFace(textKhm, route.getName("khm"), R.string.khm_notoserif, (float)5.0);
 		}
 		
 		return view;

@@ -5,10 +5,10 @@ import com.pinetree.cambus.fragments.SplashFragment;
 import com.pinetree.cambus.models.Model;
 
 import android.R.drawable;
-import android.app.Fragment;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.Menu;
 

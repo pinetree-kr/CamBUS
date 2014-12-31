@@ -1,6 +1,6 @@
 package com.pinetree.cambus.interfaces;
 
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 
 public interface SwitchFragmentInterface {
 	public void reloadFragment();
